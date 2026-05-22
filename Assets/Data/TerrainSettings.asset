@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb0478c55db8eeb4dbe65114d63b2d38, type: 3}
+  m_Name: TerrainSettings
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainSettings
+  _terrainPrefab: {fileID: 3706547287147494160, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
+  _minArea: 0.02
+  _circleVertex: 6
+  _crackDistance: 5
+  _crackWidth: 0.1
+  _crackWeight: 0.02
+  _crackDivision: 1
+  _crackNoise: 0.6
+  _minImpulse: 5
+  _impulseToRadius: 0.05

@@ -20,15 +20,16 @@ public class TerrainContext : MonoBehaviour
 
 
     private TerrainPolygon _terrainPolygon;         // 地形形状
+    private Action _onChangeTerrainEvent;           // 地形変更時イベント
 
     private PolygonCollider2D _polygonCollider;
     private Rigidbody2D _rigidbody;
-    private Action _onDestructEvent;                // 地形変更時イベント
 
 
     public TerrainSettings TerrainSettings => _terrainSettings;
     public TerrainParameter TerrainParameter => _terrainParameter;
     public TerrainPolygon TerrainPolygon => _terrainPolygon;
+    public PolygonCollider2D PolygonCollider => _polygonCollider;
     public Rigidbody2D Rigidbody => _rigidbody;
 
 
@@ -47,6 +48,7 @@ public class TerrainContext : MonoBehaviour
 
         for(int i = 0;i< splitTerrains.Count;++i)
         {
+            // 地形分離
             CreateSplitTerrain(splitTerrains[i]);
         }
         OnChangeTerrain();
@@ -55,7 +57,7 @@ public class TerrainContext : MonoBehaviour
     // 地形変更時イベントを登録する
     public void AddChangeTerrainEvent(Action onDestructEvent)
     {
-        _onDestructEvent += onDestructEvent;
+        _onChangeTerrainEvent += onDestructEvent;
     }
 
 
@@ -86,6 +88,7 @@ public class TerrainContext : MonoBehaviour
     }
 
 
+    // 分離地形のオブジェクトを生成する
     private void CreateSplitTerrain(SplitTerrainData splitTerrain)
     {
         TerrainContext newTerrain = Instantiate(
@@ -115,8 +118,8 @@ public class TerrainContext : MonoBehaviour
         }
 
         // 他のコンポーネントの地形破壊時イベント呼び出し
-        if (_onDestructEvent != null)
-            _onDestructEvent.Invoke();
+        if (_onChangeTerrainEvent != null)
+            _onChangeTerrainEvent.Invoke();
     }
 
     // コライダー形状を更新する

@@ -15,4 +15,14 @@ public class CameraController : MonoBehaviour
         pos.z = transform.position.z;
         transform.position = pos;
     }
+
+    private void OnValidate()
+    {
+        if( _followTarget == null )
+            return;
+
+        Vector3 pos = _followTarget.transform.position + (Vector3)_followOffset;
+        pos.z = transform.position.z;
+        transform.position = pos;
+    }
 }

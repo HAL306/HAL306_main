@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using LibTessDotNet;
 
 
+/// <summary>
+/// 地形の描画用コンポーネント
+/// </summary>
 [RequireComponent (typeof(TerrainContext))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshFilter))]
@@ -82,12 +85,10 @@ public class TerrainRenderer : MonoBehaviour
     ContourVertex[] ToContour(Vector2[] edgeLoop)
     {
         var result = new ContourVertex[edgeLoop.Length];
-
         for (int i = 0; i < edgeLoop.Length; i++)
         {
             result[i].Position = new Vec3(edgeLoop[i].x, edgeLoop[i].y, 0);
         }
-
         return result;
     }
 }

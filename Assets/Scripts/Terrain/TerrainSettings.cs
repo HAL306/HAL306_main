@@ -1,11 +1,14 @@
 using UnityEngine;
 
 
+/// <summary>
+/// 地形の詳細設定
+/// </summary>
 [CreateAssetMenu(fileName = "TerrainSettings", menuName = "Scriptable Objects/TerrainSettings")]
 public class TerrainSettings : ScriptableObject
 {
     [SerializeField, Tooltip("空の地形のプレハブ")]
-    private TerrainContext _baseTerrainPrefab;
+    private TerrainContext _terrainPrefab;
 
     [SerializeField, Tooltip("地形の最小サイズ")]
     [Range(0.0f, 0.1f)]
@@ -39,14 +42,14 @@ public class TerrainSettings : ScriptableObject
 
 
     [Header("衝突時破壊設定")]
-    [SerializeField, Tooltip("衝突時破壊を起こさない衝撃のしきい値")]
-    private float _minImpulse = 5.0f;
+    //[SerializeField, Tooltip("衝突時破壊を起こさない衝撃のしきい値")]
+    //private float _minImpulse = 5.0f;
 
-    [SerializeField, Tooltip("衝撃に対する地形破壊範囲")]
-    private float _impulseToRadius = 0.05f;
+    //[SerializeField, Tooltip("衝撃に対する地形破壊範囲")]
+    //private float _impulseToRadius = 0.05f;
 
 
-    public TerrainContext BaseTerrainPrefab => _baseTerrainPrefab;
+    public TerrainContext BaseTerrainPrefab => _terrainPrefab;
     public float MinArea => _minArea;
     public int CircleVertex => _circleVertex;
     public float CrackDistance => _crackDistance;
@@ -54,7 +57,7 @@ public class TerrainSettings : ScriptableObject
     public float CrackWeight => _crackWeight;
     public int CrackDivision => _crackDivision;
     public float CrackNoise => _crackNoise;
-    public float MinImpulse => _minImpulse;
-    public float ImpulseToRadius => _impulseToRadius;
+    //public float MinImpulse => _minImpulse;
+    //public float ImpulseToRadius => _impulseToRadius;
 
 }

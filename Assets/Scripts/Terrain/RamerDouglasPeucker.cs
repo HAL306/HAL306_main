@@ -11,8 +11,8 @@ public static class RamerDouglasPeucker
 {
     public static List<Vector2> RamerDouglasPeuckerAlgorithm(List<Vector2> point, float epsilon)
     {
-        //点が3点未満の場合終了
-        if (point == null || point.Count < 3)
+        //点が3点以下の場合終了
+        if (point == null || point.Count <= 3)
             return new List<Vector2>(point);
         //最大距離用indexの初期化
         int index = -1;
