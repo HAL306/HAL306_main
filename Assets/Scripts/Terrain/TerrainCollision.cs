@@ -18,31 +18,31 @@ public class TerrainCollision : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //Rigidbody2D rb = collision.rigidbody;
+        Rigidbody2D rb = collision.rigidbody;
 
-        //float mass;
-        //if (rb == null)
-        //{
-        //    mass = _terrainContext.Rigidbody.mass;
-        //}
-        //else
-        //{
-        //    mass = rb.mass;
-        //}
+        float mass;
+        if (rb == null)
+        {
+            mass = _terrainContext.Rigidbody.mass;
+        }
+        else
+        {
+            mass = rb.mass;
+        }
 
-        //float speed = collision.relativeVelocity.magnitude;
-        //float impact = mass * speed / _terrainContext.Rigidbody.mass;
+        float speed = collision.relativeVelocity.magnitude;
+        float impact = mass * speed / _terrainContext.Rigidbody.mass;
 
-        //if (impact < 3.0f)
-        //    return;
+        if (impact < 3.0f)
+            return;
 
-        //CrackParameter crack;
-        //crack.direction = collision.relativeVelocity.normalized;
-        //crack.angleNoise = 90.0f;
-        //crack.minCrackCount = 1;
-        //crack.maxCrackCount = 2;
+        CrackParameter crack;
+        crack.direction = collision.relativeVelocity.normalized;
+        crack.angleNoise = 90.0f;
+        crack.minCrackCount = 1;
+        crack.maxCrackCount = 2;
 
-        //_terrainContext.Destruct(collision.contacts[0].point, 0.01f * _terrainContext.Rigidbody.mass, crack);
+        _terrainContext.Destruct(collision.contacts[0].point, 0.01f * _terrainContext.Rigidbody.mass, crack);
 
         //Rigidbody2D thisRigid = _terrainContext.Rigidbody;
         //Rigidbody2D otherRigid = collision.rigidbody;
