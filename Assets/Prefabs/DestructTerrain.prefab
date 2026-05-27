@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 3706547287147494160}
   - component: {fileID: 976181807826979226}
   - component: {fileID: 1301672570359481511}
-  - component: {fileID: 3238659193208750668}
   m_Layer: 7
   m_Name: DestructTerrain
   m_TagString: Untagged
@@ -162,6 +161,9 @@ MonoBehaviour:
   _terrainSettings: {fileID: 11400000, guid: 55b538e2e3582654e8fd54370d30645b, type: 2}
   _terrainParameter: {fileID: 11400000, guid: 11c2a903f2b17aa4a8a7357f1bc47568, type: 2}
   _isStartTerrain: 0
+  _baseTerrainLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &976181807826979226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,30 +188,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb84141bbf57634896f660339e47e5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainRenderer
---- !u!50 &3238659193208750668
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4934632388205318660}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: a2426f03e4b2cd64fa3ed6c39a0f33f6, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
