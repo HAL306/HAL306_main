@@ -123,7 +123,7 @@ public class TerrainContext : MonoBehaviour
         {
             if (_overlapColliderList == null)
             {
-                // 最初の重なりチェック
+                // 重なったコライダーを取得する
                 GetOverlapCollider();
 
                 if (_overlapColliderList.Count == 0)
@@ -131,7 +131,6 @@ public class TerrainContext : MonoBehaviour
             }
             else
             {
-                // 今まで重なっていたコライダーのみ判定
                 if (!CheckOverlapCollider())
                     AddRigidbody();
             }
@@ -163,16 +162,19 @@ public class TerrainContext : MonoBehaviour
         }
     }
 
-    // 重なっているベース地形のコライダーを取得する
+    // 重なっているベース地形のコライダーを取得する (厳密な判定は行いません)
     private void GetOverlapCollider()
     {
         _overlapColliderList = new List<Collider2D>();
-        ContactFilter2D filter = new ContactFilter2D();
+        ContactFilter2D filter = ContactFilter2D.noFilter;
         filter.layerMask = _baseTerrainLayer;
+        filter.useLayerMask = true;
         filter.useTriggers = false;
 
         // 重なっているベース地形のコライダー取得
         _polygonCollider.Overlap(filter, _overlapColliderList);
+
+        Debug.Log(_overlapColliderList.Count);
     }
 
     // ベース地形との重なりを調べる
