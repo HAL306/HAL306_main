@@ -36,7 +36,7 @@ public class TerrainRenderer : MonoBehaviour
     // •`‰æ—pƒ|ƒŠƒSƒ“‚ğÄ\’z‚·‚é
     private bool RebuildRenderMesh()
     {
-        List<EdgeLoop> terrainPaths = _terrainContext.TerrainPolygon.TerrainPath;
+        List<EdgeLoop> terrainPaths = _terrainContext.TerrainPolygon.TerrainPaths;
         if (terrainPaths == null)
             return false;
 

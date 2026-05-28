@@ -27,8 +27,10 @@ public class TerrainContext : MonoBehaviour
 
     private PolygonCollider2D _polygonCollider;
     private Rigidbody2D _rigidbody;
+    private TerrainDestructEffect _destructEffect;
 
     private List<Collider2D> _overlapColliderList;      // 重なっているコライダーのリスト
+    private float _mass;
 
 
     public TerrainSettings TerrainSettings => _terrainSettings;
@@ -36,6 +38,7 @@ public class TerrainContext : MonoBehaviour
     public TerrainPolygon TerrainPolygon => _terrainPolygon;
     public PolygonCollider2D PolygonCollider => _polygonCollider;
     public Rigidbody2D Rigidbody => _rigidbody;
+    public float Mass => _mass;
 
 
     // 分離時の初期化処理
@@ -69,6 +72,7 @@ public class TerrainContext : MonoBehaviour
         _terrainPolygon = new TerrainPolygon();
         _polygonCollider = GetComponent<PolygonCollider2D>();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _destructEffect = GetComponent<TerrainDestructEffect>();
 
         if (_isStartTerrain)
         {
@@ -112,6 +116,9 @@ public class TerrainContext : MonoBehaviour
         // 最小サイズより小さくなったら削除
         if (_terrainPolygon.Area < _terrainSettings.MinArea)
         {
+            if (_destructEffect != null)
+                _destructEffect.EmitDestructEffect(_terrainPolygon.TerrainPaths);
+
             Destroy(this.gameObject);
             return;
         }
@@ -138,7 +145,8 @@ public class TerrainContext : MonoBehaviour
         else
         {
             // 重さを設定
-            _rigidbody.mass = _terrainPolygon.Area * _terrainParameter.Density;
+            _mass = _terrainPolygon.Area * _terrainParameter.Density;
+            _rigidbody.mass = _mass;
         }
 
         // 他のコンポーネントの地形破壊時イベント呼び出し
@@ -149,7 +157,7 @@ public class TerrainContext : MonoBehaviour
     // コライダー形状を更新する
     private void UpdateCollider()
     {
-        List<EdgeLoop> terrainPath = _terrainPolygon.TerrainPath;
+        List<EdgeLoop> terrainPath = _terrainPolygon.TerrainPaths;
         _polygonCollider.pathCount = terrainPath.Count;
         for (int i = 0; i < terrainPath.Count; ++i)
         {
@@ -173,8 +181,6 @@ public class TerrainContext : MonoBehaviour
 
         // 重なっているベース地形のコライダー取得
         _polygonCollider.Overlap(filter, _overlapColliderList);
-
-        Debug.Log(_overlapColliderList.Count);
     }
 
     // ベース地形との重なりを調べる
@@ -219,6 +225,7 @@ public class TerrainContext : MonoBehaviour
         _rigidbody = gameObject.AddComponent<Rigidbody2D>();
 
         // 重さを設定
-        _rigidbody.mass = _terrainPolygon.Area * _terrainParameter.Density;
+        _mass = _terrainPolygon.Area * _terrainParameter.Density;
+        _rigidbody.mass = _mass;
     }
 }

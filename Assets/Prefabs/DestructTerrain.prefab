@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3706547287147494160}
   - component: {fileID: 976181807826979226}
   - component: {fileID: 1301672570359481511}
+  - component: {fileID: 5745265711445885353}
   m_Layer: 7
   m_Name: DestructTerrain
   m_TagString: Untagged
@@ -140,11 +141,41 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: 1}
-      - {x: -0.95105654, y: 0.30901697}
-      - {x: -0.5877852, y: -0.80901706}
-      - {x: 0.58778536, y: -0.80901694}
-      - {x: 0.9510565, y: 0.30901712}
+    - - {x: 4.09745, y: -2.0409882}
+      - {x: 4.436919, y: -4.173501}
+      - {x: 4.8773727, y: -4.4896994}
+      - {x: 5.5538645, y: -3.3505244}
+      - {x: 4.478149, y: -1.2267221}
+      - {x: 5.1973205, y: 0.9568206}
+      - {x: 4.37214, y: 3.148271}
+      - {x: 3.2698398, y: 3.255748}
+      - {x: 2.5824428, y: 1.1366084}
+      - {x: 2.3192396, y: 1.0718374}
+      - {x: 2.2442195, y: 0.41375375}
+      - {x: 1.6702857, y: 0.17727649}
+      - {x: 0.7708788, y: 1.550698}
+      - {x: 0.107611895, y: 2.9485881}
+      - {x: -2.0375006, y: 3.0563643}
+      - {x: -1.6484451, y: 2.0466285}
+      - {x: -2.4872415, y: 1.4085779}
+      - {x: -2.8870845, y: -0.13204545}
+      - {x: -3.652076, y: -2.051688}
+      - {x: -3.4054947, y: -2.38098}
+      - {x: -3.3988266, y: -2.9958122}
+      - {x: -1.4872746, y: -1.4770833}
+      - {x: -0.81192935, y: 0.3308432}
+      - {x: -0.6769297, y: -0.026640415}
+      - {x: -0.99687517, y: -2.664378}
+      - {x: -0.7134753, y: -3.91509}
+      - {x: 0.19325426, y: -3.1667476}
+      - {x: 0.09036234, y: -1.3559597}
+      - {x: 0.27910846, y: -0.9033152}
+      - {x: 1.3258245, y: -3.198421}
+      - {x: 2.2325578, y: -3.7968872}
+      - {x: 3.5211887, y: -3.5004685}
+      - {x: 3.1115184, y: -2.6815798}
+      - {x: 1.2879455, y: -1.4840009}
+      - {x: 2.7344136, y: -1.2327309}
   m_UseDelaunayMesh: 0
 --- !u!114 &3706547287147494160
 MonoBehaviour:
@@ -188,3 +219,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb84141bbf57634896f660339e47e5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainRenderer
+--- !u!114 &5745265711445885353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4934632388205318660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df6a47e77caf9784781f3163dac1afde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDestructEffect

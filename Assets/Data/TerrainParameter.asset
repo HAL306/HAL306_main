@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b7edd5dcde01d4897a7aa4b64c9b3a, type: 3}
   m_Name: TerrainParameter
   m_EditorClassIdentifier: Assembly-CSharp::TerrainParameter
-  _destructEffect: {fileID: 0}
+  _destructEffect: {fileID: 5462262700663053942, guid: 3329a98748a3f8d4588d23622168e8c1, type: 3}
   _destructibility: 1
   _fractureMultiplier: 1
   _density: 5

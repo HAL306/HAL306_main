@@ -58,10 +58,12 @@ public class TerrainPolygon
 
     private TerrainContext _terrainContext;
     private List<EdgeLoop> _terrainPaths;       // 地形形状
+    private List<EdgeLoop> _destructPaths;      // 直前の破壊の形状
     private float _area;                        // 面積
 
 
-    public List<EdgeLoop> TerrainPath => _terrainPaths;
+    public List<EdgeLoop> TerrainPaths => _terrainPaths;
+    public List<EdgeLoop> DestructPaths => _destructPaths;
     public float Area => _area;
 
 
@@ -70,6 +72,7 @@ public class TerrainPolygon
     {
         _terrainContext = terrainContext;
         _terrainPaths = new List<EdgeLoop>(terrainPaths.Count);
+        _destructPaths = new List<EdgeLoop>();
         for (int i = 0; i < terrainPaths.Count; ++i)
         {
             EdgeLoop edgeLoop = new EdgeLoop();
@@ -83,6 +86,7 @@ public class TerrainPolygon
     {
         _terrainContext = terrainContext;
         _terrainPaths = splitTerrainData.paths;
+        _destructPaths = new List<EdgeLoop>();
         _area = splitTerrainData.area;
     }
 
@@ -103,6 +107,9 @@ public class TerrainPolygon
         // 破壊範囲の円を生成
         float circleRadius = radius * parameter.Destructibility;
         Vector2[] circlePath = CreateCirclePath(localCenter, circleRadius, settings.CircleVertex);
+
+        // 削る形状を取得
+        List<Vector2[]> destructPaths = PolygonIntersect(terrainPaths, circlePath);
 
         // 円形に削る
         terrainPaths = PolygonDifference(terrainPaths, circlePath);
@@ -128,6 +135,17 @@ public class TerrainPolygon
             _terrainPaths.Add(edgeLoop);
         }
 
+        // 破壊形状パスを更新
+        _destructPaths.Clear();
+        for (int i = 0; i < destructPaths.Count; ++i)
+        {
+            EdgeLoop edgeLoop = new EdgeLoop();
+            edgeLoop.points = destructPaths[i];
+            edgeLoop.isClockwise = IsClockwise(destructPaths[i]);
+
+            _destructPaths.Add(edgeLoop);
+        }
+
         // パスがなくなったら終了
         List<SplitTerrainData> splitTerrains = new List<SplitTerrainData>();
         if(_terrainPaths.Count == 0)
@@ -142,6 +160,20 @@ public class TerrainPolygon
         return splitTerrains;
     }
 
+
+    // ポリゴンの交差を求める
+    private List<Vector2[]> PolygonIntersect(List<Vector2[]> mainPaths, Vector2[] intersectPath)
+    {
+        // Clipper2用の配列に変換
+        PathsD mainPathsD = VectorPathsToPathsD(mainPaths);
+        PathD intersectPathD = VectorPathToPathD(intersectPath);
+
+        // ポリゴン減算
+        PathsD newPathsD = Clipper.Intersect(mainPathsD, new PathsD { intersectPathD }, FillRule.NonZero);
+
+        // Vector2配列に変換
+        return PathsDToVectorPaths(newPathsD);
+    }
 
     // ポリゴンの減算を行う
     private List<Vector2[]> PolygonDifference(List<Vector2[]> mainPaths, Vector2[] clipPath)
