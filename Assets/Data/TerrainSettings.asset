@@ -13,12 +13,10 @@ MonoBehaviour:
   m_Name: TerrainSettings
   m_EditorClassIdentifier: Assembly-CSharp::TerrainSettings
   _terrainPrefab: {fileID: 3706547287147494160, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
-  _minArea: 0.02
+  _minArea: 0.05
   _circleVertex: 6
-  _crackDistance: 5
+  _crackDistance: 3
   _crackWidth: 0.1
   _crackWeight: 0.02
   _crackDivision: 1
   _crackNoise: 0.6
-  _minImpulse: 5
-  _impulseToRadius: 0.05

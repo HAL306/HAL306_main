@@ -8,7 +8,7 @@ using UnityEngine;
 public class TerrainParameter : ScriptableObject
 {
     [SerializeField, Tooltip("破壊時エフェクト")]
-    private GameObject _destructEffect;
+    private ParticleSystem _destructEffect;
 
     [SerializeField, Tooltip("地形の削れやすさ倍率")]
     [Range(0.0f, 2.0f)]
@@ -23,7 +23,7 @@ public class TerrainParameter : ScriptableObject
     private float _density = 5.0f;
 
 
-    public GameObject DestructEffect => _destructEffect;
+    public ParticleSystem DestructEffect => _destructEffect;
     public float Destructibility => _destructibility;
     public float FractureMultiplier => _fractureMultiplier;
     public float Density => _density;

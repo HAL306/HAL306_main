@@ -12,7 +12,7 @@ public class TerrainSettings : ScriptableObject
 
     [SerializeField, Tooltip("地形の最小サイズ")]
     [Range(0.0f, 0.1f)]
-    private float _minArea = 0.02f;
+    private float _minArea = 0.05f;
 
     [SerializeField, Tooltip("破壊円の頂点数")]
     [Range(4, 16)]
