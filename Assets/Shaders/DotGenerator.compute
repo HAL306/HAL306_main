@@ -1,0 +1,66 @@
+#pragma kernel CSMain
+
+// 入力パラメータ
+int TriangleCount;
+float2 GridSpacing;
+float2 GridOffset;
+
+// 入力メッシュデータ
+StructuredBuffer<float2> Vertices;
+StructuredBuffer<int> Triangles;
+
+// 結果を保存するバッファ
+AppendStructuredBuffer<float2> ResultBuffer;
+
+// 2D外積を用いた、点が三角形の内部にあるかどうかの判定関数
+float SignFunc(float2 p1, float2 p2, float2 p3)
+{
+    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+}
+
+bool PointInTriangle(float2 pt, float2 v1, float2 v2, float2 v3)
+{
+    float d1 = SignFunc(pt, v1, v2);
+    float d2 = SignFunc(pt, v2, v3);
+    float d3 = SignFunc(pt, v3, v1);
+
+    bool has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+    bool has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+    return !(has_neg && has_pos);
+}
+
+[numthreads(8, 8, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // 現在のスレッドに対応するグリッドのローカル座標
+    float2 localPos = GridOffset + float2(id.xy) * GridSpacing;
+
+    bool isInside = false;
+
+    // すべての三角形ポリゴンに対して内包判定を行う
+    for (int i = 0; i < TriangleCount; i++)
+    {
+        // 頂点インデックスの取得
+        int idxA = Triangles[i * 3 + 0];
+        int idxB = Triangles[i * 3 + 1];
+        int idxC = Triangles[i * 3 + 2];
+
+        // 頂点座標の取得
+        float2 vA = Vertices[idxA];
+        float2 vB = Vertices[idxB];
+        float2 vC = Vertices[idxC];
+
+        // 1つでも三角形の内部に含まれていれば、ドットを配置する
+        if (PointInTriangle(localPos, vA, vB, vC))
+        {
+            isInside = true;
+            break;
+        }
+    }
+
+    if (isInside)
+    {
+        ResultBuffer.Append(localPos);
+    }
+}
