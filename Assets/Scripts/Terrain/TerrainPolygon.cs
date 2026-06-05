@@ -3,63 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-// ƒGƒbƒWƒ‹[ƒv
+// ã‚¨ãƒƒã‚¸ãƒ«ãƒ¼ãƒ—
 public class EdgeLoop
 {
-    [Tooltip("’¸“_À•W")]
+    [Tooltip("é ‚ç‚¹åº§æ¨™")]
     public Vector2[] points;
 
-    [Tooltip("‰ñ“]•ûŒü")]
+    [Tooltip("å›è»¢æ–¹å‘")]
     public bool isClockwise;
 }
 
 
-// ‚Ğ‚ÑŠ„‚êƒpƒ‰ƒ[ƒ^
+// ã²ã³å‰²ã‚Œãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 public struct CrackParameter
 {
-    [Tooltip("‚Ğ‚ÑŠ„‚ê‚ÌŠî€•ûŒü")]
+    [Tooltip("ã²ã³å‰²ã‚Œã®åŸºæº–æ–¹å‘")]
     public Vector2 direction;
 
-    [Tooltip("‚Ğ‚ÑŠ„‚ê•ûŒü‚ÌŠp“xƒmƒCƒY")]
+    [Tooltip("ã²ã³å‰²ã‚Œæ–¹å‘ã®è§’åº¦ãƒã‚¤ã‚º")]
     public float angleNoise;
 
-    [Tooltip("Å‘å‚Ğ‚ÑŠ„‚ê–{”")]
+    [Tooltip("æœ€å¤§ã²ã³å‰²ã‚Œæœ¬æ•°")]
     public int maxCrackCount;
 
-    [Tooltip("Å¬‚Ğ‚ÑŠ„‚ê–{”")]
+    [Tooltip("æœ€å°ã²ã³å‰²ã‚Œæœ¬æ•°")]
     public int minCrackCount;
 }
 
 
-// •ª—£‚µ‚½’nŒ`‚Ìƒf[ƒ^
+// åˆ†é›¢ã—ãŸåœ°å½¢ã®ãƒ‡ãƒ¼ã‚¿
 public struct SplitTerrainData
 {
-    [Tooltip("’nŒ`‚ÌŒ`óƒpƒX")]
+    [Tooltip("åœ°å½¢ã®å½¢çŠ¶ãƒ‘ã‚¹")]
     public List<EdgeLoop> paths;
 
-    [Tooltip("’nŒ`‚Ì–ÊÏ")]
+    [Tooltip("åœ°å½¢ã®é¢ç©")]
     public float area;
 }
 
 
 /// <summary>
-/// ’nŒ`‚ÌŒ`óƒf[ƒ^
+/// åœ°å½¢ã®å½¢çŠ¶ãƒ‡ãƒ¼ã‚¿
 /// </summary>
 public class TerrainPolygon
 {
-    // Œğ·”»’èŒ‹‰Ê
+    // äº¤å·®åˆ¤å®šçµæœ
     struct IntercectResult
     {
-        public bool isHit;                  // Œğ·”»’è
-        public float distance;              // Œğ·ˆÊ’u‚Ü‚Å‚Ì‹——£
-        public Vector2 point;               // Œğ·ˆÊ’u
+        public bool isHit;                  // äº¤å·®åˆ¤å®š
+        public float distance;              // äº¤å·®ä½ç½®ã¾ã§ã®è·é›¢
+        public Vector2 point;               // äº¤å·®ä½ç½®
     }
 
 
     private TerrainContext _terrainContext;
-    private List<EdgeLoop> _terrainPaths;       // ’nŒ`Œ`ó
-    private List<EdgeLoop> _destructPaths;      // ’¼‘O‚Ì”j‰ó‚ÌŒ`ó
-    private float _area;                        // –ÊÏ
+    private List<EdgeLoop> _terrainPaths;       // åœ°å½¢å½¢çŠ¶
+    private List<EdgeLoop> _destructPaths;      // ç›´å‰ã®ç ´å£Šã®å½¢çŠ¶
+    private float _area;                        // é¢ç©
 
 
     public List<EdgeLoop> TerrainPaths => _terrainPaths;
@@ -67,7 +67,7 @@ public class TerrainPolygon
     public float Area => _area;
 
 
-    // ‰Šú‰»ˆ—
+    // åˆæœŸåŒ–å‡¦ç†
     public void Initialize(TerrainContext terrainContext, List<Vector2[]> terrainPaths)
     {
         _terrainContext = terrainContext;
@@ -90,41 +90,41 @@ public class TerrainPolygon
         _area = splitTerrainData.area;
     }
 
-    // ƒ|ƒŠƒSƒ“‚Ì”j‰óˆ—
+    // ãƒãƒªã‚´ãƒ³ã®ç ´å£Šå‡¦ç†
     public List<SplitTerrainData> PolygonDestruct(Vector2 worldCenter, float radius, CrackParameter crack)
     {
         TerrainSettings settings = _terrainContext.TerrainSettings;
         TerrainParameter parameter = _terrainContext.TerrainParameter;
         Vector2 localCenter = _terrainContext.transform.InverseTransformPoint(worldCenter);
 
-        // ŒvZ—p‚Ì’nŒ`ƒpƒX‚ğì¬
+        // è¨ˆç®—ç”¨ã®åœ°å½¢ãƒ‘ã‚¹ã‚’ä½œæˆ
         List<Vector2[]> terrainPaths = new List<Vector2[]>(_terrainPaths.Count);
         for (int i = 0; i < _terrainPaths.Count; ++i)
         {
             terrainPaths.Add(_terrainPaths[i].points);
         }
 
-        // ”j‰ó”ÍˆÍ‚Ì‰~‚ğ¶¬
+        // ç ´å£Šç¯„å›²ã®å††ã‚’ç”Ÿæˆ
         float circleRadius = radius * parameter.Destructibility;
         Vector2[] circlePath = CreateCirclePath(localCenter, circleRadius, settings.CircleVertex);
 
-        // í‚éŒ`ó‚ğæ“¾
+        // å‰Šã‚‹å½¢çŠ¶ã‚’å–å¾—
         List<Vector2[]> destructPaths = PolygonIntersect(terrainPaths, circlePath);
 
-        // ‰~Œ`‚Éí‚é
+        // å††å½¢ã«å‰Šã‚‹
         terrainPaths = PolygonDifference(terrainPaths, circlePath);
 
-        // ‚Ğ‚ÑŠ„‚êˆ—
+        // ã²ã³å‰²ã‚Œå‡¦ç†
         int crackCount = UnityEngine.Random.Range(crack.minCrackCount, crack.maxCrackCount + 1);
         for (int i = 0; i < crackCount; ++i)
         {
             terrainPaths = CrackDestruct(terrainPaths, localCenter, crack);
         }
 
-        // Œv‰ñ‚è‚ÌƒGƒbƒWƒ‹[ƒv(ŒŠ‚ÌƒGƒbƒWƒ‹[ƒv)‚Ííœ‚·‚é
+        // æ™‚è¨ˆå›ã‚Šã®ã‚¨ãƒƒã‚¸ãƒ«ãƒ¼ãƒ—(ç©´ã®ã‚¨ãƒƒã‚¸ãƒ«ãƒ¼ãƒ—)ã¯å‰Šé™¤ã™ã‚‹
         terrainPaths.RemoveAll(x => IsClockwise(x));
 
-        // ’nŒ`ƒpƒX‚ğXV
+        // åœ°å½¢ãƒ‘ã‚¹ã‚’æ›´æ–°
         _terrainPaths.Clear();
         for (int i = 0; i < terrainPaths.Count; ++i)
         {
@@ -135,7 +135,7 @@ public class TerrainPolygon
             _terrainPaths.Add(edgeLoop);
         }
 
-        // ”j‰óŒ`óƒpƒX‚ğXV
+        // ç ´å£Šå½¢çŠ¶ãƒ‘ã‚¹ã‚’æ›´æ–°
         _destructPaths.Clear();
         for (int i = 0; i < destructPaths.Count; ++i)
         {
@@ -146,7 +146,7 @@ public class TerrainPolygon
             _destructPaths.Add(edgeLoop);
         }
 
-        // ƒpƒX‚ª‚È‚­‚È‚Á‚½‚çI—¹
+        // ãƒ‘ã‚¹ãŒãªããªã£ãŸã‚‰çµ‚äº†
         List<SplitTerrainData> splitTerrains = new List<SplitTerrainData>();
         if(_terrainPaths.Count == 0)
         {
@@ -154,45 +154,45 @@ public class TerrainPolygon
             return splitTerrains;
         }
 
-        // ’nŒ`‚Ì•ª—£”»’è
+        // åœ°å½¢ã®åˆ†é›¢åˆ¤å®š
         splitTerrains = SplitTerrainPath();
 
         return splitTerrains;
     }
 
 
-    // ƒ|ƒŠƒSƒ“‚ÌŒğ·‚ğ‹‚ß‚é
+    // ãƒãƒªã‚´ãƒ³ã®äº¤å·®ã‚’æ±‚ã‚ã‚‹
     private List<Vector2[]> PolygonIntersect(List<Vector2[]> mainPaths, Vector2[] intersectPath)
     {
-        // Clipper2—p‚Ì”z—ñ‚É•ÏŠ·
+        // Clipper2ç”¨ã®é…åˆ—ã«å¤‰æ›
         PathsD mainPathsD = VectorPathsToPathsD(mainPaths);
         PathD intersectPathD = VectorPathToPathD(intersectPath);
 
-        // ƒ|ƒŠƒSƒ“Œ¸Z
+        // ãƒãƒªã‚´ãƒ³æ¸›ç®—
         PathsD newPathsD = Clipper.Intersect(mainPathsD, new PathsD { intersectPathD }, FillRule.NonZero);
 
-        // Vector2”z—ñ‚É•ÏŠ·
+        // Vector2é…åˆ—ã«å¤‰æ›
         return PathsDToVectorPaths(newPathsD);
     }
 
-    // ƒ|ƒŠƒSƒ“‚ÌŒ¸Z‚ğs‚¤
+    // ãƒãƒªã‚´ãƒ³ã®æ¸›ç®—ã‚’è¡Œã†
     private List<Vector2[]> PolygonDifference(List<Vector2[]> mainPaths, Vector2[] clipPath)
     {
-        // Clipper2—p‚Ì”z—ñ‚É•ÏŠ·
+        // Clipper2ç”¨ã®é…åˆ—ã«å¤‰æ›
         PathsD mainPathsD = VectorPathsToPathsD(mainPaths);
         PathD clipPathD = VectorPathToPathD(clipPath);
 
-        // ƒ|ƒŠƒSƒ“Œ¸Z
+        // ãƒãƒªã‚´ãƒ³æ¸›ç®—
         PathsD newPathsD = Clipper.Difference(mainPathsD, new PathsD() { clipPathD }, FillRule.NonZero);
 
-        // Vector2”z—ñ‚É•ÏŠ·
+        // Vector2é…åˆ—ã«å¤‰æ›
         return PathsDToVectorPaths(newPathsD);
     }
 
-    // Vector2‚ÌƒpƒX”z—ñ‚ğClipper2—p”z—ñ‚É•ÏŠ·‚·‚é
+    // Vector2ã®ãƒ‘ã‚¹é…åˆ—ã‚’Clipper2ç”¨é…åˆ—ã«å¤‰æ›ã™ã‚‹
     private PathD VectorPathToPathD(Vector2[] vectorPath)
     {
-        // Clipper2—p”z—ñ‚É•ÏŠ·
+        // Clipper2ç”¨é…åˆ—ã«å¤‰æ›
         PathD pathD = new PathD(vectorPath.Length);
         for (int i = 0; i < vectorPath.Length; i++)
         {
@@ -203,7 +203,7 @@ public class TerrainPolygon
     }
     private PathsD VectorPathsToPathsD(List<Vector2[]> vectorPaths)
     {
-        // Clipper2—p”z—ñ‚É•ÏŠ·
+        // Clipper2ç”¨é…åˆ—ã«å¤‰æ›
         PathsD pathsD = new PathsD(vectorPaths.Count);
         for (int i = 0; i < vectorPaths.Count; ++i)
         {
@@ -212,10 +212,10 @@ public class TerrainPolygon
         return pathsD;
     }
 
-    // Clipper2—p”z—ñ‚ğVector2‚ÌƒpƒX”z—ñ‚É•ÏŠ·‚·‚é
+    // Clipper2ç”¨é…åˆ—ã‚’Vector2ã®ãƒ‘ã‚¹é…åˆ—ã«å¤‰æ›ã™ã‚‹
     private Vector2[] PathDToVectorPath(PathD pathD)
     {
-        // Vector2‚ÌƒpƒX”z—ñ‚É•ÏŠ·
+        // Vector2ã®ãƒ‘ã‚¹é…åˆ—ã«å¤‰æ›
         Vector2[] vectorPath = new Vector2[pathD.Count];
         for (int i = 0; i < pathD.Count; i++)
         {
@@ -234,10 +234,10 @@ public class TerrainPolygon
         return vectorPaths;
     }
 
-    // ‰~Œ`‚ÌƒpƒX‚ğ¶¬‚·‚é
+    // å††å½¢ã®ãƒ‘ã‚¹ã‚’ç”Ÿæˆã™ã‚‹
     private Vector2[] CreateCirclePath(Vector2 center, float radius, int vertexCount)
     {
-        // ”j‰ó”ÍˆÍ‚Ì‰~‚ğ¶¬
+        // ç ´å£Šç¯„å›²ã®å††ã‚’ç”Ÿæˆ
         Vector2[] circlePath = new Vector2[vertexCount];
         for (int i = 0; i < vertexCount; ++i)
         {
@@ -255,27 +255,27 @@ public class TerrainPolygon
         return circlePath;
     }
 
-    // ‚Ğ‚ÑŠ„‚ê”j‰óˆ—
+    // ã²ã³å‰²ã‚Œç ´å£Šå‡¦ç†
     private List<Vector2[]> CrackDestruct(List<Vector2[]> mainPaths, Vector2 center, CrackParameter crack)
     {
         TerrainSettings settings = _terrainContext.TerrainSettings;
         TerrainParameter parameter = _terrainContext.TerrainParameter;
 
-        // ‚Ğ‚ÑŠ„‚ê•ûŒü‚ğ‹‚ß‚é
+        // ã²ã³å‰²ã‚Œæ–¹å‘ã‚’æ±‚ã‚ã‚‹
         Vector2 crackDir = _terrainContext.transform.InverseTransformDirection(crack.direction);
         float rotateAngle = UnityEngine.Random.Range(-crack.angleNoise, crack.angleNoise) * 0.5f;
         crackDir = Quaternion.Euler(0.0f, 0.0f, rotateAngle) * crackDir;
 
-        // ‚Ğ‚ÑŠ„‚ê‹——£‚ğ‹‚ß‚é
+        // ã²ã³å‰²ã‚Œè·é›¢ã‚’æ±‚ã‚ã‚‹
         float crackDistance = settings.CrackDistance * parameter.FractureMultiplier;
 
-        // ‚Ğ‚ÑŠ„‚ê‚Æ‚ÌÅ¬Œğ·‹——£‚ğ‹‚ß‚é
+        // ã²ã³å‰²ã‚Œã¨ã®æœ€å°äº¤å·®è·é›¢ã‚’æ±‚ã‚ã‚‹
         float minDistance = float.MaxValue;
         for (int i = 0; i < mainPaths.Count; ++i)
         {
             Vector2[] path = mainPaths[i];
 
-            // ‘S‚Ä‚Ì•Ó‚É‘Î‚µ‚Ä‚Ğ‚ÑŠ„‚ê‚Æ‚ÌŒğ·‚ğ‹‚ß‚é
+            // å…¨ã¦ã®è¾ºã«å¯¾ã—ã¦ã²ã³å‰²ã‚Œã¨ã®äº¤å·®ã‚’æ±‚ã‚ã‚‹
             for (int j = 0; j < path.Length; ++j)
             {
                 Vector2 a = path[j];
@@ -289,14 +289,14 @@ public class TerrainPolygon
                     b = path[j + 1 - path.Length];
                 }
 
-                // •Ó‚Æ‚Ğ‚ÑŠ„‚ê‚Æ‚ÌŒğ·”»’è
+                // è¾ºã¨ã²ã³å‰²ã‚Œã¨ã®äº¤å·®åˆ¤å®š
                 IntercectResult result;
                 result = RaySegmentIntersection(center, crackDir, a, b);
 
                 if (!result.isHit)
                     continue;
 
-                // Å‚à‹ß‚¢Œğ·‹——£‚ğ•Û
+                // æœ€ã‚‚è¿‘ã„äº¤å·®è·é›¢ã‚’ä¿æŒ
                 if (result.distance < minDistance)
                 {
                     minDistance = result.distance;
@@ -304,7 +304,7 @@ public class TerrainPolygon
             }
         }
 
-        // ‚Ğ‚ÑŠ„‚êŒ`ó‚Åƒ|ƒŠƒSƒ“‚ğí‚é
+        // ã²ã³å‰²ã‚Œå½¢çŠ¶ã§ãƒãƒªã‚´ãƒ³ã‚’å‰Šã‚‹
         if (minDistance < crackDistance)
         {
             Vector2[] crackPath = CreateCrackPath(center, crackDir, minDistance);
@@ -314,14 +314,14 @@ public class TerrainPolygon
         return mainPaths;
     }
 
-    // ƒŒƒC‚Æü•ª‚ÌŒğ·”»’è‚ğs‚¤
+    // ãƒ¬ã‚¤ã¨ç·šåˆ†ã®äº¤å·®åˆ¤å®šã‚’è¡Œã†
     private IntercectResult RaySegmentIntersection(
         Vector2 rayOrigin, Vector2 rayDir, Vector2 segA, Vector2 segB)
     {
         IntercectResult result = new IntercectResult();
         rayDir = rayDir.normalized;
 
-        // ƒ|ƒŠƒSƒ““à•”‚É“ü‚éŒğ·‚ÍƒXƒLƒbƒv
+        // ãƒãƒªã‚´ãƒ³å†…éƒ¨ã«å…¥ã‚‹äº¤å·®ã¯ã‚¹ã‚­ãƒƒãƒ—
         Vector2 segVec = segB - segA;
         Vector2 normal = new Vector2(segVec.y, -segVec.x);
         float dot = Vector2.Dot(rayDir, normal);
@@ -331,20 +331,20 @@ public class TerrainPolygon
             return result;
         }
 
-        // ƒŒƒC•ûŒü‚Æü•ªƒxƒNƒgƒ‹‚ÌŠOÏ‚ğ‚Æ‚é
+        // ãƒ¬ã‚¤æ–¹å‘ã¨ç·šåˆ†ãƒ™ã‚¯ãƒˆãƒ«ã®å¤–ç©ã‚’ã¨ã‚‹
         float cross = Cross(rayDir, segVec);
 
-        // •½s”»’è
+        // å¹³è¡Œåˆ¤å®š
         if (Mathf.Abs(cross) < Mathf.Epsilon)
         {
             result.isHit = false;
             return result;
         }
 
-        // ƒŒƒCn“_‚©‚çü•ªn“_‚Ö‚ÌƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+        // ãƒ¬ã‚¤å§‹ç‚¹ã‹ã‚‰ç·šåˆ†å§‹ç‚¹ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
         Vector2 diff = segA - rayOrigin;
 
-        // ü•ª‚ğ‰½”{‚·‚ê‚ÎRay‚ÆŒğ·‚·‚é‚©’²‚×‚é
+        // ç·šåˆ†ã‚’ä½•å€ã™ã‚Œã°Rayã¨äº¤å·®ã™ã‚‹ã‹èª¿ã¹ã‚‹
         float u = Cross(diff, rayDir) / cross;
         if (u < 0.0f || u > 1.0f)
         {
@@ -352,7 +352,7 @@ public class TerrainPolygon
             return result;
         }
 
-        // ƒŒƒC‚Ìn“_‚©‚ç‚ÌŒğ·ˆÊ’u‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚é
+        // ãƒ¬ã‚¤ã®å§‹ç‚¹ã‹ã‚‰ã®äº¤å·®ä½ç½®ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
         float t = Cross(diff, segVec) / cross;
         if (t < 0.0f)
         {
@@ -367,13 +367,13 @@ public class TerrainPolygon
         return result;
     }
 
-    // 2DŠOÏ‚ğ‹‚ß‚é
+    // 2Då¤–ç©ã‚’æ±‚ã‚ã‚‹
     private float Cross(Vector2 a, Vector2 b)
     {
         return a.x * b.y - a.y * b.x;
     }
 
-    // ‚Ğ‚ÑŠ„‚êŒ`ó‚ÌƒpƒX‚ğ¶¬‚·‚é
+    // ã²ã³å‰²ã‚Œå½¢çŠ¶ã®ãƒ‘ã‚¹ã‚’ç”Ÿæˆã™ã‚‹
     private Vector2[] CreateCrackPath(Vector2 origin, Vector2 dir, float distance)
     {
         TerrainSettings settings = _terrainContext.TerrainSettings;
@@ -390,14 +390,14 @@ public class TerrainPolygon
         int end_b = start_b + divisionCount + 1;
 
 
-        // Šî€‚Æ‚È‚éü‚ğì¬
+        // åŸºæº–ã¨ãªã‚‹ç·šã‚’ä½œæˆ
         Vector2[] crackPath = new Vector2[end_b + 1];
         crackPath[start_a] = origin - dir * weight - normal * halfWidth;
         crackPath[end_a] = origin + dir * (distance + weight) - normal * halfWidth;
         crackPath[start_b] = origin + dir * (distance + weight) + normal * halfWidth;
         crackPath[end_b] = origin - dir * weight + normal * halfWidth;
 
-        // ×•ª‰»‚µƒmƒCƒY‚Å‚¸‚ç‚·
+        // ç´°åˆ†åŒ–ã—ãƒã‚¤ã‚ºã§ãšã‚‰ã™
         for (int i = 0; i < divisionCount; ++i)
         {
             float maxNoise = distance * settings.CrackNoise * 0.5f;
@@ -416,12 +416,12 @@ public class TerrainPolygon
         return crackPath;
     }
 
-    // ƒGƒbƒWƒ‹[ƒv‚ÌŒü‚«‚ğ’²‚×‚é
+    // ã‚¨ãƒƒã‚¸ãƒ«ãƒ¼ãƒ—ã®å‘ãã‚’èª¿ã¹ã‚‹
     private bool IsClockwise(Vector2[] edgeLoop)
     {
         float area = 0.0f;
 
-        // •„†•t‚«–ÊÏ‚ğ‹‚ß‚é
+        // ç¬¦å·ä»˜ãé¢ç©ã‚’æ±‚ã‚ã‚‹
         for (int i = 0; i < edgeLoop.Length; ++i)
         {
             Vector2 a = edgeLoop[i];
@@ -430,16 +430,16 @@ public class TerrainPolygon
             area += a.x * b.y - b.x * a.y;
         }
 
-        // •„†•t‚«–ÊÏ‚ª•‰‚Ì’l‚È‚çŒv‰ñ‚è
+        // ç¬¦å·ä»˜ãé¢ç©ãŒè² ã®å€¤ãªã‚‰æ™‚è¨ˆå›ã‚Š
         return area < 0.0f;
     }
 
-    // ’nŒ`•ª—£”»’è
+    // åœ°å½¢åˆ†é›¢åˆ¤å®š
     private List<SplitTerrainData> SplitTerrainPath()
     {
         List<SplitTerrainData> result = new List<SplitTerrainData>();
 
-        // ’nŒ`‚Ì•ª—£‚ğs‚¤
+        // åœ°å½¢ã®åˆ†é›¢ã‚’è¡Œã†
         for (int i = 0; i < _terrainPaths.Count; ++i)
         {
             SplitTerrainData splitTerrain;
@@ -450,7 +450,7 @@ public class TerrainPolygon
             result.Add(splitTerrain);
         }
 
-        // Å‘å–ÊÏ‚Ì•ª—£’nŒ`‚ğ‹‚ß‚é
+        // æœ€å¤§é¢ç©ã®åˆ†é›¢åœ°å½¢ã‚’æ±‚ã‚ã‚‹
         float maxArea = 0.0f;
         int maxAreaIndex = 0;
         for (int i = 0; i < result.Count; ++i)
@@ -462,7 +462,7 @@ public class TerrainPolygon
             }
         }
 
-        // Å‘å–ÊÏ‚Ì•ª—£’nŒ`‚ğŒ³‚Ì’nŒ`‚Æ‚·‚é
+        // æœ€å¤§é¢ç©ã®åˆ†é›¢åœ°å½¢ã‚’å…ƒã®åœ°å½¢ã¨ã™ã‚‹
         _terrainPaths = result[maxAreaIndex].paths;
         _area = result[maxAreaIndex].area;
         result.RemoveAt(maxAreaIndex);
@@ -470,7 +470,7 @@ public class TerrainPolygon
         return result;
     }
 
-    // –ÊÏ‚ğ‹‚ß‚é
+    // é¢ç©ã‚’æ±‚ã‚ã‚‹
     private float GetArea(List<EdgeLoop> edgeLoops)
     {
         PathsD pathsD = new PathsD(edgeLoops.Count);

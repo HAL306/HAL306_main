@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
@@ -7,9 +8,9 @@ public class MeshDotRenderer : MonoBehaviour
     public Material instancedMaterial;
     public Mesh quadMesh;
 
-    [Header("Pixel Settings")]
-    public float dotSpacing = 0.05f;
-    public Vector2 dotOffset = Vector2.zero;
+    public float DotSize { get; set; }
+    
+    public Vector2 DotOffset { get; set; }
 
     private MeshFilter _meshFilter;
     private ComputeBuffer _vertexBuffer;
@@ -71,11 +72,13 @@ public class MeshDotRenderer : MonoBehaviour
             maxBound = Vector2.Max(maxBound, v);
         }
 
-        minBound -= new Vector2(dotSpacing, dotSpacing);
-        maxBound += new Vector2(dotSpacing, dotSpacing);
+        minBound.x = Mathf.Floor(minBound.x / DotSize) * DotSize - DotSize;
+        minBound.y = Mathf.Floor(minBound.y / DotSize) * DotSize - DotSize;
+        maxBound.x = Mathf.Ceil(maxBound.x / DotSize) * DotSize + DotSize;
+        maxBound.y = Mathf.Ceil(maxBound.y / DotSize) * DotSize + DotSize;
 
-        int gridWidth = Mathf.CeilToInt((maxBound.x - minBound.x) / dotSpacing);
-        int gridHeight = Mathf.CeilToInt((maxBound.y - minBound.y) / dotSpacing);
+        int gridWidth = Mathf.CeilToInt((maxBound.x - minBound.x) / DotSize);
+        int gridHeight = Mathf.CeilToInt((maxBound.y - minBound.y) / DotSize);
 
         // GPUバッファの動的確保
         int requiredPixels = gridWidth * gridHeight;
@@ -105,9 +108,8 @@ public class MeshDotRenderer : MonoBehaviour
         int kernel = computeShader.FindKernel("CSMain");
 
         computeShader.SetInt(TriangleCount, triangleCount);
-        computeShader.SetVector(GridSpacing, new Vector2(dotSpacing, dotSpacing));
+        computeShader.SetVector(GridSpacing, new Vector2(DotSize, DotSize));
         computeShader.SetVector(GridOffset, minBound);
-        computeShader.SetVector(UserOffset, dotOffset);
         
         computeShader.SetBuffer(kernel, Vertices, _vertexBuffer);
         computeShader.SetBuffer(kernel, Triangles, _triangleBuffer);
@@ -120,7 +122,7 @@ public class MeshDotRenderer : MonoBehaviour
         // 描画
         ComputeBuffer.CopyCount(_resultBuffer, _argsBuffer, sizeof(uint));
         
-        _mpb.SetFloat(PixelSize, dotSpacing);
+        _mpb.SetFloat(PixelSize, DotSize);
         _mpb.SetBuffer(PositionBuffer, _resultBuffer);
         _mpb.SetMatrix(ObjectToWorldMatrix, transform.localToWorldMatrix);
 

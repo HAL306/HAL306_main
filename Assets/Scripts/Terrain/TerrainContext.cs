@@ -28,6 +28,7 @@ public class TerrainContext : MonoBehaviour
     private PolygonCollider2D _polygonCollider;
     private Rigidbody2D _rigidbody;
     private TerrainDestructEffect _destructEffect;
+    private MeshDotRenderer _dotRenderer;
 
     private List<Collider2D> _overlapColliderList;      // 重なっているコライダーのリスト
     private float _mass;
@@ -73,6 +74,7 @@ public class TerrainContext : MonoBehaviour
         _polygonCollider = GetComponent<PolygonCollider2D>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _destructEffect = GetComponent<TerrainDestructEffect>();
+        _dotRenderer = GetComponent<MeshDotRenderer>();
 
         if (_isStartTerrain)
         {
@@ -92,6 +94,8 @@ public class TerrainContext : MonoBehaviour
         {
             OnChangeTerrain();
         }
+
+        _dotRenderer.DotSize = TerrainSettings.DotSize;
     }
 
 

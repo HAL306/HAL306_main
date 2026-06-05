@@ -2,23 +2,23 @@ using UnityEngine;
 
 
 /// <summary>
-/// ’nŒ`‚Ìƒpƒ‰ƒ[ƒ^
+/// åœ°å½¢ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 /// </summary>
 [CreateAssetMenu(fileName = "TerrainParameter", menuName = "Scriptable Objects/TerrainParameter")]
 public class TerrainParameter : ScriptableObject
 {
-    [SerializeField, Tooltip("”j‰óƒGƒtƒFƒNƒg")]
+    [SerializeField, Tooltip("ç ´å£Šæ™‚ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ")]
     private ParticleSystem _destructEffect;
 
-    [SerializeField, Tooltip("’nŒ`‚Ìí‚ê‚â‚·‚³”{—¦")]
+    [SerializeField, Tooltip("åœ°å½¢ã®å‰Šã‚Œã‚„ã™ã•å€ç‡")]
     [Range(0.0f, 2.0f)]
     private float _destructibility = 1.0f;
 
-    [SerializeField, Tooltip("’nŒ`‚ÌŠ„‚ê‚â‚·‚³”{—¦")]
+    [SerializeField, Tooltip("åœ°å½¢ã®å‰²ã‚Œã‚„ã™ã•å€ç‡")]
     [Range(0.0f, 2.0f)]
     private float _fractureMultiplier = 1.0f;
 
-    [SerializeField, Tooltip("’nŒ`‚Ì–§“x")]
+    [SerializeField, Tooltip("åœ°å½¢ã®å¯†åº¦")]
     [Range(0.0f, 20.0f)]
     private float _density = 5.0f;
 

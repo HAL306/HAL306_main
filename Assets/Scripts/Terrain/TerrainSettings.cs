@@ -2,50 +2,56 @@ using UnityEngine;
 
 
 /// <summary>
-/// ’nŒ`‚ÌÚ×İ’è
+/// åœ°å½¢ã®è©³ç´°è¨­å®š
 /// </summary>
 [CreateAssetMenu(fileName = "TerrainSettings", menuName = "Scriptable Objects/TerrainSettings")]
 public class TerrainSettings : ScriptableObject
 {
-    [SerializeField, Tooltip("‹ó‚Ì’nŒ`‚ÌƒvƒŒƒnƒu")]
+    [SerializeField, Tooltip("ç©ºã®åœ°å½¢ã®ãƒ—ãƒ¬ãƒãƒ–")]
     private TerrainContext _terrainPrefab;
 
-    [SerializeField, Tooltip("’nŒ`‚ÌÅ¬ƒTƒCƒY")]
+    [SerializeField, Tooltip("åœ°å½¢ã®æœ€å°ã‚µã‚¤ã‚º")]
     [Range(0.0f, 0.1f)]
     private float _minArea = 0.05f;
 
-    [SerializeField, Tooltip("”j‰ó‰~‚Ì’¸“_”")]
+    [SerializeField, Tooltip("ç ´å£Šå††ã®é ‚ç‚¹æ•°")]
     [Range(4, 16)]
     private int _circleVertex = 6;
 
 
-    [Header("‚Ğ‚ÑŠ„‚êİ’è")]
-    [SerializeField, Tooltip("Šî–{‚Ğ‚ÑŠ„‚ê‹——£")]
+    [Header("ã²ã³å‰²ã‚Œè¨­å®š")]
+    [SerializeField, Tooltip("åŸºæœ¬ã²ã³å‰²ã‚Œè·é›¢")]
     [Range(0.0f, 10.0f)]
     private float _crackDistance = 5.0f;
 
-    [SerializeField, Tooltip("‚Ğ‚ÑŠ„‚ê‚Ì•")]
+    [SerializeField, Tooltip("ã²ã³å‰²ã‚Œã®å¹…")]
     [Range(0.0f, 0.2f)]
     private float _crackWidth = 0.1f;
 
-    [SerializeField, Tooltip("‚Ğ‚ÑŠ„‚ê‚Ì”j‰ó”ÍˆÍ‚Ì—]”’")]
+    [SerializeField, Tooltip("ã²ã³å‰²ã‚Œã®ç ´å£Šç¯„å›²ã®ä½™ç™½")]
     [Range(0.0f, 0.1f)]
     private float _crackWeight = 0.02f;
 
-    [SerializeField, Tooltip("‚Ğ‚ÑŠ„‚ê‚Ì•ªŠ„”")]
+    [SerializeField, Tooltip("ã²ã³å‰²ã‚Œã®åˆ†å‰²æ•°")]
     [Range(0, 5)]
     private int _crackDivision = 1;
 
-    [SerializeField, Tooltip("‚Ğ‚ÑŠ„‚ê‚Ì˜c‚İ")]
+    [SerializeField, Tooltip("ã²ã³å‰²ã‚Œã®æ­ªã¿")]
     [Range(0.0f, 1.0f)]
     private float _crackNoise = 0.6f;
 
 
-    [Header("Õ“Ë”j‰óİ’è")]
-    //[SerializeField, Tooltip("Õ“Ë”j‰ó‚ğ‹N‚±‚³‚È‚¢ÕŒ‚‚Ì‚µ‚«‚¢’l")]
+    [Header("æç”»è¨­å®š")]
+    [SerializeField, Tooltip("ãƒ‰ãƒƒãƒˆã®ã‚µã‚¤ã‚º")]
+    [Range(0.0f, 1.0f)]
+    private float _dotSize = 0.05f;
+
+
+    [Header("è¡çªæ™‚ç ´å£Šè¨­å®š")]
+    //[SerializeField, Tooltip("è¡çªæ™‚ç ´å£Šã‚’èµ·ã“ã•ãªã„è¡æ’ƒã®ã—ãã„å€¤")]
     //private float _minImpulse = 5.0f;
 
-    //[SerializeField, Tooltip("ÕŒ‚‚É‘Î‚·‚é’nŒ`”j‰ó”ÍˆÍ")]
+    //[SerializeField, Tooltip("è¡æ’ƒã«å¯¾ã™ã‚‹åœ°å½¢ç ´å£Šç¯„å›²")]
     //private float _impulseToRadius = 0.05f;
 
 
@@ -57,6 +63,8 @@ public class TerrainSettings : ScriptableObject
     public float CrackWeight => _crackWeight;
     public int CrackDivision => _crackDivision;
     public float CrackNoise => _crackNoise;
+
+    public float DotSize => _dotSize;
     //public float MinImpulse => _minImpulse;
     //public float ImpulseToRadius => _impulseToRadius;
 
