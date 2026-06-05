@@ -6,6 +6,10 @@ public class Boss : MonoBehaviour
     private float destructRadius = 0.5f;
     [SerializeField]
     private CrackParameter crackParameter;
+    [SerializeField]
+    private Transform player;
+
+    private float moveX;
 
     Rigidbody2D rb;
     public float speed = 3.0f;
@@ -18,28 +22,30 @@ public class Boss : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        startY = transform.position.y;
+        moveX = transform.position.x;
     }
     void FixedUpdate()
     {
-        float y = startY + Mathf.Sin(Time.time * (speed * 0.5f)) * moveHeight;
+        if (player == null)
+        {
+            Debug.Log("playerが入っていない");
+            return;
+        }
+        moveX += speed * Time.fixedDeltaTime;
 
-        rb.MovePosition(new Vector2(transform.position.x + speed * Time.fixedDeltaTime, y));
+        float y = player.position.y + Mathf.Sin(Time.time * moveSpeed) * moveHeight;
+
+        rb.MovePosition(new Vector2(moveX, y));
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        Debug.Log("触れている: " + collision.name);
-
         if (collision.CompareTag("Field"))
         {
-            Debug.Log("Fieldタグに当たった");
-
             TerrainContext terrain = collision.GetComponent<TerrainContext>();
 
             if (terrain == null)
             {
-                Debug.Log("TerrainContextが見つからない");
                 return;
             }
 
@@ -47,7 +53,6 @@ public class Boss : MonoBehaviour
 
             if (destructTimer >= 0.2f)
             {
-                Debug.Log("地形破壊実行");
                 terrain.Destruct(transform.position, destructRadius, crackParameter);
                 destructTimer = 0.0f;
             }
