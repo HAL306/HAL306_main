@@ -1,18 +1,22 @@
 #pragma kernel CSMain
 
-// 入力パラメータ
+struct PixelData
+{
+    float2 position;
+    float3 normal;
+};
+
 int TriangleCount;
+int BoundaryEdgeCount;
 float2 GridSpacing;
 float2 GridOffset;
+float EdgeSize;
 
-// 入力メッシュデータ
 StructuredBuffer<float2> Vertices;
 StructuredBuffer<int> Triangles;
+StructuredBuffer<float4> BoundaryEdges;
+AppendStructuredBuffer<PixelData> ResultBuffer;
 
-// 結果を保存するバッファ
-AppendStructuredBuffer<float2> ResultBuffer;
-
-// 2D外積を用いた、点が三角形の内部にあるかどうかの判定関数
 float SignFunc(float2 p1, float2 p2, float2 p3)
 {
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
@@ -30,37 +34,99 @@ bool PointInTriangle(float2 pt, float2 v1, float2 v2, float2 v3)
     return !(has_neg && has_pos);
 }
 
+float DistanceToSegment(float2 p, float2 a, float2 b, out float2 outNormal)
+{
+    float2 ab = b - a;
+    float2 ap = p - a;
+    
+    float t = saturate(dot(ap, ab) / (dot(ab, ab) + 1e-6));
+    float2 closest = a + t * ab;
+    
+    float2 n = float2(-ab.y, ab.x);
+    float len = length(n);
+    outNormal = len > 1e-6 ? n / len : float2(0, 0);
+    
+    return distance(p, closest);
+}
+
 [numthreads(8, 8, 1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    // 現在のスレッドに対応するグリッドのローカル座標
     float2 localPos = GridOffset + float2(id.xy) * GridSpacing;
 
-    bool isInside = false;
+    float2 posC = localPos;
+    float2 posL = localPos + float2(-GridSpacing.x * EdgeSize, 0);
+    float2 posR = localPos + float2(GridSpacing.x * EdgeSize, 0);
+    float2 posD = localPos + float2(0, -GridSpacing.y * EdgeSize);
+    float2 posU = localPos + float2(0, GridSpacing.y * EdgeSize);
 
-    // すべての三角形ポリゴンに対して内包判定を行う
+    bool insideC = false;
+    bool insideL = false;
+    bool insideR = false;
+    bool insideD = false;
+    bool insideU = false;
+
     for (int i = 0; i < TriangleCount; i++)
     {
-        // 頂点インデックスの取得
         int idxA = Triangles[i * 3 + 0];
         int idxB = Triangles[i * 3 + 1];
         int idxC = Triangles[i * 3 + 2];
 
-        // 頂点座標の取得
         float2 vA = Vertices[idxA];
         float2 vB = Vertices[idxB];
         float2 vC = Vertices[idxC];
 
-        // 1つでも三角形の内部に含まれていれば、ドットを配置する
-        if (PointInTriangle(localPos, vA, vB, vC))
-        {
-            isInside = true;
-            break;
-        }
+        if (!insideC) insideC = PointInTriangle(posC, vA, vB, vC);
+        if (!insideL) insideL = PointInTriangle(posL, vA, vB, vC);
+        if (!insideR) insideR = PointInTriangle(posR, vA, vB, vC);
+        if (!insideD) insideD = PointInTriangle(posD, vA, vB, vC);
+        if (!insideU) insideU = PointInTriangle(posU, vA, vB, vC);
     }
 
-    if (isInside)
+    if (insideC)
     {
-        ResultBuffer.Append(localPos);
+        float3 normal = float3(0, 0, -1); 
+
+        if (!insideL || !insideR || !insideD || !insideU)
+        {
+            float2 roughEdgeVec = float2(0, 0);
+            if (!insideL) roughEdgeVec.x -= 1.0;
+            if (!insideR) roughEdgeVec.x += 1.0;
+            if (!insideD) roughEdgeVec.y -= 1.0;
+            if (!insideU) roughEdgeVec.y += 1.0;
+
+            float minBufferDist = 999999.0;
+            float2 bestNormal2D = float2(0, 0);
+
+            for (int t = 0; t < BoundaryEdgeCount; t++)
+            {
+                float4 edge = BoundaryEdges[t];
+                float2 vA = edge.xy;
+                float2 vB = edge.zw;
+
+                float2 n; float d;
+                d = DistanceToSegment(posC, vA, vB, n);
+                if (d < minBufferDist) 
+                { 
+                    minBufferDist = d; 
+                    bestNormal2D = n; 
+                }
+            }
+
+            if (length(bestNormal2D) > 0.0)
+            {
+                if (dot(bestNormal2D, roughEdgeVec) < 0.0)
+                {
+                    bestNormal2D = -bestNormal2D;
+                }
+                
+                normal = normalize(float3(bestNormal2D * 0.75, -0.66));
+            }
+        }
+
+        PixelData data;
+        data.position = localPos;
+        data.normal = normal;
+        ResultBuffer.Append(data);
     }
 }
