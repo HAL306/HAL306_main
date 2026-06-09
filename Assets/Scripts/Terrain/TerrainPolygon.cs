@@ -15,6 +15,7 @@ public class EdgeLoop
 
 
 // ひび割れパラメータ
+[System.Serializable]
 public struct CrackParameter
 {
     [Tooltip("ひび割れの基準方向")]

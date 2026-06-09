@@ -21,10 +21,13 @@ public class Boss : MonoBehaviour
     float startY;
     private float destructTimer;
 
+    private Transform t;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         moveX = transform.position.x;
+        t = GetComponent<Transform>();
     }
     void FixedUpdate()
     {
