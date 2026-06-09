@@ -13,6 +13,8 @@ public class Boss : MonoBehaviour
 
     Rigidbody2D rb;
     public float speed = 3.0f;
+    public float boostSpeed = 6.0f;
+    public float boostDistance = 5.0f;
     public float moveHeight = 2.0f;
     public float moveSpeed = 2.0f;
 
@@ -31,7 +33,14 @@ public class Boss : MonoBehaviour
             Debug.Log("player‚ª“ü‚Á‚Ä‚¢‚È‚¢");
             return;
         }
-        moveX += speed * Time.fixedDeltaTime;
+        float currentSpeed = speed;
+
+        float distance = Mathf.Abs(transform.position.x - player.position.x);
+        if (distance > boostDistance)
+        {
+            currentSpeed = boostSpeed;
+        }
+        moveX += currentSpeed * Time.fixedDeltaTime;
 
         float y = player.position.y + Mathf.Sin(Time.time * moveSpeed) * moveHeight;
 
