@@ -3,9 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
+<<<<<<< HEAD
   tags:
   - Boss
   - Field
+=======
+  tags: []
+>>>>>>> develop
   layers:
   - Default
   - TransparentFX
@@ -13,9 +17,9 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Player
+  - DestructibleTerrain
+  - BaseTerrain
   - 
   - 
   - 

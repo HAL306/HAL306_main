@@ -119,6 +119,95 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &95324246
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 800469969667301738, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2926641784579660090, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -11.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021073192403285868, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5192236991857190520, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_Size.x
+      value: 2.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 5192236991857190520, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -3458440473287049574, guid: 9d8408833b6c80a42bcdc9280845cb25, type: 3}
+    - target: {fileID: 5192236991857190520, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6039698409937138395, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_Name
+      value: Boss
+      objectReference: {fileID: 0}
+    - target: {fileID: 7672278905634511679, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 2143157069}
+    - target: {fileID: 7672278905634511679, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: destructRadius
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9192321581482405866, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
 --- !u!1 &237940620
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,13 +436,13 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
   m_FocalLength: 50
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
   m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -543,7 +632,7 @@ MonoBehaviour:
   _explodeRadius: 0.3
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
 --- !u!120 &1830940782
 LineRenderer:
   serializedVersion: 3
@@ -670,7 +759,7 @@ GameObject:
   - component: {fileID: 2143157070}
   m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -689,7 +778,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 384
+    m_Bits: 0
   _groundSpeed: 5
   _airSpeed: 3
   _jumpPower: 10
@@ -880,7 +969,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 351f2ccd-1f9f-44bf-9bec-d62ac5c5f408
-    m_ActionName: Player/Move[/SwitchProControllerHID/leftStick,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+    m_ActionName: 'Player/Move[/SwitchProControllerHID/leftStick,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2143157065}
@@ -896,7 +985,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: f1ba0d36-48eb-4cd5-b651-1c94a6531f70
-    m_ActionName: Player/Jump[/Keyboard/space,/SwitchProControllerHID/buttonSouth]
+    m_ActionName: 'Player/Jump[/Keyboard/space,/SwitchProControllerHID/buttonSouth]'
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1830940781}
@@ -912,7 +1001,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 69e4c98f-7b59-420e-8591-27db9eac7003
-    m_ActionName: Player/Shoot[/Mouse/leftButton]
+    m_ActionName: 'Player/Shoot[/Mouse/leftButton]'
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1830940781}
@@ -928,43 +1017,43 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 730f9740-0797-4e95-aaad-e5632aec0af7
-    m_ActionName: Player/Aim[/Mouse/delta]
+    m_ActionName: 'Player/Aim[/Mouse/delta]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: a4580f82-cb1d-42ce-b0d5-4be663fd86ec
-    m_ActionName: Player/Special[/Mouse/rightButton]
+    m_ActionName: 'Player/Special[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: c95b2375-e6d9-4b88-9c4c-c5e76515df4b
-    m_ActionName: UI/Navigate[/SwitchProControllerHID/leftStick/up,/SwitchProControllerHID/rightStick/up,/SwitchProControllerHID/leftStick/down,/SwitchProControllerHID/rightStick/down,/SwitchProControllerHID/leftStick/left,/SwitchProControllerHID/rightStick/left,/SwitchProControllerHID/leftStick/right,/SwitchProControllerHID/rightStick/right,/SwitchProControllerHID/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
+    m_ActionName: 'UI/Navigate[/SwitchProControllerHID/leftStick/up,/SwitchProControllerHID/rightStick/up,/SwitchProControllerHID/leftStick/down,/SwitchProControllerHID/rightStick/down,/SwitchProControllerHID/leftStick/left,/SwitchProControllerHID/rightStick/left,/SwitchProControllerHID/leftStick/right,/SwitchProControllerHID/rightStick/right,/SwitchProControllerHID/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 7607c7b6-cd76-4816-beef-bd0341cfe950
-    m_ActionName: UI/Submit[/Keyboard/enter,/SwitchProControllerHID/buttonEast]
+    m_ActionName: 'UI/Submit[/Keyboard/enter,/SwitchProControllerHID/buttonEast]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 15cef263-9014-4fd5-94d9-4e4a6234a6ef
-    m_ActionName: UI/Cancel[/Keyboard/escape,/SwitchProControllerHID/buttonSouth]
+    m_ActionName: 'UI/Cancel[/Keyboard/escape,/SwitchProControllerHID/buttonSouth]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 32b35790-4ed0-4e9a-aa41-69ac6d629449
-    m_ActionName: UI/Point[/Mouse/position,/Pen/position]
+    m_ActionName: 'UI/Point[/Mouse/position,/Pen/position]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 3c7022bf-7922-4f7c-a998-c437916075ad
-    m_ActionName: UI/Click[/Mouse/leftButton,/Pen/tip]
+    m_ActionName: 'UI/Click[/Mouse/leftButton,/Pen/tip]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 44b200b1-1557-4083-816c-b22cbdf77ddf
-    m_ActionName: UI/RightClick[/Mouse/rightButton]
+    m_ActionName: 'UI/RightClick[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: dad70c86-b58c-4b17-88ad-f5e53adf419e
-    m_ActionName: UI/MiddleClick[/Mouse/middleButton]
+    m_ActionName: 'UI/MiddleClick[/Mouse/middleButton]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 0489e84a-4833-4c40-bfae-cea84b696689
-    m_ActionName: UI/ScrollWheel[/Mouse/scroll]
+    m_ActionName: 'UI/ScrollWheel[/Mouse/scroll]'
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 24908448-c609-4bc3-a128-ea258674378a
@@ -1030,9 +1119,17 @@ PrefabInstance:
       propertyPath: _isStartTerrain
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3706547287147494160, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
+      propertyPath: _baseTerrainLayer.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4934632388205318660, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
       propertyPath: m_Name
       value: DestructTerrain
+      objectReference: {fileID: 0}
+    - target: {fileID: 4934632388205318660, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
+      propertyPath: m_TagString
+      value: Field
       objectReference: {fileID: 0}
     - target: {fileID: 6280399116308659022, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.size
@@ -1204,3 +1301,4 @@ SceneRoots:
   - {fileID: 237940623}
   - {fileID: 2143157069}
   - {fileID: 4920636725339663263}
+  - {fileID: 95324246}
