@@ -199,5 +199,6 @@ public class MeshDotRenderer : MonoBehaviour
         if (_triangleBuffer != null) _triangleBuffer.Release();
         if (_resultBuffer != null) _resultBuffer.Release();
         if (_argsBuffer != null) _argsBuffer.Release();
+        if(_edgeBuffer != null) _edgeBuffer.Release();
     }
 }

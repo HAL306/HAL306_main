@@ -145,7 +145,7 @@ public class PlayerShooter : MonoBehaviour
             {
                 CrackParameter crack;
                 crack.direction = dir;
-                crack.angleNoise = 120.0f;
+                crack.angleNoise = 240.0f;
                 crack.minCrackCount = 1;
                 crack.maxCrackCount = 2;
                 terrain.Destruct(center, _explodeRadius, crack);

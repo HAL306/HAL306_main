@@ -145,7 +145,7 @@ Shader "Custom/DotInstancedPBR"
             {
                 UNITY_SETUP_INSTANCE_ID(input);
 
-                half4 albedoAlpha = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv) * _BaseColor;
+                half4 albedoAlpha = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv*0.2f) * _BaseColor;
                 clip(albedoAlpha.a - 0.5);
 
                 half4 bumpMapSample = SAMPLE_TEXTURE2D(_BumpMap, sampler_BaseMap, input.uv);
