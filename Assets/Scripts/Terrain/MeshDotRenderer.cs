@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(MeshFilter))]
 public class MeshDotRenderer : MonoBehaviour
@@ -7,6 +7,7 @@ public class MeshDotRenderer : MonoBehaviour
     public ComputeShader computeShader;
     public Material instancedMaterial;
     public Mesh quadMesh;
+    public float edgeSize;
 
     public float DotSize { get; set; }
     
@@ -17,22 +18,28 @@ public class MeshDotRenderer : MonoBehaviour
     private ComputeBuffer _triangleBuffer;
     private ComputeBuffer _resultBuffer;
     private ComputeBuffer _argsBuffer;
+    private ComputeBuffer _edgeBuffer;
     
     private uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
     private int _maxPixelCount = 0;
-    
     private MaterialPropertyBlock _mpb;
+    
+    private Dictionary<ulong, int> _edgeCounts = new Dictionary<ulong, int>();
+    private Dictionary<ulong, Vector2Int> _edgeOriginalDirs = new Dictionary<ulong, Vector2Int>();
+    private List<Vector4> _boundaryEdges = new List<Vector4>();
     
     private static readonly int TriangleCount = Shader.PropertyToID("TriangleCount");
     private static readonly int GridSpacing = Shader.PropertyToID("GridSpacing");
     private static readonly int GridOffset = Shader.PropertyToID("GridOffset");
-    private static readonly int UserOffset = Shader.PropertyToID("UserOffset");
     private static readonly int Vertices = Shader.PropertyToID("Vertices");
     private static readonly int Triangles = Shader.PropertyToID("Triangles");
     private static readonly int ResultBuffer = Shader.PropertyToID("ResultBuffer");
     private static readonly int PixelSize = Shader.PropertyToID("_PixelSize");
     private static readonly int PositionBuffer = Shader.PropertyToID("positionBuffer");
     private static readonly int ObjectToWorldMatrix = Shader.PropertyToID("_ObjectToWorldMatrix");
+    private static readonly int BoundaryEdgeCount = Shader.PropertyToID("BoundaryEdgeCount");
+    private static readonly int BoundaryEdges = Shader.PropertyToID("BoundaryEdges");
+    private static readonly int EdgeSize = Shader.PropertyToID("EdgeSize");
 
     void Start()
     {
@@ -71,6 +78,28 @@ public class MeshDotRenderer : MonoBehaviour
             minBound = Vector2.Min(minBound, v);
             maxBound = Vector2.Max(maxBound, v);
         }
+        
+        _edgeCounts.Clear();
+        _edgeOriginalDirs.Clear();
+        _boundaryEdges.Clear();
+
+        for (int i = 0; i < triangles.Length; i += 3)
+        {
+            AddEdge(triangles[i], triangles[i + 1]);
+            AddEdge(triangles[i + 1], triangles[i + 2]);
+            AddEdge(triangles[i + 2], triangles[i]);
+        }
+
+        foreach (var kvp in _edgeCounts)
+        {
+            if (kvp.Value == 1)
+            {
+                Vector2Int orig = _edgeOriginalDirs[kvp.Key];
+                Vector2 vA = vertices2D[orig.x];
+                Vector2 vB = vertices2D[orig.y];
+                _boundaryEdges.Add(new Vector4(vA.x, vA.y, vB.x, vB.y));
+            }
+        }
 
         minBound.x = Mathf.Floor(minBound.x / DotSize) * DotSize - DotSize;
         minBound.y = Mathf.Floor(minBound.y / DotSize) * DotSize - DotSize;
@@ -86,7 +115,7 @@ public class MeshDotRenderer : MonoBehaviour
         {
             if (_resultBuffer != null) _resultBuffer.Release();
             _maxPixelCount = Mathf.NextPowerOfTwo(requiredPixels);
-            _resultBuffer = new ComputeBuffer(_maxPixelCount, sizeof(float) * 2, ComputeBufferType.Append);
+            _resultBuffer = new ComputeBuffer(_maxPixelCount, 20, ComputeBufferType.Append);
         }
 
         if (_vertexBuffer == null || _vertexBuffer.count != vertexCount)
@@ -102,17 +131,30 @@ public class MeshDotRenderer : MonoBehaviour
             _triangleBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
         }
         _triangleBuffer.SetData(triangles);
+        
+        if (_edgeBuffer == null || _edgeBuffer.count != _boundaryEdges.Count)
+        {
+            if (_edgeBuffer != null) _edgeBuffer.Release();
+            _edgeBuffer = new ComputeBuffer(Mathf.Max(_boundaryEdges.Count, 1), sizeof(float) * 4);
+        }
+        if (_boundaryEdges.Count > 0)
+        {
+            _edgeBuffer.SetData(_boundaryEdges);
+        }
 
         // ComputeShaderの実行
         _resultBuffer.SetCounterValue(0);
         int kernel = computeShader.FindKernel("CSMain");
 
         computeShader.SetInt(TriangleCount, triangleCount);
+        computeShader.SetInt(BoundaryEdgeCount, _boundaryEdges.Count);
         computeShader.SetVector(GridSpacing, new Vector2(DotSize, DotSize));
         computeShader.SetVector(GridOffset, minBound);
+        computeShader.SetFloat(EdgeSize, edgeSize);
         
         computeShader.SetBuffer(kernel, Vertices, _vertexBuffer);
         computeShader.SetBuffer(kernel, Triangles, _triangleBuffer);
+        computeShader.SetBuffer(kernel, BoundaryEdges, _edgeBuffer);
         computeShader.SetBuffer(kernel, ResultBuffer, _resultBuffer);
 
         int threadGroupsX = Mathf.CeilToInt(gridWidth / 8.0f);
@@ -133,6 +175,23 @@ public class MeshDotRenderer : MonoBehaviour
             true, gameObject.layer, null, UnityEngine.Rendering.LightProbeUsage.Off
         );
     }
+    
+    private void AddEdge(int v1, int v2)
+    {
+        int min = Mathf.Min(v1, v2);
+        int max = Mathf.Max(v1, v2);
+        ulong key = ((ulong)min << 32) | (uint)max;
+
+        if (_edgeCounts.ContainsKey(key))
+        {
+            _edgeCounts[key]++;
+        }
+        else
+        {
+            _edgeCounts[key] = 1;
+            _edgeOriginalDirs[key] = new Vector2Int(v1, v2);
+        }
+    }
 
     void OnDestroy()
     {
@@ -140,5 +199,6 @@ public class MeshDotRenderer : MonoBehaviour
         if (_triangleBuffer != null) _triangleBuffer.Release();
         if (_resultBuffer != null) _resultBuffer.Release();
         if (_argsBuffer != null) _argsBuffer.Release();
+        if(_edgeBuffer != null) _edgeBuffer.Release();
     }
 }

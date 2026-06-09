@@ -61,7 +61,8 @@ public class TerrainDestructEffect : MonoBehaviour
             int c = tess.Elements[i + 2];
 
             // エフェクト生成位置を求める
-            List<Vector2> EmitPoints = GetEmitPos(vertices[a], vertices[b], vertices[c], 30.0f);
+            float density = _terrainContext.TerrainParameter.EffectAmount;
+            List<Vector2> EmitPoints = GetEmitPos(vertices[a], vertices[b], vertices[c], density);
 
             for (int j = 0; j < EmitPoints.Count; j++)
             {

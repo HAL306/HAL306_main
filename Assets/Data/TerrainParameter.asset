@@ -16,3 +16,4 @@ MonoBehaviour:
   _destructibility: 1
   _fractureMultiplier: 1
   _density: 5
+  _effectAmount: 100

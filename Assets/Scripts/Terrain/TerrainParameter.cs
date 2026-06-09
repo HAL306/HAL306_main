@@ -22,9 +22,13 @@ public class TerrainParameter : ScriptableObject
     [Range(0.0f, 20.0f)]
     private float _density = 5.0f;
 
+    [SerializeField, Tooltip("エフェクト生成量")]
+    private float _effectAmount = 30.0f;
+
 
     public ParticleSystem DestructEffect => _destructEffect;
     public float Destructibility => _destructibility;
     public float FractureMultiplier => _fractureMultiplier;
     public float Density => _density;
+    public float EffectAmount => _effectAmount;
 }

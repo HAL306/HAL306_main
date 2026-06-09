@@ -2,15 +2,19 @@ Shader "Custom/DotInstanced"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        [MainTexture] _MainTex ("Texture", 2D) = "white" {}
+        [MainColor] _Color ("Tint Color", Color) = (1, 1, 1, 1)
         _UVScale ("UV Scale", Vector) = (1, 1, 0, 0)
         _UVOffset ("UV Offset", Vector) = (0, 0, 0, 0)
-        _Color ("Tint Color", Color) = (1, 1, 1, 1)
-        _PixelSize ("Pixel Size", Float) = 0.05
+        [HideInInspector] _PixelSize ("Pixel Size", Float) = 0.05
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
+        Tags { 
+            "RenderType"="TransparentCutout" 
+            "RenderPipeline"="UniversalPipeline" 
+            "Queue"="AlphaTest"
+        }
 
         Pass
         {
@@ -35,6 +39,13 @@ Shader "Custom/DotInstanced"
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
+            // ★ ここを追加：C#・ComputeShaderと同じデータ構造を定義
+            struct PixelData
+            {
+                float2 position;
+                float3 normal;
+            };
+
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
 
@@ -46,7 +57,8 @@ Shader "Custom/DotInstanced"
                 float4x4 _ObjectToWorldMatrix;
             CBUFFER_END
 
-            StructuredBuffer<float2> positionBuffer;
+            // ★ 変更：float2 から PixelData の配列として受け取る
+            StructuredBuffer<PixelData> positionBuffer;
 
             void setup() {}
 
@@ -60,13 +72,17 @@ Shader "Custom/DotInstanced"
                 float2 pixelCenter = float2(0, 0);
 
             #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
-                pixelCenter = positionBuffer[instanceID];
+                // ★ 変更：PixelDataとして取り出し、位置情報だけを使う（法線は無視）
+                PixelData data = positionBuffer[instanceID];
+                pixelCenter = data.position;
                 localPos.xy += pixelCenter;
             #endif
-                
+
                 o.uv = pixelCenter * _UVScale + _UVOffset;
+                
                 float3 worldPos = mul(_ObjectToWorldMatrix, float4(localPos, 1.0)).xyz;
                 o.pos = TransformWorldToHClip(worldPos);
+
                 return o;
             }
 
@@ -74,7 +90,10 @@ Shader "Custom/DotInstanced"
             {
                 half4 texColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 half4 finalColor = texColor * _Color;
+                
+                // アルファが0.5未満を切り抜く（透明対応）
                 clip(finalColor.a - 0.5);
+                
                 return finalColor;
             }
             ENDHLSL
