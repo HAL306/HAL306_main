@@ -7,12 +7,10 @@ using LibTessDotNet;
 /// 地形の描画用コンポーネント
 /// </summary>
 [RequireComponent (typeof(TerrainContext))]
-[RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshFilter))]
 public class TerrainRenderer : MonoBehaviour
 {
     private TerrainContext _terrainContext;
-    private MeshRenderer _meshRenderer;
     private MeshFilter _meshFilter;
     private Mesh _mesh;
 
@@ -25,7 +23,6 @@ public class TerrainRenderer : MonoBehaviour
     private void Awake()
     {
         _terrainContext = GetComponent<TerrainContext>();
-        _meshRenderer = GetComponent<MeshRenderer>();
         _meshFilter = GetComponent<MeshFilter>();
         _mesh = new Mesh();
 

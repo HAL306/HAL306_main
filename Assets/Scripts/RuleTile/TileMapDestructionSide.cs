@@ -7,16 +7,16 @@ public class TileMapDestructionSide : MonoBehaviour
     [SerializeField]
     private LayerMask targetLayer;
 
-    private Collider2D myCollider;
+    private Collider2D[] myColliders;
 
     private void Awake()
     {
-        myCollider =
-            GetComponent<Collider2D>();
+        myColliders =
+            GetComponents<Collider2D>();
     }
 
-    private void OnCollisionStay2D(
-        Collision2D collision)
+    private void OnTriggerStay2D(
+        Collider2D collision)
     {
         if (((1 << collision.gameObject.layer)
             & targetLayer) == 0)
@@ -29,7 +29,9 @@ public class TileMapDestructionSide : MonoBehaviour
         if (tilemap == null)
             return;
 
-        tilemap.BreakTilesInBounds(
-            myCollider.bounds);
+        foreach(Collider2D collider in myColliders)
+        {
+            tilemap.BreakTilesInBounds(collider.bounds);
+        }
     }
 }
