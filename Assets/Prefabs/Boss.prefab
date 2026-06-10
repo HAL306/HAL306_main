@@ -254,10 +254,10 @@ MonoBehaviour:
     maxCrackCount: 0
     minCrackCount: 0
   player: {fileID: 0}
-  speed: 3
+  speed: 0.8
   boostSpeed: 6
-  boostDistance: 5
-  moveHeight: 2
+  boostDistance: 9
+  moveHeight: 1
   moveSpeed: 2
 --- !u!114 &4289410077684622826
 MonoBehaviour:

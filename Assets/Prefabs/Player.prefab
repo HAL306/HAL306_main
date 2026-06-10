@@ -176,12 +176,12 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 72
-  _groundSpeed: 5
-  _airSpeed: 3
+  _groundSpeed: 9
+  _airSpeed: 6
   _jumpPower: 10
   _gravity: 30
-  _groundAcceleration: 50
-  _airAcceleration: 30
+  _groundAcceleration: 70
+  _airAcceleration: 45
   _fallStartSpeed: 2
   _maxFallSpeed: 20
   _coyoteTime: 0.1
