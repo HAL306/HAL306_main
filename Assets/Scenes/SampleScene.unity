@@ -543,7 +543,7 @@ MonoBehaviour:
   _explodeRadius: 0.3
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 8
 --- !u!120 &1830940782
 LineRenderer:
   serializedVersion: 3
@@ -689,7 +689,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   _groundSpeed: 5
   _airSpeed: 3
   _jumpPower: 10
