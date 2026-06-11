@@ -479,6 +479,6 @@ public class TerrainPolygon
         {
             pathsD.Add(VectorPathToPathD(edgeLoops[i].points));
         }
-        return (float)Clipper.Area(pathsD);
+        return Mathf.Abs((float)Clipper.Area(pathsD));
     }
 }
