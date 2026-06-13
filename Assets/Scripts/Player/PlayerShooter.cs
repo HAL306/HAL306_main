@@ -152,4 +152,14 @@ public class PlayerShooter : MonoBehaviour
             }
         }
     }
+
+    public float GetInterval()
+    {
+        return _shootInterval;
+    }
+
+    public float GetCoolTimer()
+    {
+        return _cooldownTimer;
+    }
 }

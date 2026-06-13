@@ -121,7 +121,8 @@ public class TerrainContext : MonoBehaviour
         if (_terrainPolygon.Area < _terrainSettings.MinArea)
         {
             if (_destructEffect != null)
-                _destructEffect.EmitDestructEffect(_terrainPolygon.TerrainPaths);
+                //_destructEffect.EmitDestructEffect(_terrainPolygon.TerrainPaths);
+                _destructEffect.EmitDestructEffect(_terrainPolygon.DestructPaths);
 
             Destroy(this.gameObject);
             return;
