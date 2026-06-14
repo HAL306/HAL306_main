@@ -195,6 +195,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeshDotRenderer
   computeShader: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
-  instancedMaterial: {fileID: 2100000, guid: ec24e5e1d5735ab4f8303d558856abbb, type: 2}
+  instancedMaterial: {fileID: 0}
   quadMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   edgeSize: 3

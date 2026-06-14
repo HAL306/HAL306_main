@@ -7,6 +7,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TerrainParameter", menuName = "Scriptable Objects/TerrainParameter")]
 public class TerrainParameter : ScriptableObject
 {
+    [SerializeField, Tooltip("地形のマテリアル")]
+    private Material _material;
+
     [SerializeField, Tooltip("破壊時エフェクト")]
     private ParticleSystem _destructEffect;
 
@@ -25,7 +28,7 @@ public class TerrainParameter : ScriptableObject
     [SerializeField, Tooltip("エフェクト生成量")]
     private float _effectAmount = 30.0f;
 
-
+    public Material Material => _material;
     public ParticleSystem DestructEffect => _destructEffect;
     public float Destructibility => _destructibility;
     public float FractureMultiplier => _fractureMultiplier;
