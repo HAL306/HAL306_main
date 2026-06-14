@@ -34427,7 +34427,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightRotation
   _rotateSpeed: 30
-  _isActive: 1
 --- !u!114 &2002932213
 MonoBehaviour:
   m_ObjectHideFlags: 0
