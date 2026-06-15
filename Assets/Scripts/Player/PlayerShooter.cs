@@ -32,6 +32,9 @@ public class PlayerShooter : MonoBehaviour
     private float _cooldownTimer;       // ショット待ち時間計測用タイマー
 
     private float _lineTimer;
+
+    public Vector2 ShootAimTarget => _shootAimTarget;
+
     public void OnShoot(InputAction.CallbackContext context)
     {
         ChangeDeviceMode(context);
