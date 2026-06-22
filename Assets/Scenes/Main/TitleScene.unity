@@ -657,8 +657,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleInteraction
   _invalidTime: 1
+  _transitionTime: 1
   _titleUIAnimator: {fileID: 211565194}
   _titleCameraAnimator: {fileID: 21720310}
+  _nextSceneName: ModeSelectScene
 --- !u!4 &1387252781
 Transform:
   m_ObjectHideFlags: 0
