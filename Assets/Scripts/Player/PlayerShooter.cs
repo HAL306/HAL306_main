@@ -17,8 +17,11 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField, Tooltip("着弾時の爆発半径")]
     private float _explodeRadius = 0.2f;
 
-    [SerializeField, Tooltip("攻撃が当たるレイヤー")]
+    [SerializeField, Tooltip("攻撃が当たるレイヤー（ベース地形・破壊可能地形の両方を含む）")]
     private LayerMask _hitLayer;
+
+    [SerializeField, Tooltip("破壊可能地形のレイヤー")]
+    private LayerMask _destructibleLayer;
 
     [SerializeField, Tooltip("発射する弾のプレハブ")]
     private GameObject _bulletPrefab;
@@ -50,6 +53,7 @@ public class PlayerShooter : MonoBehaviour
     public float ShootInterval => _shootInterval;
 
     // -- 入力イベント --
+
     public void OnShoot(InputAction.CallbackContext context)
     {
         ChangeDeviceMode(context);
@@ -63,9 +67,17 @@ public class PlayerShooter : MonoBehaviour
     }
 
     // -- Unity イベント --
+
     private void Awake()
     {
-        _lineRenderer = GetComponent<LineRenderer>();   
+        _lineRenderer = GetComponent<LineRenderer>();
+    }
+
+    private void Start()
+    {
+        // マウスが存在する場合はデフォルトでマウスモードにする
+        if (Mouse.current != null)
+            _isMouseAim = true;
     }
 
     private void Update()
@@ -122,8 +134,6 @@ public class PlayerShooter : MonoBehaviour
         }
     }
 
-
-
     // -- 射撃処理 --
 
     // 弾を生成してエイムラインを更新する
@@ -134,7 +144,8 @@ public class PlayerShooter : MonoBehaviour
 
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
-        bulletObj.GetComponent<PlayerBullet>().Init(dir, _explodeRadius, _hitLayer, _shootRange);
+        bulletObj.GetComponent<PlayerBullet>().Init(
+            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer);
 
         // エイムライン描画
         if (_showAimLine)
@@ -146,8 +157,7 @@ public class PlayerShooter : MonoBehaviour
         }
     }
 
-
-    // エイム入力モードを自動的に切り替える
+    // デバイスの種類に応じてエイムモードを切り替える
     private void ChangeDeviceMode(InputAction.CallbackContext context)
     {
         _isMouseAim = context.control.device.layout == "Mouse";

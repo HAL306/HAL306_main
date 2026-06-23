@@ -11,12 +11,11 @@ public class ShootTargetUI : MonoBehaviour
     [Range(0.1f, 5.0f)]
     private float _reticleSize = 1.0f;
 
-    [SerializeField, Tooltip("プレイヤーの射撃コンポーネント")]
-    private PlayerShooter _playerShooter;
-
     [SerializeField, Tooltip("コントローラー操作時の照準距離")]
     [Range(0.0f, 20.0f)]
     private float _controllerAimDist = 5.0f;
+
+    private PlayerShooter _playerShooter;
 
     private void Update()
     {
@@ -24,6 +23,8 @@ public class ShootTargetUI : MonoBehaviour
     }
     private void Start()
     {
+        // シーン内のPlayerShooterを自動で取得する
+        _playerShooter = FindAnyObjectByType<PlayerShooter>();
         transform.localScale = Vector3.one * _reticleSize;
     }
 

@@ -17,16 +17,18 @@ public class PlayerBullet : MonoBehaviour
     private Vector2 _direction;        // 移動方向
     private float _explodeRadius;      // 爆発半径
     private LayerMask _hitLayer;       // 衝突レイヤー
+    private LayerMask _destructibleLayer;  // 破壊可能地形のレイヤー
 
     /// <summary>
     /// 弾を初期化する
     /// PlayerShooterから発射時に呼び出す
     /// </summary>
-    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range)
+    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer)
     {
         _direction = direction.normalized;
         _explodeRadius = explodeRadius;
         _hitLayer = hitLayer;
+        _destructibleLayer = destructibleLayer;
 
         // 射程距離と速度から生存時間を計算する
         float lifetime = range / _speed;
@@ -49,8 +51,14 @@ public class PlayerBullet : MonoBehaviour
 
         if (hit.collider != null)
         {
-            // 衝突位置で破壊処理を呼び出す
-            HitDestruct(hit.point);
+            // 破壊可能地形の場合のみ破壊処理を呼び出す
+            bool isDestructible = (_destructibleLayer.value & (1 << hit.collider.gameObject.layer)) != 0;
+            if (isDestructible)
+            {
+                HitDestruct(hit.point);
+            }
+
+            // どの地形に当たっても弾は消滅する
             Destroy(gameObject);
             return;
         }

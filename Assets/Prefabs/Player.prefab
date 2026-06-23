@@ -499,7 +499,13 @@ MonoBehaviour:
   _explodeRadius: 0.3
   _hitLayer:
     serializedVersion: 2
+    m_Bits: 72
+  _destructibleLayer:
+    serializedVersion: 2
     m_Bits: 8
+  _bulletPrefab: {fileID: 2590035284781143901, guid: 6e0d559a1a65b184eb82b5a5c4dfe650, type: 3}
+  _showAimLine: 1
+  _lineDisplayDuration: 0.1
 --- !u!1 &4636640035820007146
 GameObject:
   m_ObjectHideFlags: 0
@@ -916,7 +922,13 @@ MonoBehaviour:
   _explodeRadius: 3
   _hitLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 72
+  _destructibleLayer:
+    serializedVersion: 2
+    m_Bits: 72
+  _bulletPrefab: {fileID: 2590035284781143901, guid: 6e0d559a1a65b184eb82b5a5c4dfe650, type: 3}
+  _showAimLine: 1
+  _lineDisplayDuration: 0.1
 --- !u!212 &5592474166083590828
 SpriteRenderer:
   serializedVersion: 2
