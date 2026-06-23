@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Boss : MonoBehaviour
 {
@@ -68,6 +69,12 @@ public class Boss : MonoBehaviour
                 terrain.Destruct(transform.position, destructRadius, crackParameter);
                 destructTimer = 0.0f;
             }
+        }
+
+        if (collision.CompareTag("Player"))
+        {
+            string current = SceneManager.GetActiveScene().name;
+            SceneManager.LoadScene(current);
         }
     }
 }

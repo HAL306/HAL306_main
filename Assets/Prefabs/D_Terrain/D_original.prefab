@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 5745265711445885353}
   - component: {fileID: 389411870176214123}
   m_Layer: 3
-  m_Name: DestructTerrain
+  m_Name: D_original
   m_TagString: Field
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
