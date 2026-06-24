@@ -17,7 +17,7 @@ public class CoolTimeUI : MonoBehaviour
 
         playerShooter = GetComponent<PlayerShooter>();
         if (playerShooter != null)
-            coolTime = playerShooter.CooldownTimer;
+            coolTime = playerShooter.ShootInterval;
     }
 
     // Update is called once per frame
