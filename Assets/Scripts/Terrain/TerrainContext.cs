@@ -95,7 +95,8 @@ public class TerrainContext : MonoBehaviour
             OnChangeTerrain();
         }
 
-        _dotRenderer.DotSize = TerrainSettings.DotSize;
+        _dotRenderer.DotSize = _terrainSettings.DotSize;
+        _dotRenderer.instancedMaterial = _terrainParameter.Material;
     }
 
 
