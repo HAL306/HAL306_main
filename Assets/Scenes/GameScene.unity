@@ -33519,17 +33519,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
---- !u!114 &1380487386 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1385036857345117470, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
-  m_PrefabInstance: {fileID: 1427262063}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c107ba4ac7f8b454591efef8a478753d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
 --- !u!1001 &1427262063
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34199,16 +34188,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790263251}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f93e06003e5e8ff43b953fd019fade88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   _followTarget: {fileID: 2080541430}
   _followOffset: {x: 3, y: 3}
-  _playerShooter: {fileID: 0}
+  _playerShooter: {fileID: 943564914}
   _aimOffsetDistance: {x: 2, y: 1}
-  _aimOffsetSpeed: 2
+  _aimOffsetSpeed: 5
 --- !u!114 &1790263257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34216,7 +34205,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790263251}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b78023baa08fbd541aaba7677fe21f32, type: 3}
   m_Name: 
