@@ -144,7 +144,7 @@ public class PlayerShooter : MonoBehaviour
 
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
-        bulletObj.GetComponent<PlayerBullet>().Init(
+        bulletObj.GetComponent<PlayerRocket>().Init(
             dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer);
 
         // エイムライン描画
