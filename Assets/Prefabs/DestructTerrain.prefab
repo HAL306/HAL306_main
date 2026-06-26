@@ -194,7 +194,7 @@ MonoBehaviour:
   _isStartTerrain: 0
   _baseTerrainLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
 --- !u!114 &976181807826979226
 MonoBehaviour:
   m_ObjectHideFlags: 0

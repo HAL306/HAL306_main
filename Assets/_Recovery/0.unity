@@ -689,7 +689,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 384
+    m_Bits: 0
   _groundSpeed: 5
   _airSpeed: 3
   _jumpPower: 10
@@ -822,7 +822,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &2143157069
 Transform:
@@ -1029,6 +1029,10 @@ PrefabInstance:
     - target: {fileID: 3706547287147494160, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
       propertyPath: _isStartTerrain
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3706547287147494160, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
+      propertyPath: _baseTerrainLayer.m_Bits
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4934632388205318660, guid: b35635b0f0804b84cb7422899c01cb55, type: 3}
       propertyPath: m_Name
