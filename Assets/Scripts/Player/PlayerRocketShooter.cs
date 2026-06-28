@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 /// プレイヤーの弾を発射するコンポーネント
 /// </summary>
 [RequireComponent(typeof(LineRenderer))]
-public class PlayerShooter : MonoBehaviour
+public class PlayerRocketShooter : MonoBehaviour
 {
     [Header("射撃設定")]
     [SerializeField, Tooltip("射程距離")]
@@ -144,7 +144,7 @@ public class PlayerShooter : MonoBehaviour
 
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
-        bulletObj.GetComponent<PlayerBullet>().Init(
+        bulletObj.GetComponent<PlayerRocket>().Init(
             dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer);
 
         // エイムライン描画
