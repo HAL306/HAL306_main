@@ -124,7 +124,6 @@ public class PlayerRocket : MonoBehaviour
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
             hitPoint, _explodeRadius, _hitLayer);
 
-        int num = 0;
         foreach (Collider2D collider in hitColliders)
         {
             if (collider.TryGetComponent(out TerrainContext terrain))
@@ -140,7 +139,7 @@ public class PlayerRocket : MonoBehaviour
 
         // Ç–Ç—Ç¢ÇÍÇÈ
         Collider2D[] crackColliders = Physics2D.OverlapCircleAll(
-            hitPoint, crackRadius, _hitLayer);
+            hitPoint, crackRadius, _destructibleLayer);
 
         // à íuçXêV
         for (int i = 0; i < crackDatas.Length; i++)
@@ -159,23 +158,13 @@ public class PlayerRocket : MonoBehaviour
                 crack.minCrackCount = 0;
                 crack.maxCrackCount = 0;
                 // Ç–Ç—ì¸ÇÍÇÈ
-                //for (int i = 0; i < crackDatas.Length; i++)
-                //{
-                //    crackDatas[i].pos.x += transform.position.x;
-                //    crackDatas[i].pos.y += transform.position.y;
-                //    terrain.Crack(crackDatas[i].pos, crackDatas[i].dir, crackDatas[i].length, crack);
-                //}
                 terrain.Crack(crackDatas, crack);
-                Debug.Log(num);
-
-                num++;
             }
         }
-        //Debug.Log(num);
 
         // îöïó
         Collider2D[] colliders = Physics2D.OverlapCircleAll(
-            hitPoint, windRadius, _hitLayer);
+            hitPoint, windRadius, _destructibleLayer);
 
 
         foreach (Collider2D collider in colliders)
