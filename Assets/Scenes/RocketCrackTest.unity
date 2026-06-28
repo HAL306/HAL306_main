@@ -32694,6 +32694,17 @@ Transform:
   - {fileID: 825466104}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &914851739 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3009328418883844808, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+  m_PrefabInstance: {fileID: 1427262063}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb273cb2dab62454f9fbe15f2c3d026b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRocketShooter
 --- !u!114 &943564914 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1385036857345117470, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
@@ -33570,6 +33581,22 @@ PrefabInstance:
     - target: {fileID: 1252782279758346500, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5308044220147577639, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5308044220147577639, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 914851739}
+    - target: {fileID: 5308044220147577639, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnShoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 5308044220147577639, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerRocketShooter, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

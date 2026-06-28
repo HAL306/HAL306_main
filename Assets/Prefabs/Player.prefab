@@ -280,8 +280,8 @@ MonoBehaviour:
     m_ActionName: 'Player/Aim[/Mouse/delta]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1668207728313034344}
-        m_TargetAssemblyTypeName: PlayerShooter, Assembly-CSharp
+      - m_Target: {fileID: 3009328418883844808}
+        m_TargetAssemblyTypeName: PlayerRocketShooter, Assembly-CSharp
         m_MethodName: OnShoot
         m_Mode: 0
         m_Arguments:
@@ -296,44 +296,12 @@ MonoBehaviour:
     m_ActionName: 'Player/Special[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: c95b2375-e6d9-4b88-9c4c-c5e76515df4b
-    m_ActionName: 'UI/Navigate[/SwitchProControllerHID/leftStick/up,/SwitchProControllerHID/rightStick/up,/SwitchProControllerHID/leftStick/down,/SwitchProControllerHID/rightStick/down,/SwitchProControllerHID/leftStick/left,/SwitchProControllerHID/rightStick/left,/SwitchProControllerHID/leftStick/right,/SwitchProControllerHID/rightStick/right,/SwitchProControllerHID/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
+    m_ActionId: 4b8c34de-15b0-4ef3-8dd4-1e595e138b8e
+    m_ActionName: 'UI/Any[/Keyboard/anyKey]'
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: 7607c7b6-cd76-4816-beef-bd0341cfe950
-    m_ActionName: 'UI/Submit[/Keyboard/enter,/SwitchProControllerHID/buttonEast]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 15cef263-9014-4fd5-94d9-4e4a6234a6ef
-    m_ActionName: 'UI/Cancel[/Keyboard/escape,/SwitchProControllerHID/buttonSouth]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 32b35790-4ed0-4e9a-aa41-69ac6d629449
-    m_ActionName: 'UI/Point[/Mouse/position,/Pen/position]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 3c7022bf-7922-4f7c-a998-c437916075ad
-    m_ActionName: 'UI/Click[/Mouse/leftButton,/Pen/tip]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 44b200b1-1557-4083-816c-b22cbdf77ddf
-    m_ActionName: 'UI/RightClick[/Mouse/rightButton]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: dad70c86-b58c-4b17-88ad-f5e53adf419e
-    m_ActionName: 'UI/MiddleClick[/Mouse/middleButton]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 0489e84a-4833-4c40-bfae-cea84b696689
-    m_ActionName: 'UI/ScrollWheel[/Mouse/scroll]'
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 24908448-c609-4bc3-a128-ea258674378a
-    m_ActionName: UI/TrackedDevicePosition
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
-    m_ActionName: UI/TrackedDeviceOrientation
+    m_ActionId: b7a66173-5963-4d68-aaef-edf549555c32
+    m_ActionName: 'UI/Interact[/Mouse/leftButton]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
@@ -770,9 +738,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3929208429927698173}
   - component: {fileID: 5612654524762967525}
-  - component: {fileID: 1668207728313034344}
   - component: {fileID: 5592474166083590828}
   - component: {fileID: 1594951805368751933}
+  - component: {fileID: 3009328418883844808}
   m_Layer: 0
   m_Name: PlayerRocketLauncher
   m_TagString: Untagged
@@ -905,30 +873,6 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!114 &1668207728313034344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7930051854424470889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c107ba4ac7f8b454591efef8a478753d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
-  _shootRange: 20
-  _shootInterval: 1
-  _explodeRadius: 3
-  _hitLayer:
-    serializedVersion: 2
-    m_Bits: 72
-  _destructibleLayer:
-    serializedVersion: 2
-    m_Bits: 72
-  _bulletPrefab: {fileID: 2590035284781143901, guid: 6e0d559a1a65b184eb82b5a5c4dfe650, type: 3}
-  _showAimLine: 1
-  _lineDisplayDuration: 0.1
 --- !u!212 &5592474166083590828
 SpriteRenderer:
   serializedVersion: 2
@@ -1001,3 +945,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoolTimeUI
   maxSize: 8
+--- !u!114 &3009328418883844808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7930051854424470889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb273cb2dab62454f9fbe15f2c3d026b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRocketShooter
+  _shootRange: 20
+  _shootInterval: 1
+  _explodeRadius: 1.5
+  _hitLayer:
+    serializedVersion: 2
+    m_Bits: 72
+  _destructibleLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  _bulletPrefab: {fileID: 2590035284781143901, guid: 72b008e4055b0f648a2710df12b9559a, type: 3}
+  _showAimLine: 1
+  _lineDisplayDuration: 0.1

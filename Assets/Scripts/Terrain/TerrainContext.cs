@@ -62,6 +62,21 @@ public class TerrainContext : MonoBehaviour
         OnChangeTerrain();
     }
 
+    // 三品怜
+    // 地形にひびを入れる処理
+    public void Crack(CrackData[] data,CrackParameter crack)
+    {
+        List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonCrack(data, crack);
+
+        for (int i = 0; i < splitTerrains.Count; ++i)
+        {
+            // 地形分離
+            CreateSplitTerrain(splitTerrains[i]);
+        }
+        OnChangeTerrain();
+    }
+
+
     // 地形変更時イベントを登録する
     public void AddChangeTerrainEvent(Action onDestructEvent)
     {
