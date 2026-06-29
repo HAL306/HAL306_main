@@ -168,12 +168,9 @@ public class MeshDotRenderer : MonoBehaviour
         _mpb.SetBuffer(PositionBuffer, _resultBuffer);
         _mpb.SetMatrix(ObjectToWorldMatrix, transform.localToWorldMatrix);
 
-        Bounds bounds = mesh.bounds;
-        bounds.center = transform.TransformPoint(bounds.center);
-
         Graphics.DrawMeshInstancedIndirect(
             quadMesh, 0, instancedMaterial,
-            bounds,
+            new Bounds(transform.position, Vector3.one * 20f),
             _argsBuffer, 0, _mpb, UnityEngine.Rendering.ShadowCastingMode.Off,
             true, gameObject.layer, null, UnityEngine.Rendering.LightProbeUsage.Off
         );
