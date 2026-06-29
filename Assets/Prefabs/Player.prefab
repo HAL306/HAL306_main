@@ -969,7 +969,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 72b008e4055b0f648a2710df12b9559a, type: 3}
-  penetrationPower: 0.5
+  penetrationPower: 0.3
   _showAimLine: 1
   _lineDisplayDuration: 0.1
   feverCoolSpeed: 0.3
