@@ -61,6 +61,19 @@ public class PlayerMove : MonoBehaviour
     [Range(0.0f, 90.0f)]
     private float _minSlopeAngle = 10.0f;
 
+    [Header("InputAction登録")]
+    [SerializeField, Tooltip("移動")]
+    private InputActionReference _moveAction;
+    [SerializeField, Tooltip("ジャンプ")]
+    private InputActionReference _jumpAction;
+    
+
+    [Header("参照登録")]
+    [SerializeField]
+    private CutsceneState _cutsceneState;
+    [SerializeField]
+    private PlayerMoveOverrideState _playerMoveOverrideState;
+
 
     private Rigidbody2D _rigidbody;
 
@@ -80,15 +93,98 @@ public class PlayerMove : MonoBehaviour
 
     private float _rotateLockTimer;             // 向き固定時間計測用タイマー
 
-    public void OnMove(InputAction.CallbackContext context)
+    private bool _wasOverrideMoveTargetReachedPrevFrame;    // オーバーライドされた移動の目標地点に前のフレームで到達していたか
+
+    private void OverrideInput()
     {
+        if (_playerMoveOverrideState is null)
+        {
+            return;
+        }
+
+        switch (_playerMoveOverrideState.MoveOverridingState)
+        {
+            case PlayerMoveOverrideState.OverrideState.Speed:
+            {
+                float distanceX = _playerMoveOverrideState.OverrideMoveTargetX - transform.position.x;
+
+                float threshold = Mathf.Max(0.05f, Mathf.Abs(_currentVelicity.x) * Time.fixedDeltaTime * 1.5f);
+
+                if (Mathf.Abs(distanceX) < threshold)
+                {
+                    _inputMove = Vector2.zero;
+                    _currentVelicity.x = 0f;
+                    _rigidbody.linearVelocity = new Vector2(0f, _rigidbody.linearVelocity.y);
+                    
+                    if (_wasOverrideMoveTargetReachedPrevFrame)
+                    {
+                        _playerMoveOverrideState.FinishOverride();
+                        _wasOverrideMoveTargetReachedPrevFrame = false;
+                    }
+                    else
+                    {
+                        _wasOverrideMoveTargetReachedPrevFrame = true;
+                    }
+                    
+                    // transform.position = new Vector3(_playerMoveOverrideState.OverrideMoveTargetX, transform.position.y, transform.position.z);
+                    return;
+                }
+
+                _wasOverrideMoveTargetReachedPrevFrame = false;
+
+                float dirX = Mathf.Sign(distanceX);
+                _inputMove = new Vector2(dirX * _playerMoveOverrideState.OverrideMoveSpeed, 0f);
+                break;
+            }
+            case PlayerMoveOverrideState.OverrideState.Time:
+            {
+                _playerMoveOverrideState.OverrideMoveTime = Mathf.Max(_playerMoveOverrideState.OverrideMoveTime - Time.fixedDeltaTime, 0.0f);
+                
+                float distanceX = _playerMoveOverrideState.OverrideMoveTargetX - transform.position.x;
+
+                if (_playerMoveOverrideState.OverrideMoveTime <= 0f)
+                {
+                    _inputMove = Vector2.zero;
+                    _currentVelicity.x = 0f;
+                    _rigidbody.linearVelocity = new Vector2(0f, _rigidbody.linearVelocity.y);
+                    
+                    _playerMoveOverrideState.FinishOverride();
+                    return;
+                }
+
+                float remainingTime = Mathf.Max(_playerMoveOverrideState.OverrideMoveTime, Time.fixedDeltaTime);
+                
+                float requiredVelocity = distanceX / remainingTime;
+                
+                float speedInput = requiredVelocity / Mathf.Max(_groundSpeed, 0.1f);
+
+                _inputMove = new Vector2(Mathf.Clamp(speedInput, -2.0f, 2.0f), 0f);
+                break;
+            }
+            case PlayerMoveOverrideState.OverrideState.None:
+            {
+                if (_cutsceneState.IsPlaying)
+                {
+                    _inputMove = Vector2.zero;
+                    _inputJump = false;
+                }
+                break;
+            }
+        }
+    }
+
+    public void OnMove(InputAction.CallbackContext context)
+    { 
         _inputMove = context.ReadValue<Vector2>();
     }
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        _inputJump = context.performed;
-        _jumpBufferTimer = _inputBufferDuration;
+        if (!_cutsceneState.IsPlaying)
+        {
+            _inputJump = context.performed;
+            _jumpBufferTimer = _inputBufferDuration;
+        }
     }
 
     // 向きを変更し一定時間固定する
@@ -113,12 +209,43 @@ public class PlayerMove : MonoBehaviour
         _rigidbody.sleepMode = RigidbodySleepMode2D.NeverSleep;
     }
 
+    private void OnEnable()
+    {
+        if (_moveAction != null)
+        {
+            _moveAction.action.started += OnMove;
+            _moveAction.action.performed += OnMove;
+            _moveAction.action.canceled += OnMove;
+        }
+        if (_jumpAction != null)
+        {
+            _jumpAction.action.performed += OnJump;
+            _jumpAction.action.canceled += OnJump;
+        }
+    }
+    
+    private void OnDisable()
+    {
+        if (_moveAction != null)
+        {
+            _moveAction.action.started -= OnMove;
+            _moveAction.action.performed -= OnMove;
+            _moveAction.action.canceled -= OnMove;
+        }
+        if (_jumpAction != null)
+        {
+            _jumpAction.action.performed -= OnJump;
+            _jumpAction.action.canceled -= OnJump;
+        }
+    }
+
     private void FixedUpdate()
     {
         // 現在の速度を取得
         _currentVelicity = _rigidbody.linearVelocity;
 
         // 移動処理
+        OverrideInput();
         Move();
         Jump();
         AddGravity();
