@@ -659,6 +659,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562d3b1dba20544784bd7828f09ba84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleInteraction
+  _invalidTime: 1
   _titleUIAnimator: {fileID: 211565194}
   _titleCameraAnimator: {fileID: 21720310}
   _fadeUI: {fileID: 1622779079}
