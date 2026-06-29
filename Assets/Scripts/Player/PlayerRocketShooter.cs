@@ -33,6 +33,10 @@ public class PlayerRocketShooter : MonoBehaviour
     [SerializeField, Tooltip("エイムラインの表示時間")]
     private float _lineDisplayDuration = 0.1f;
 
+
+    [SerializeField, Tooltip("フィーバー中のロケランのクールタイムが減るスピード")]
+    private float feverCoolSpeed = 0.5f;
+
     // 入力
     private bool _inputShoot;           // ショット入力
     private Vector2 _inputAim;          // エイム方向入力 (スティック限定)
@@ -46,13 +50,16 @@ public class PlayerRocketShooter : MonoBehaviour
 
     private LineRenderer _lineRenderer;
 
+    private PlayerFever playerFever;
+    private bool isFever;
+
     public Vector2 ShootAimTarget => _shootAimTarget;
     public Vector2 MouseWorldPos => _mouseWorldPos;
     public bool IsMouseAim => _isMouseAim;
     public float CooldownTimer => _cooldownTimer;
     public float ShootInterval => _shootInterval;
 
-    private PlayerFever playerFever;
+
 
     // -- 入力イベント --
 
@@ -150,7 +157,7 @@ public class PlayerRocketShooter : MonoBehaviour
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
         bulletObj.GetComponent<PlayerRocket>().Init(
-            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer,playerFever);
+            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer,playerFever,this);
 
         // エイムライン描画
         if (_showAimLine)
@@ -166,5 +173,18 @@ public class PlayerRocketShooter : MonoBehaviour
     private void ChangeDeviceMode(InputAction.CallbackContext context)
     {
         _isMouseAim = context.control.device.layout == "Mouse";
+    }
+
+    public void SetFever(bool fever)
+    {
+        isFever = fever;
+    }
+
+    public void Charge(float amount)
+    {
+        if(isFever)
+        {
+            _cooldownTimer -= amount * feverCoolSpeed;
+        }
     }
 }

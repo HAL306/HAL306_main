@@ -44,17 +44,21 @@ public class PlayerRocket : MonoBehaviour
 
     private PlayerFever playerFever;
 
+    private PlayerRocketShooter playerRocketShooter;
+
     /// <summary>
     /// ’e‚ğ‰Šú‰»‚·‚é
     /// PlayerShooter‚©‚ç”­Ë‚ÉŒÄ‚Ño‚·
     /// </summary>
-    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer,PlayerFever fever)
+    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer,
+        PlayerFever fever,PlayerRocketShooter shooter)
     {
         _direction = direction.normalized;
         _explodeRadius = explodeRadius;
         _hitLayer = hitLayer;
         _destructibleLayer = destructibleLayer;
         playerFever = fever;
+        playerRocketShooter = shooter;
 
         // Ë’ö‹——£‚Æ‘¬“x‚©‚ç¶‘¶ŠÔ‚ğŒvZ‚·‚é
         float lifetime = range / _speed;
@@ -169,6 +173,7 @@ public class PlayerRocket : MonoBehaviour
         }
 
         playerFever.Charge(area * rocketChrgeRatio);
+        playerRocketShooter.Charge(area);
 
         // ”š•—
         Collider2D[] colliders = Physics2D.OverlapCircleAll(

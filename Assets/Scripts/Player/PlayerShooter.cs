@@ -46,13 +46,15 @@ public class PlayerShooter : MonoBehaviour
 
     private LineRenderer _lineRenderer;
 
+    private PlayerFever playerFever;
+    private bool isFever;
+
     public Vector2 ShootAimTarget => _shootAimTarget;
     public Vector2 MouseWorldPos => _mouseWorldPos;
     public bool IsMouseAim => _isMouseAim;
     public float CooldownTimer => _cooldownTimer;
     public float ShootInterval => _shootInterval;
 
-    private PlayerFever playerFever;
 
     // -- 入力イベント --
 
@@ -166,5 +168,10 @@ public class PlayerShooter : MonoBehaviour
     private void ChangeDeviceMode(InputAction.CallbackContext context)
     {
         _isMouseAim = context.control.device.layout == "Mouse";
+    }
+
+    public void SetFever(bool fever)
+    {
+        isFever = fever;
     }
 }

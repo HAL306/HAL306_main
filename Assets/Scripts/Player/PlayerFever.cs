@@ -50,7 +50,8 @@ public class PlayerFever : MonoBehaviour
     {
         timer = 0.0f;
         isFever = true;
-        Debug.Log("開始");
+        playerRocketShooter.SetFever(true);
+        playerShooter.SetFever(true);
     }
 
     // フィーバー終了処理
@@ -58,6 +59,8 @@ public class PlayerFever : MonoBehaviour
     {
         charge = 0.0f;
         isFever = false;
+        playerRocketShooter.SetFever(false);
+        playerShooter.SetFever(false);
     }
     // チャージする
     // area : 破壊した面積

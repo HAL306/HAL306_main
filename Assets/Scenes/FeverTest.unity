@@ -33050,7 +33050,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c904eae4aff556d46873abeb3e35d824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FeverGaugeUI
-  size: 300
+  width: 300
+  height: 60
 --- !u!114 &1259777601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35049,8 +35050,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFever
   maxCharge: 5
-  asultChrgeRatio: 1.1
-  rocketChrgeRatio: 0.9
   feverTime: 10
   speedRatio: 1.2
 --- !u!1 &2094899738
