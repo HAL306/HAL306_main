@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 7372806046798318253}
   - component: {fileID: 3210302066754762607}
   m_Layer: 3
-  m_Name: D_original
+  m_Name: D_alpha
   m_TagString: Field
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,8 +109,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7a6f8d96159b664180d867f299c6b0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainContext
-  _terrainSettings: {fileID: 11400000, guid: 55b538e2e3582654e8fd54370d30645b, type: 2}
-  _terrainParameter: {fileID: 11400000, guid: 11c2a903f2b17aa4a8a7357f1bc47568, type: 2}
+  _terrainSettings: {fileID: 11400000, guid: 6dfc9a1dd6a889d46abfea8511aa41d3, type: 2}
+  _terrainParameter: {fileID: 11400000, guid: b0ca9b4cfe5901649a9b2cababb25cfe, type: 2}
   _isStartTerrain: 1
   _baseTerrainLayer:
     serializedVersion: 2
