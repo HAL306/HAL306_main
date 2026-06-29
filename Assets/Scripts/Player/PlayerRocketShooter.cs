@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 /// プレイヤーの弾を発射するコンポーネント
 /// </summary>
 [RequireComponent(typeof(LineRenderer))]
-public class PlayerShooter : MonoBehaviour
+public class PlayerRocketShooter : MonoBehaviour
 {
     [Header("射撃設定")]
     [SerializeField, Tooltip("射程距離")]
@@ -27,7 +27,7 @@ public class PlayerShooter : MonoBehaviour
     private GameObject _bulletPrefab;
 
     [SerializeField, Tooltip("貫通力")]
-    private float penetrationPower = 0.1f;
+    private float penetrationPower= 0.1f;
 
     [Header("エイムライン設定")]
     [SerializeField, Tooltip("エイムラインを表示するか")]
@@ -36,10 +36,8 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField, Tooltip("エイムラインの表示時間")]
     private float _lineDisplayDuration = 0.1f;
 
-
-    [Header("フィーバー中の設定設定")]
-    [SerializeField, Tooltip("貫通力にかかる倍率")]
-    private float penetrationRatio = 1.2f;
+    [SerializeField, Tooltip("フィーバー中のロケランのクールタイムが減るスピード")]
+    private float feverCoolSpeed = 0.5f;
 
     // 入力
     private bool _inputShoot;           // ショット入力
@@ -62,6 +60,7 @@ public class PlayerShooter : MonoBehaviour
     public bool IsMouseAim => _isMouseAim;
     public float CooldownTimer => _cooldownTimer;
     public float ShootInterval => _shootInterval;
+
 
 
     // -- 入力イベント --
@@ -92,7 +91,7 @@ public class PlayerShooter : MonoBehaviour
             _isMouseAim = true;
 
         playerFever = GetComponentInParent<PlayerFever>();
-        playerFever.SetPlayerShooter(this);
+        playerFever.SetPlayerRocketShooter(this);
     }
 
     private void Update()
@@ -159,17 +158,8 @@ public class PlayerShooter : MonoBehaviour
 
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
-
-        if (isFever)    // フィーバーしてるときは貫通力を上げる
-        {
-            bulletObj.GetComponent<PlayerBullet>().Init(
-                dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer, playerFever, penetrationPower * penetrationRatio);
-        }
-        else
-        {
-            bulletObj.GetComponent<PlayerBullet>().Init(
-                dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer, playerFever, penetrationPower);
-        }
+        bulletObj.GetComponent<PlayerRocket>().Init(
+            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer,playerFever,this,penetrationPower);
 
         // エイムライン描画
         if (_showAimLine)
@@ -190,5 +180,13 @@ public class PlayerShooter : MonoBehaviour
     public void SetFever(bool fever)
     {
         isFever = fever;
+    }
+
+    public void Charge(float amount)
+    {
+        if(isFever)
+        {
+            _cooldownTimer -= amount * feverCoolSpeed;
+        }
     }
 }
