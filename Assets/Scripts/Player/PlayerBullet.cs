@@ -15,6 +15,9 @@ public class PlayerBullet : MonoBehaviour
     [Range(0.0f, 1.0f)]
     private float _radius = 0.1f;
 
+    [SerializeField, Tooltip("アサルトチャージ倍率")]
+    private float asultChrgeRatio = 1.1f;
+
     private Vector2 _direction;        // 移動方向
     private float _explodeRadius;      // 爆発半径
     private LayerMask _hitLayer;       // 衝突レイヤー
@@ -93,7 +96,6 @@ public class PlayerBullet : MonoBehaviour
             }
         }
 
-        playerFever.Charge(area);
-        Debug.Log(area);
+        playerFever.Charge(area * asultChrgeRatio);
     }
 }

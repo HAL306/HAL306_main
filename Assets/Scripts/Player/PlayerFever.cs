@@ -1,16 +1,12 @@
 using LibTessDotNet;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerFever : MonoBehaviour
 {
     [SerializeField, Tooltip("必要チャージ量")]
-    private float maxCharge = 100.0f;
+    private float maxCharge = 20.0f;
 
-    [SerializeField, Tooltip("アサルトチャージ倍率")]
-    private float asultChrgeRatio = 1.1f;
-
-    [SerializeField, Tooltip("ロケランチャージ倍率")]
-    private float rocketChrgeRatio = 0.9f;
 
     [SerializeField, Tooltip("フィーバーの時間")]
     private float feverTime = 10.0f;
@@ -24,13 +20,6 @@ public class PlayerFever : MonoBehaviour
 
     private PlayerShooter playerShooter;
     private PlayerRocketShooter playerRocketShooter;
-
-    // チャージする
-    // area : 破壊した面積
-    public void Charge(float area)
-    {
-        charge += area;
-    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -59,16 +48,39 @@ public class PlayerFever : MonoBehaviour
     // フィーバー開始処理
     private void StartFever()
     {
+        timer = 0.0f;
         isFever = true;
-        charge = 0.0f;
         Debug.Log("開始");
     }
 
     // フィーバー終了処理
     private void EndFever()
     {
-        timer = 0.0f;
+        charge = 0.0f;
         isFever = false;
+    }
+    // チャージする
+    // area : 破壊した面積
+    public void Charge(float area)
+    {
+        charge += area;
+    }
+
+    // 割合を取得 UI用
+    public float GetRate()
+    {
+        float rate = 0.0f;
+
+        if (isFever)
+        {
+            rate = (feverTime - timer) / feverTime;
+        }
+        else
+        {
+            rate = charge / maxCharge;
+        }
+        rate = Mathf.Clamp01(rate);
+        return rate;
     }
 
     public void SetPlayerShooter(PlayerShooter ps)

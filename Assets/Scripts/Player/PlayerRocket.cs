@@ -31,6 +31,9 @@ public class PlayerRocket : MonoBehaviour
     [Range(0.1f, 100.0f)]
     private float windPower = 0.1f;
 
+    [SerializeField, Tooltip("ロケランチャージ倍率")]
+    private float rocketChrgeRatio = 0.9f;
+
     private Vector2 _direction;        // 移動方向
     private float _explodeRadius;      // 爆発半径
     private LayerMask _hitLayer;       // 衝突レイヤー
@@ -165,8 +168,7 @@ public class PlayerRocket : MonoBehaviour
             }
         }
 
-        Debug.Log(area);
-        playerFever.Charge(area);
+        playerFever.Charge(area * rocketChrgeRatio);
 
         // 爆風
         Collider2D[] colliders = Physics2D.OverlapCircleAll(
