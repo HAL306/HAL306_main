@@ -39,18 +39,19 @@ public class PlayerRocket : MonoBehaviour
     [SerializeField]
     private CrackData[] crackDatas;     // ‚Ğ‚Ñ‚Ìƒf[ƒ^
 
-    
+    private PlayerFever playerFever;
 
     /// <summary>
     /// ’e‚ğ‰Šú‰»‚·‚é
     /// PlayerShooter‚©‚ç”­Ë‚ÉŒÄ‚Ño‚·
     /// </summary>
-    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer)
+    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer,PlayerFever fever)
     {
         _direction = direction.normalized;
         _explodeRadius = explodeRadius;
         _hitLayer = hitLayer;
         _destructibleLayer = destructibleLayer;
+        playerFever = fever;
 
         // Ë’ö‹——£‚Æ‘¬“x‚©‚ç¶‘¶ŠÔ‚ğŒvZ‚·‚é
         float lifetime = range / _speed;
@@ -121,6 +122,8 @@ public class PlayerRocket : MonoBehaviour
     // ”j‰óˆ—
     private void HitDestruct(Vector2 hitPoint)
     {
+        float area = 0.0f;  // ”j‰ó–ÊÏ
+
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
             hitPoint, _explodeRadius, _hitLayer);
 
@@ -133,7 +136,7 @@ public class PlayerRocket : MonoBehaviour
                 crack.angleNoise = 240.0f;
                 crack.minCrackCount = 0;
                 crack.maxCrackCount = 0;
-                terrain.Destruct(hitPoint, _explodeRadius, crack);
+                area += terrain.Destruct(hitPoint, _explodeRadius, crack);
             }
         }
 
@@ -158,9 +161,12 @@ public class PlayerRocket : MonoBehaviour
                 crack.minCrackCount = 0;
                 crack.maxCrackCount = 0;
                 // ‚Ğ‚Ñ“ü‚ê‚é
-                terrain.Crack(crackDatas, crack);
+                area += terrain.Crack(crackDatas, crack);
             }
         }
+
+        Debug.Log(area);
+        playerFever.Charge(area);
 
         // ”š•—
         Collider2D[] colliders = Physics2D.OverlapCircleAll(

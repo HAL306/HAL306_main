@@ -593,7 +593,7 @@ public class TerrainPolygon
     }
 
     // 面積を求める
-    private float GetArea(List<EdgeLoop> edgeLoops)
+    public float GetArea(List<EdgeLoop> edgeLoops)
     {
         PathsD pathsD = new PathsD(edgeLoops.Count);
         for (int i = 0; i < edgeLoops.Count; ++i)

@@ -52,6 +52,8 @@ public class PlayerRocketShooter : MonoBehaviour
     public float CooldownTimer => _cooldownTimer;
     public float ShootInterval => _shootInterval;
 
+    private PlayerFever playerFever;
+
     // -- 入力イベント --
 
     public void OnShoot(InputAction.CallbackContext context)
@@ -78,6 +80,9 @@ public class PlayerRocketShooter : MonoBehaviour
         // マウスが存在する場合はデフォルトでマウスモードにする
         if (Mouse.current != null)
             _isMouseAim = true;
+
+        playerFever = GetComponentInParent<PlayerFever>();
+        playerFever.SetPlayerRocketShooter(this);
     }
 
     private void Update()
@@ -145,7 +150,7 @@ public class PlayerRocketShooter : MonoBehaviour
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
         bulletObj.GetComponent<PlayerRocket>().Init(
-            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer);
+            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer,playerFever);
 
         // エイムライン描画
         if (_showAimLine)

@@ -49,31 +49,36 @@ public class TerrainContext : MonoBehaviour
     }
 
     // 地形破壊処理
-    public void Destruct(Vector2 worldCenter, float radius, CrackParameter crack)
+    // 破壊面積を返す
+    public float Destruct(Vector2 worldCenter, float radius, CrackParameter crack)
     {
         List<SplitTerrainData> splitTerrains;
         splitTerrains = _terrainPolygon.PolygonDestruct(worldCenter, radius, crack);
+        float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
 
-        for(int i = 0;i< splitTerrains.Count;++i)
+        for (int i = 0;i< splitTerrains.Count;++i)
         {
             // 地形分離
             CreateSplitTerrain(splitTerrains[i]);
         }
         OnChangeTerrain();
+        return area;
     }
 
     // 三品怜
     // 地形にひびを入れる処理
-    public void Crack(CrackData[] data,CrackParameter crack)
+    // 破壊面積を返す
+    public float Crack(CrackData[] data,CrackParameter crack)
     {
         List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonCrack(data, crack);
-
+        float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
         for (int i = 0; i < splitTerrains.Count; ++i)
         {
             // 地形分離
             CreateSplitTerrain(splitTerrains[i]);
         }
         OnChangeTerrain();
+        return area;
     }
 
 
