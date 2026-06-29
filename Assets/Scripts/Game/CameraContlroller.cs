@@ -24,7 +24,7 @@ public class CameraController : MonoBehaviour
         Vector2 aimOffsetTarget = _playerShooter.ShootAimTarget * 0.5f;
         aimOffsetTarget.x = Mathf.Clamp(aimOffsetTarget.x, -_aimOffsetDistance.x, _aimOffsetDistance.x);
         aimOffsetTarget.y = Mathf.Clamp(aimOffsetTarget.y, -_aimOffsetDistance.y, _aimOffsetDistance.y);
-        _aimOffset = Vector2.Lerp(_aimOffset, aimOffsetTarget, Time.deltaTime * _aimOffsetSpeed);
+        _aimOffset = Vector2.MoveTowards(_aimOffset, aimOffsetTarget, Time.deltaTime * _aimOffsetSpeed);
 
         Vector3 pos = _followTarget.transform.position + (Vector3)_followOffset;
         pos.z = transform.position.z;
