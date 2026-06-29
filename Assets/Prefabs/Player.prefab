@@ -190,6 +190,9 @@ MonoBehaviour:
   _inputBufferDuration: 0.1
   _maxSlopeAngle: 50
   _minSlopeAngle: 10
+  _groundSpeedRatio: 1.2
+  _airSpeedRatio: 1.2
+  _airAccelerationRatio: 1.2
 --- !u!114 &3367973697461627094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -976,7 +979,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRocketShooter
   _shootRange: 20
-  _shootInterval: 1
+  _shootInterval: 8
   _explodeRadius: 1.5
   _hitLayer:
     serializedVersion: 2

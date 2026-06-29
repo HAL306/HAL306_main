@@ -204,7 +204,7 @@ public class PlayerRocket : MonoBehaviour
                 dir.Normalize();
 
                 if(collider.attachedRigidbody != null)
-                    collider.attachedRigidbody.linearVelocity = dir * windPower;
+                    collider.attachedRigidbody.AddForce(dir * windPower,ForceMode2D.Impulse);
             }
         }
 
