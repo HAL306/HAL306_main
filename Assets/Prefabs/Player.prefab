@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6283098077018612178}
   - component: {fileID: 2181388114539021185}
   - component: {fileID: 238002657663107949}
+  - component: {fileID: 3367973697461627094}
   - component: {fileID: 5308044220147577639}
   m_Layer: 0
   m_Name: Player
@@ -189,6 +190,21 @@ MonoBehaviour:
   _inputBufferDuration: 0.1
   _maxSlopeAngle: 50
   _minSlopeAngle: 10
+--- !u!114 &3367973697461627094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475784792494734951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f67c4badd14e844ac8d3d6b43b4269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFever
+  maxCharge: 15
+  feverTime: 10
+  speedRatio: 1.2
 --- !u!114 &5308044220147577639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,8 +488,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 6e0d559a1a65b184eb82b5a5c4dfe650, type: 3}
+  penetrationPower: 0.1
   _showAimLine: 1
   _lineDisplayDuration: 0.1
+  penetrationRatio: 2
 --- !u!1 &4636640035820007146
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,5 +985,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 72b008e4055b0f648a2710df12b9559a, type: 3}
+  penetrationPower: 0.3
   _showAimLine: 1
   _lineDisplayDuration: 0.1
+  feverCoolSpeed: 0.3

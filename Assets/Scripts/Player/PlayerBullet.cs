@@ -1,3 +1,4 @@
+using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
 /// <summary>
@@ -14,21 +15,32 @@ public class PlayerBullet : MonoBehaviour
     [Range(0.0f, 1.0f)]
     private float _radius = 0.1f;
 
+    [SerializeField, Tooltip("アサルトチャージ倍率")]
+    private float asultChrgeRatio = 1.1f;
+
     private Vector2 _direction;        // 移動方向
     private float _explodeRadius;      // 爆発半径
     private LayerMask _hitLayer;       // 衝突レイヤー
     private LayerMask _destructibleLayer;  // 破壊可能地形のレイヤー
+    private PlayerFever playerFever;
+    private float penetrationPower = 0.1f;
+
+    public PlayerFever PlayerFever => playerFever;
+
 
     /// <summary>
     /// 弾を初期化する
     /// PlayerShooterから発射時に呼び出す
     /// </summary>
-    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer)
+    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer, PlayerFever fever,
+        float power)
     {
         _direction = direction.normalized;
         _explodeRadius = explodeRadius;
         _hitLayer = hitLayer;
         _destructibleLayer = destructibleLayer;
+        playerFever = fever;
+        penetrationPower = power;
 
         // 射程距離と速度から生存時間を計算する
         float lifetime = range / _speed;
@@ -56,11 +68,22 @@ public class PlayerBullet : MonoBehaviour
             if (isDestructible)
             {
                 HitDestruct(hit.point);
+                if (hit.collider.TryGetComponent(out TerrainContext terrain))
+                {
+                    if (penetrationPower < terrain.TerrainPolygon.Area)
+                    {
+                        // 貫通力より大きい地形に当たったら弾は消滅する
+                        Destroy(gameObject);
+                        return;
+                    }
+                }
             }
-
-            // どの地形に当たっても弾は消滅する
-            Destroy(gameObject);
-            return;
+            else
+            {
+                // どの地形に当たっても弾は消滅する
+                Destroy(gameObject);
+                return;
+            }
         }
 
         // 衝突なし：移動を継続
@@ -73,6 +96,8 @@ public class PlayerBullet : MonoBehaviour
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
             hitPoint, _explodeRadius, _hitLayer);
 
+        float area = 0.0f;  // 破壊面積
+
         foreach (Collider2D collider in hitColliders)
         {
             if (collider.TryGetComponent(out TerrainContext terrain))
@@ -82,8 +107,10 @@ public class PlayerBullet : MonoBehaviour
                 crack.angleNoise = 240.0f;
                 crack.minCrackCount = 1;
                 crack.maxCrackCount = 2;
-                terrain.Destruct(hitPoint, _explodeRadius, crack);
+                area += terrain.Destruct(hitPoint, _explodeRadius, crack);
             }
         }
+
+        playerFever.Charge(area * asultChrgeRatio);
     }
 }

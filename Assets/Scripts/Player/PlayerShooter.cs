@@ -26,12 +26,20 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField, Tooltip("発射する弾のプレハブ")]
     private GameObject _bulletPrefab;
 
+    [SerializeField, Tooltip("貫通力")]
+    private float penetrationPower = 0.1f;
+
     [Header("エイムライン設定")]
     [SerializeField, Tooltip("エイムラインを表示するか")]
     private bool _showAimLine = true;
 
     [SerializeField, Tooltip("エイムラインの表示時間")]
     private float _lineDisplayDuration = 0.1f;
+
+
+    [Header("フィーバー中の設定設定")]
+    [SerializeField, Tooltip("貫通力にかかる倍率")]
+    private float penetrationRatio = 1.2f;
 
     // 入力
     private bool _inputShoot;           // ショット入力
@@ -46,11 +54,15 @@ public class PlayerShooter : MonoBehaviour
 
     private LineRenderer _lineRenderer;
 
+    private PlayerFever playerFever;
+    private bool isFever;
+
     public Vector2 ShootAimTarget => _shootAimTarget;
     public Vector2 MouseWorldPos => _mouseWorldPos;
     public bool IsMouseAim => _isMouseAim;
     public float CooldownTimer => _cooldownTimer;
     public float ShootInterval => _shootInterval;
+
 
     // -- 入力イベント --
 
@@ -78,6 +90,9 @@ public class PlayerShooter : MonoBehaviour
         // マウスが存在する場合はデフォルトでマウスモードにする
         if (Mouse.current != null)
             _isMouseAim = true;
+
+        playerFever = GetComponentInParent<PlayerFever>();
+        playerFever.SetPlayerShooter(this);
     }
 
     private void Update()
@@ -144,8 +159,17 @@ public class PlayerShooter : MonoBehaviour
 
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
-        bulletObj.GetComponent<PlayerBullet>().Init(
-            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer);
+
+        if (isFever)    // フィーバーしてるときは貫通力を上げる
+        {
+            bulletObj.GetComponent<PlayerBullet>().Init(
+                dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer, playerFever, penetrationPower * penetrationRatio);
+        }
+        else
+        {
+            bulletObj.GetComponent<PlayerBullet>().Init(
+                dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer, playerFever, penetrationPower);
+        }
 
         // エイムライン描画
         if (_showAimLine)
@@ -161,5 +185,10 @@ public class PlayerShooter : MonoBehaviour
     private void ChangeDeviceMode(InputAction.CallbackContext context)
     {
         _isMouseAim = context.control.device.layout == "Mouse";
+    }
+
+    public void SetFever(bool fever)
+    {
+        isFever = fever;
     }
 }
