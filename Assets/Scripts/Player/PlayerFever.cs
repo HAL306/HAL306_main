@@ -11,8 +11,6 @@ public class PlayerFever : MonoBehaviour
     [SerializeField, Tooltip("フィーバーの時間")]
     private float feverTime = 10.0f;
 
-    [SerializeField, Tooltip("フィーバー中の移動速度倍率")]
-    private float speedRatio = 1.2f;
 
     private float charge = 0.0f;    // 現在のチャージ量
     private bool isFever = false;   // フィーバーかどうか
@@ -20,11 +18,12 @@ public class PlayerFever : MonoBehaviour
 
     private PlayerShooter playerShooter;
     private PlayerRocketShooter playerRocketShooter;
+    private PlayerMove playerMove;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        playerMove = GetComponent<PlayerMove>();
     }
 
     // Update is called once per frame
@@ -52,6 +51,7 @@ public class PlayerFever : MonoBehaviour
         isFever = true;
         playerRocketShooter.SetFever(true);
         playerShooter.SetFever(true);
+        playerMove.SetFever(true);
     }
 
     // フィーバー終了処理
@@ -61,6 +61,7 @@ public class PlayerFever : MonoBehaviour
         isFever = false;
         playerRocketShooter.SetFever(false);
         playerShooter.SetFever(false);
+        playerMove.SetFever(false);
     }
     // チャージする
     // area : 破壊した面積
