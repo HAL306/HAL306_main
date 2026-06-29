@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6283098077018612178}
   - component: {fileID: 2181388114539021185}
   - component: {fileID: 238002657663107949}
+  - component: {fileID: 3367973697461627094}
   - component: {fileID: 5308044220147577639}
   m_Layer: 0
   m_Name: Player
@@ -189,6 +190,21 @@ MonoBehaviour:
   _inputBufferDuration: 0.1
   _maxSlopeAngle: 50
   _minSlopeAngle: 10
+--- !u!114 &3367973697461627094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475784792494734951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f67c4badd14e844ac8d3d6b43b4269, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFever
+  maxCharge: 15
+  feverTime: 10
+  speedRatio: 1.2
 --- !u!114 &5308044220147577639
 MonoBehaviour:
   m_ObjectHideFlags: 0

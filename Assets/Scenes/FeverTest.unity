@@ -33745,10 +33745,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 475784792494734951, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2080541442}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
 --- !u!1 &1566456368
 GameObject:
@@ -35039,21 +35036,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1252782279758346500, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
   m_PrefabInstance: {fileID: 1427262063}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2080541442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2080541430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6f67c4badd14e844ac8d3d6b43b4269, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerFever
-  maxCharge: 15
-  feverTime: 10
-  speedRatio: 1.2
 --- !u!1 &2094899738
 GameObject:
   m_ObjectHideFlags: 0
