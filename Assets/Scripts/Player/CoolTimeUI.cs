@@ -5,7 +5,7 @@ public class CoolTimeUI : MonoBehaviour
     [SerializeField]
     private float maxSize = 8.0f;
 
-    private PlayerShooter playerShooter;
+    private PlayerRocketShooter playerShooter;
     private Transform transform;
     private float coolTime;
 
@@ -15,9 +15,9 @@ public class CoolTimeUI : MonoBehaviour
         transform = GetComponent<Transform>();
         transform.localScale = new Vector3(maxSize,1.0f,1.0f);
 
-        playerShooter = GetComponent<PlayerShooter>();
+        playerShooter = GetComponent<PlayerRocketShooter>();
         if (playerShooter != null)
-            coolTime = playerShooter.GetInterval();
+            coolTime = playerShooter.ShootInterval;
     }
 
     // Update is called once per frame
@@ -26,7 +26,7 @@ public class CoolTimeUI : MonoBehaviour
         if (playerShooter == null)
             return;
 
-        float timer = playerShooter.GetCoolTimer();
+        float timer = playerShooter.CooldownTimer;
 
         float ratio = Mathf.Clamp( timer / coolTime,0.0f,1.0f);
 

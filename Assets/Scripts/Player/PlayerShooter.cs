@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(LineRenderer))]
 public class PlayerShooter : MonoBehaviour
 {
+    [Header("射撃設定")]
     [SerializeField, Tooltip("射程距離")]
     private float _shootRange = 20.0f;
 
@@ -16,24 +17,54 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField, Tooltip("着弾時の爆発半径")]
     private float _explodeRadius = 0.2f;
 
-
-    [SerializeField, Tooltip("攻撃が当たるレイヤー")]
+    [SerializeField, Tooltip("攻撃が当たるレイヤー（ベース地形・破壊可能地形の両方を含む）")]
     private LayerMask _hitLayer;
 
+    [SerializeField, Tooltip("破壊可能地形のレイヤー")]
+    private LayerMask _destructibleLayer;
 
+    [SerializeField, Tooltip("発射する弾のプレハブ")]
+    private GameObject _bulletPrefab;
+
+    [SerializeField, Tooltip("貫通力")]
+    private float penetrationPower = 0.1f;
+
+    [Header("エイムライン設定")]
+    [SerializeField, Tooltip("エイムラインを表示するか")]
+    private bool _showAimLine = true;
+
+    [SerializeField, Tooltip("エイムラインの表示時間")]
+    private float _lineDisplayDuration = 0.1f;
+
+
+    [Header("フィーバー中の設定設定")]
+    [SerializeField, Tooltip("貫通力にかかる倍率")]
+    private float penetrationRatio = 1.2f;
+
+    // 入力
     private bool _inputShoot;           // ショット入力
     private Vector2 _inputAim;          // エイム方向入力 (スティック限定)
     private bool _isMouseAim;           // マウス操作によるエイムを行うフラグ
 
-    private LineRenderer _lineRenderer;
-
+    // 内部状態
     private Vector2 _shootAimTarget;    // 現在のショットターゲット座標
     private Vector2 _mouseWorldPos;     // マウスのワールド座標
     private float _cooldownTimer;       // ショット待ち時間計測用タイマー
-
     private float _lineTimer;
 
+    private LineRenderer _lineRenderer;
+
+    private PlayerFever playerFever;
+    private bool isFever;
+
     public Vector2 ShootAimTarget => _shootAimTarget;
+    public Vector2 MouseWorldPos => _mouseWorldPos;
+    public bool IsMouseAim => _isMouseAim;
+    public float CooldownTimer => _cooldownTimer;
+    public float ShootInterval => _shootInterval;
+
+
+    // -- 入力イベント --
 
     public void OnShoot(InputAction.CallbackContext context)
     {
@@ -47,122 +78,117 @@ public class PlayerShooter : MonoBehaviour
         _inputAim = context.ReadValue<Vector2>();
     }
 
+    // -- Unity イベント --
 
     private void Awake()
     {
-        _lineRenderer = GetComponent<LineRenderer>();   
+        _lineRenderer = GetComponent<LineRenderer>();
+    }
+
+    private void Start()
+    {
+        // マウスが存在する場合はデフォルトでマウスモードにする
+        if (Mouse.current != null)
+            _isMouseAim = true;
+
+        playerFever = GetComponentInParent<PlayerFever>();
+        playerFever.SetPlayerShooter(this);
     }
 
     private void Update()
     {
+        UpdateAimLine();
+        UpdateAimTarget();
+        UpdateShoot();
+    }
+
+    // -- 更新処理 --
+
+    // エイムラインの表示時間を管理する
+    private void UpdateAimLine()
+    {
         _lineTimer -= Time.deltaTime;
         if (_lineTimer < 0.0f)
             _lineRenderer.positionCount = 0;
+    }
 
-        MoveAimTarget();
+    // ショットターゲット座標を更新する
+    private void UpdateAimTarget()
+    {
+        if (_isMouseAim)
+        {
+            // マウス操作：マウスのワールド座標からプレイヤーへの方向を取得
+            Vector2 mouseScreen = Mouse.current.position.ReadValue();
+            _mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreen);
+            _shootAimTarget = _mouseWorldPos - (Vector2)transform.position;
+        }
+        else
+        {
+            // スティック操作：入力方向をそのまま使用
+            _shootAimTarget = _inputAim.normalized;
+        }
 
+        // 入力がゼロの場合は右向きをデフォルトにする
+        if (_shootAimTarget == Vector2.zero)
+            _shootAimTarget = Vector2.right;
+    }
+
+    // 射撃クールダウンと発射処理を管理する
+    private void UpdateShoot()
+    {
         if (_cooldownTimer > 0.0f)
         {
             _cooldownTimer -= Time.deltaTime;
             return;
         }
 
-        if(_inputShoot)
+        if (_inputShoot)
         {
             Shoot();
             _cooldownTimer = _shootInterval;
         }
     }
 
-    // エイム入力モードを自動的に切り替える
-    private void ChangeDeviceMode(InputAction.CallbackContext context)
-    {
-        if (context.control.device.layout == "Mouse")
-        {
-            _isMouseAim = true;
-        }
-        else
-        {
-            _isMouseAim = false;
-        }
-    }
+    // -- 射撃処理 --
 
-    // ショットターゲットを移動させる
-    private void MoveAimTarget()
-    {
-        // ターゲット座標取得
-        if (_isMouseAim)
-        {
-            // マウス操作
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            _mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePosition);
-            _shootAimTarget = _mouseWorldPos - (Vector2)transform.position;
-        }
-        else
-        {
-            // スティック操作
-            _shootAimTarget = _inputAim.normalized;
-        }
-
-        // ゼロ対策
-        if (_shootAimTarget == Vector2.zero)
-        {
-            _shootAimTarget = Vector2.right;
-        }
-    }
-
+    // 弾を生成してエイムラインを更新する
     private void Shoot()
     {
-        RaycastHit2D hit;
         Vector2 origin = transform.position;
         Vector2 dir = _shootAimTarget.normalized;
 
-        // ショットが命中したかを取得する
-        hit = Physics2D.Raycast(origin, dir, _shootRange, _hitLayer);
-        if(hit)
-        {
-            HitDestruct(hit.point, dir);
+        // 弾オブジェクトを生成して初期化
+        GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
 
-            _lineRenderer.positionCount = 2;
-            _lineRenderer.SetPosition(0, transform.position);
-            _lineRenderer.SetPosition(1, hit.point);
+        if (isFever)    // フィーバーしてるときは貫通力を上げる
+        {
+            bulletObj.GetComponent<PlayerBullet>().Init(
+                dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer, playerFever, penetrationPower * penetrationRatio);
         }
         else
         {
-            _lineRenderer.positionCount = 2;
-            _lineRenderer.SetPosition(0, transform.position);
-            _lineRenderer.SetPosition(1, transform.position + (Vector3)dir * _shootRange);
+            bulletObj.GetComponent<PlayerBullet>().Init(
+                dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer, playerFever, penetrationPower);
         }
-        _lineTimer = 0.1f;
-    }
 
-    private void HitDestruct(Vector2 center, Vector2 dir)
-    {
-        // 爆発判定を行う
-        Collider2D[] hitColliders;
-        hitColliders = Physics2D.OverlapCircleAll(center, _explodeRadius, _hitLayer);
-
-        foreach(Collider2D collider in hitColliders)
+        // エイムライン描画
+        if (_showAimLine)
         {
-            if(collider.TryGetComponent<TerrainContext>(out TerrainContext terrain))
-            {
-                CrackParameter crack;
-                crack.direction = dir;
-                crack.angleNoise = 240.0f;
-                crack.minCrackCount = 1;
-                crack.maxCrackCount = 2;
-                terrain.Destruct(center, _explodeRadius, crack);
-            }
+            _lineRenderer.positionCount = 2;
+            _lineRenderer.SetPosition(0, origin);
+            _lineRenderer.SetPosition(1, origin + dir * _shootRange);
+            _lineTimer = _lineDisplayDuration;
         }
     }
 
-    public float GetInterval()
+    // デバイスの種類に応じてエイムモードを切り替える
+    private void ChangeDeviceMode(InputAction.CallbackContext context)
     {
-        return _shootInterval;
+        _isMouseAim = context.control.device.layout == "Mouse";
     }
 
-    public float GetCoolTimer()
+    public void SetFever(bool fever)
     {
-        return _cooldownTimer;
+        isFever = fever;
     }
 }
