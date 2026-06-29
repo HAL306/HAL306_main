@@ -207,6 +207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFever
   maxCharge: 15
   feverTime: 10
+  speedRatio: 1.2
 --- !u!114 &5308044220147577639
 MonoBehaviour:
   m_ObjectHideFlags: 0
