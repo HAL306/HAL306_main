@@ -472,8 +472,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 6e0d559a1a65b184eb82b5a5c4dfe650, type: 3}
+  penetrationPower: 0.1
   _showAimLine: 1
   _lineDisplayDuration: 0.1
+  penetrationRatio: 2
 --- !u!1 &4636640035820007146
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,6 +969,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 72b008e4055b0f648a2710df12b9559a, type: 3}
+  penetrationPower: 0.5
   _showAimLine: 1
   _lineDisplayDuration: 0.1
   feverCoolSpeed: 0.3

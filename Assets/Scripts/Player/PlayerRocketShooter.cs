@@ -26,13 +26,15 @@ public class PlayerRocketShooter : MonoBehaviour
     [SerializeField, Tooltip("発射する弾のプレハブ")]
     private GameObject _bulletPrefab;
 
+    [SerializeField, Tooltip("貫通力")]
+    private float penetrationPower= 0.1f;
+
     [Header("エイムライン設定")]
     [SerializeField, Tooltip("エイムラインを表示するか")]
     private bool _showAimLine = true;
 
     [SerializeField, Tooltip("エイムラインの表示時間")]
     private float _lineDisplayDuration = 0.1f;
-
 
     [SerializeField, Tooltip("フィーバー中のロケランのクールタイムが減るスピード")]
     private float feverCoolSpeed = 0.5f;
@@ -157,7 +159,7 @@ public class PlayerRocketShooter : MonoBehaviour
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
         bulletObj.GetComponent<PlayerRocket>().Init(
-            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer,playerFever,this);
+            dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer,playerFever,this,penetrationPower);
 
         // エイムライン描画
         if (_showAimLine)

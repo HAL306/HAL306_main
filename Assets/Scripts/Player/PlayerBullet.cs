@@ -23,6 +23,8 @@ public class PlayerBullet : MonoBehaviour
     private LayerMask _hitLayer;       // 衝突レイヤー
     private LayerMask _destructibleLayer;  // 破壊可能地形のレイヤー
     private PlayerFever playerFever;
+    private float penetrationPower = 0.1f;
+
     public PlayerFever PlayerFever => playerFever;
 
 
@@ -30,13 +32,15 @@ public class PlayerBullet : MonoBehaviour
     /// 弾を初期化する
     /// PlayerShooterから発射時に呼び出す
     /// </summary>
-    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer, PlayerFever fever)
+    public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer, PlayerFever fever,
+        float power)
     {
         _direction = direction.normalized;
         _explodeRadius = explodeRadius;
         _hitLayer = hitLayer;
         _destructibleLayer = destructibleLayer;
         playerFever = fever;
+        penetrationPower = power;
 
         // 射程距離と速度から生存時間を計算する
         float lifetime = range / _speed;
@@ -64,11 +68,22 @@ public class PlayerBullet : MonoBehaviour
             if (isDestructible)
             {
                 HitDestruct(hit.point);
+                if (hit.collider.TryGetComponent(out TerrainContext terrain))
+                {
+                    if (penetrationPower < terrain.TerrainPolygon.Area)
+                    {
+                        // 貫通力より大きい地形に当たったら弾は消滅する
+                        Destroy(gameObject);
+                        return;
+                    }
+                }
             }
-
-            // どの地形に当たっても弾は消滅する
-            Destroy(gameObject);
-            return;
+            else
+            {
+                // どの地形に当たっても弾は消滅する
+                Destroy(gameObject);
+                return;
+            }
         }
 
         // 衝突なし：移動を継続

@@ -43,15 +43,15 @@ public class PlayerRocket : MonoBehaviour
     private CrackData[] crackDatas;     // ひびのデータ
 
     private PlayerFever playerFever;
-
     private PlayerRocketShooter playerRocketShooter;
+    private float penetrationPower = 0.1f;
 
     /// <summary>
     /// 弾を初期化する
     /// PlayerShooterから発射時に呼び出す
     /// </summary>
     public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer,
-        PlayerFever fever,PlayerRocketShooter shooter)
+        PlayerFever fever,PlayerRocketShooter shooter,float power)
     {
         _direction = direction.normalized;
         _explodeRadius = explodeRadius;
@@ -59,6 +59,7 @@ public class PlayerRocket : MonoBehaviour
         _destructibleLayer = destructibleLayer;
         playerFever = fever;
         playerRocketShooter = shooter;
+        penetrationPower = power;
 
         // 射程距離と速度から生存時間を計算する
         float lifetime = range / _speed;
@@ -115,11 +116,23 @@ public class PlayerRocket : MonoBehaviour
             if (isDestructible)
             {
                 HitDestruct(hit.point);
-            }
 
-            // どの地形に当たっても弾は消滅する
-            Destroy(gameObject);
-            return;
+                if (hit.collider.TryGetComponent(out TerrainContext terrain))
+                {
+                    if(penetrationPower < terrain.TerrainPolygon.Area)
+                    {
+                        // 貫通力より大きい地形に当たったら弾は消滅する
+                        Destroy(gameObject);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                // どの地形に当たっても弾は消滅する
+                Destroy(gameObject);
+                return;
+            }
         }
 
         // 衝突なし：移動を継続
