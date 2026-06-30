@@ -1,54 +1,54 @@
 using UnityEngine;
 
 /// <summary>
-/// ƒvƒŒƒCƒ„[‚Ì’eƒIƒuƒWƒFƒNƒg‚ğ§Œä‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒg
-/// CircleCast‚ÅˆÚ“®”ÍˆÍ“à‚ÌÕ“Ë‚ğ³Šm‚Éæ“¾‚·‚é
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å¼¾ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’åˆ¶å¾¡ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
+/// CircleCastã§ç§»å‹•ç¯„å›²å†…ã®è¡çªã‚’æ­£ç¢ºã«å–å¾—ã™ã‚‹
 /// </summary>
 public class PlayerRocket : MonoBehaviour
 {
-    [SerializeField, Tooltip("’e‚ÌˆÚ“®‘¬“x")]
+    [SerializeField, Tooltip("å¼¾ã®ç§»å‹•é€Ÿåº¦")]
     [Range(0.0f, 100.0f)]
     private float _speed = 30.0f;
 
-    [SerializeField, Tooltip("CircleCast‚Ì”»’è”¼Œa")]
+    [SerializeField, Tooltip("CircleCastã®åˆ¤å®šåŠå¾„")]
     [Range(0.0f, 1.0f)]
     private float _radius = 0.1f;
 
 
-    [SerializeField, Tooltip("‚Ğ‚Ñ‚Ì”")]
+    [SerializeField, Tooltip("ã²ã³ã®æ•°")]
     [Range(3.0f, 10.0f)]
     private int crackNum = 3;
 
-    [SerializeField, Tooltip("‚Ğ‚Ñ‚Ì”ÍˆÍ‚Ì”¼Œa")]
+    [SerializeField, Tooltip("ã²ã³ã®ç¯„å›²ã®åŠå¾„")]
     [Range(0.1f, 10.0f)]
     private float crackRadius = 0.1f;
 
-    [SerializeField, Tooltip("”š•—‚Ì”ÍˆÍ‚Ì”¼Œa")]
+    [SerializeField, Tooltip("çˆ†é¢¨ã®ç¯„å›²ã®åŠå¾„")]
     [Range(0.1f, 10.0f)]
     private float windRadius = 0.1f;
 
-    [SerializeField, Tooltip("”š•—‚Ì‹­‚³")]
+    [SerializeField, Tooltip("çˆ†é¢¨ã®å¼·ã•")]
     [Range(0.1f, 100.0f)]
     private float windPower = 0.1f;
 
-    [SerializeField, Tooltip("ƒƒPƒ‰ƒ“ƒ`ƒƒ[ƒW”{—¦")]
+    [SerializeField, Tooltip("ãƒ­ã‚±ãƒ©ãƒ³ãƒãƒ£ãƒ¼ã‚¸å€ç‡")]
     private float rocketChrgeRatio = 0.9f;
 
-    private Vector2 _direction;        // ˆÚ“®•ûŒü
-    private float _explodeRadius;      // ”š”­”¼Œa
-    private LayerMask _hitLayer;       // Õ“ËƒŒƒCƒ„[
-    private LayerMask _destructibleLayer;  // ”j‰ó‰Â”\’nŒ`‚ÌƒŒƒCƒ„[
+    private Vector2 _direction;        // ç§»å‹•æ–¹å‘
+    private float _explodeRadius;      // çˆ†ç™ºåŠå¾„
+    private LayerMask _hitLayer;       // è¡çªãƒ¬ã‚¤ãƒ¤ãƒ¼
+    private LayerMask _destructibleLayer;  // ç ´å£Šå¯èƒ½åœ°å½¢ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼
 
     [SerializeField]
-    private CrackData[] crackDatas;     // ‚Ğ‚Ñ‚Ìƒf[ƒ^
+    private CrackData[] crackDatas;     // ã²ã³ã®ãƒ‡ãƒ¼ã‚¿
 
     private PlayerFever playerFever;
     private PlayerRocketShooter playerRocketShooter;
     private float penetrationPower = 0.1f;
 
     /// <summary>
-    /// ’e‚ğ‰Šú‰»‚·‚é
-    /// PlayerShooter‚©‚ç”­Ë‚ÉŒÄ‚Ño‚·
+    /// å¼¾ã‚’åˆæœŸåŒ–ã™ã‚‹
+    /// PlayerShooterã‹ã‚‰ç™ºå°„æ™‚ã«å‘¼ã³å‡ºã™
     /// </summary>
     public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer,
         PlayerFever fever,PlayerRocketShooter shooter,float power)
@@ -61,14 +61,14 @@ public class PlayerRocket : MonoBehaviour
         playerRocketShooter = shooter;
         penetrationPower = power;
 
-        // Ë’ö‹——£‚Æ‘¬“x‚©‚ç¶‘¶ŠÔ‚ğŒvZ‚·‚é
+        // å°„ç¨‹è·é›¢ã¨é€Ÿåº¦ã‹ã‚‰ç”Ÿå­˜æ™‚é–“ã‚’è¨ˆç®—ã™ã‚‹
         float lifetime = range / _speed;
         Destroy(gameObject, lifetime);
 
-        // ‚Ğ‚Ñ‚Ìƒf[ƒ^‚ğ‰Šú‰»
+        // ã²ã³ã®ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–
         crackDatas = new CrackData[crackNum * 2];
 
-        // •úËó‚É‚Ì‚Ñ‚é‚Ğ‚Ñ
+        // æ”¾å°„çŠ¶ã«ã®ã³ã‚‹ã²ã³
         float angle = 0.0f;
         float angleDelta = (360.0f / crackNum) * Mathf.Deg2Rad;
         for (int i = 0; i < crackNum; i++)
@@ -80,7 +80,7 @@ public class PlayerRocket : MonoBehaviour
             angle += angleDelta;
         }
 
-        // ‰~ü‚ğŒq‚®‚Ğ‚Ñ
+        // å††å‘¨ã‚’ç¹‹ãã²ã³
         angle = (90.0f * Mathf.Deg2Rad + angleDelta * 0.5f);
         float temp = (Mathf.PI - angleDelta) * 0.5f;
         for (int i = 0; i < crackNum; i++)
@@ -100,18 +100,18 @@ public class PlayerRocket : MonoBehaviour
         Move();
     }
 
-    // ˆÚ“®ˆ— + CircleCast‚É‚æ‚éÕ“Ë”»’è
+    // ç§»å‹•å‡¦ç† + CircleCastã«ã‚ˆã‚‹è¡çªåˆ¤å®š
     private void Move()
     {
         float moveDist = _speed * Time.deltaTime;
 
-        // ˆÚ“®”ÍˆÍ“à‚ÌÕ“Ë‚ğCircleCast‚Åæ“¾
+        // ç§»å‹•ç¯„å›²å†…ã®è¡çªã‚’CircleCastã§å–å¾—
         RaycastHit2D hit = Physics2D.CircleCast(
             transform.position, _radius, _direction, moveDist, _hitLayer);
 
         if (hit.collider != null)
         {
-            // ”j‰ó‰Â”\’nŒ`‚Ìê‡‚Ì‚İ”j‰óˆ—‚ğŒÄ‚Ño‚·
+            // ç ´å£Šå¯èƒ½åœ°å½¢ã®å ´åˆã®ã¿ç ´å£Šå‡¦ç†ã‚’å‘¼ã³å‡ºã™
             bool isDestructible = (_destructibleLayer.value & (1 << hit.collider.gameObject.layer)) != 0;
             if (isDestructible)
             {
@@ -121,7 +121,7 @@ public class PlayerRocket : MonoBehaviour
                 {
                     if(penetrationPower < terrain.TerrainPolygon.Area)
                     {
-                        // ŠÑ’Ê—Í‚æ‚è‘å‚«‚¢’nŒ`‚É“–‚½‚Á‚½‚ç’e‚ÍÁ–Å‚·‚é
+                        // è²«é€šåŠ›ã‚ˆã‚Šå¤§ãã„åœ°å½¢ã«å½“ãŸã£ãŸã‚‰å¼¾ã¯æ¶ˆæ»…ã™ã‚‹
                         Destroy(gameObject);
                         return;
                     }
@@ -129,20 +129,20 @@ public class PlayerRocket : MonoBehaviour
             }
             else
             {
-                // ‚Ç‚Ì’nŒ`‚É“–‚½‚Á‚Ä‚à’e‚ÍÁ–Å‚·‚é
+                // ã©ã®åœ°å½¢ã«å½“ãŸã£ã¦ã‚‚å¼¾ã¯æ¶ˆæ»…ã™ã‚‹
                 Destroy(gameObject);
                 return;
             }
         }
 
-        // Õ“Ë‚È‚µFˆÚ“®‚ğŒp‘±
+        // è¡çªãªã—ï¼šç§»å‹•ã‚’ç¶™ç¶š
         transform.Translate(_direction * moveDist);
     }
 
-    // ”j‰óˆ—
+    // ç ´å£Šå‡¦ç†
     private void HitDestruct(Vector2 hitPoint)
     {
-        float area = 0.0f;  // ”j‰ó–ÊÏ
+        float area = 0.0f;  // ç ´å£Šé¢ç©
 
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
             hitPoint, _explodeRadius, _hitLayer);
@@ -160,11 +160,11 @@ public class PlayerRocket : MonoBehaviour
             }
         }
 
-        // ‚Ğ‚Ñ‚¢‚ê‚é
+        // ã²ã³ã„ã‚Œã‚‹
         Collider2D[] crackColliders = Physics2D.OverlapCircleAll(
             hitPoint, crackRadius, _destructibleLayer);
 
-        // ˆÊ’uXV
+        // ä½ç½®æ›´æ–°
         for (int i = 0; i < crackDatas.Length; i++)
         {
             crackDatas[i].pos.x += transform.position.x;
@@ -180,7 +180,7 @@ public class PlayerRocket : MonoBehaviour
                 crack.angleNoise = 240.0f;
                 crack.minCrackCount = 0;
                 crack.maxCrackCount = 0;
-                // ‚Ğ‚Ñ“ü‚ê‚é
+                // ã²ã³å…¥ã‚Œã‚‹
                 area += terrain.Crack(crackDatas, crack);
             }
         }
@@ -188,7 +188,7 @@ public class PlayerRocket : MonoBehaviour
         playerFever.Charge(area * rocketChrgeRatio);
         playerRocketShooter.Charge(area);
 
-        // ”š•—
+        // çˆ†é¢¨
         Collider2D[] colliders = Physics2D.OverlapCircleAll(
             hitPoint, windRadius, _destructibleLayer);
 
@@ -197,7 +197,7 @@ public class PlayerRocket : MonoBehaviour
         {
             if (collider.TryGetComponent(out TerrainContext terrain))
             {
-                // Œü‚«ŒvZ
+                // å‘ãè¨ˆç®—
                 Vector2 dir = Vector2.zero;
                 dir.x = collider.bounds.center.x - hitPoint.x;
                 dir.y = collider.bounds.center.y - hitPoint.y;

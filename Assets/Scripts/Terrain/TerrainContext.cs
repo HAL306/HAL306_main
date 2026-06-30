@@ -20,6 +20,8 @@ public class TerrainContext : MonoBehaviour
 
     [SerializeField, Tooltip("ベース地形のレイヤー")]
     private LayerMask _baseTerrainLayer;
+    
+    public bool IsDirtyDot { get; set; } = true;    // MeshDotManagerのキャッシュから変更があったか
 
 
     private TerrainPolygon _terrainPolygon;         // 地形形状
@@ -28,7 +30,6 @@ public class TerrainContext : MonoBehaviour
     private PolygonCollider2D _polygonCollider;
     private Rigidbody2D _rigidbody;
     private TerrainDestructEffect _destructEffect;
-    private MeshDotRenderer _dotRenderer;
 
     private List<Collider2D> _overlapColliderList;      // 重なっているコライダーのリスト
     private float _mass;
@@ -94,7 +95,6 @@ public class TerrainContext : MonoBehaviour
         _polygonCollider = GetComponent<PolygonCollider2D>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _destructEffect = GetComponent<TerrainDestructEffect>();
-        _dotRenderer = GetComponent<MeshDotRenderer>();
 
         if (_isStartTerrain)
         {
@@ -110,13 +110,26 @@ public class TerrainContext : MonoBehaviour
 
     private void Start()
     {
+        // ドット描画マネージャーに登録
+        if (MeshDotManager.Instance != null)
+        {
+            MeshDotManager.Instance.Register(this);
+        }
+        
         if (_isStartTerrain)
         {
             OnChangeTerrain();
         }
-
-        _dotRenderer.DotSize = _terrainSettings.DotSize;
-        _dotRenderer.instancedMaterial = _terrainParameter.Material;
+    }
+    
+    
+    private void OnDestroy()
+    {
+        // ドット描画マネージャーから登録解除
+        if (MeshDotManager.Instance != null)
+        {
+            MeshDotManager.Instance.Unregister(this);
+        }
     }
 
 
@@ -178,6 +191,8 @@ public class TerrainContext : MonoBehaviour
         // 他のコンポーネントの地形破壊時イベント呼び出し
         if (_onChangeTerrainEvent != null)
             _onChangeTerrainEvent.Invoke();
+        
+        IsDirtyDot = true;
     }
 
     // コライダー形状を更新する

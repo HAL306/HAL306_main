@@ -131,13 +131,29 @@ public class TerrainPolygon
 
         // ひび割れ処理
         int crackCount = UnityEngine.Random.Range(crack.minCrackCount, crack.maxCrackCount + 1);
+        List<Vector2[]> allCrackPaths = new List<Vector2[]>(crackCount);
         for (int i = 0; i < crackCount; ++i)
         {
-            terrainPaths = CrackDestruct(terrainPaths, localCenter, crack);
+            Vector2[] crackPath = GenerateCrackPath(terrainPaths, localCenter, crack);
+            if (crackPath != null)
+            {
+                allCrackPaths.Add(crackPath);
+            }
+        }
+        
+        if (allCrackPaths.Count > 0)
+        {
+            terrainPaths = PolygonDifference(terrainPaths, allCrackPaths);
         }
 
         // 時計回りのエッジループ(穴のエッジループ)は削除する
-        terrainPaths.RemoveAll(x => IsClockwise(x));
+        for (int i = terrainPaths.Count - 1; i >= 0; --i)
+        {
+            if (IsClockwise(terrainPaths[i]))
+            {
+                terrainPaths.RemoveAt(i);
+            }
+        }
 
         // 地形パスを更新
         _terrainPaths.Clear();
@@ -175,7 +191,7 @@ public class TerrainPolygon
         return splitTerrains;
     }
 
-    // 三品怜
+    // 三品怜、芝晃佑
     // ポリゴンにひびを入れる処理
     public List<SplitTerrainData> PolygonCrack(CrackData[] data, CrackParameter crack)
     {
@@ -189,9 +205,13 @@ public class TerrainPolygon
             terrainPaths.Add(_terrainPaths[i].points);
         }
 
-        for(int idx = 0; idx < data.Length;++idx)
+        // すべてのひび割れ形状を格納するリスト
+        List<Vector2[]> allCrackPaths = new List<Vector2[]>(data.Length);
+        
+        for(int idx = 0; idx < data.Length; ++idx)
         {
             Vector2 localCenter = _terrainContext.transform.InverseTransformPoint(data[idx].pos);
+            Vector2 normalizedDir = data[idx].dir.normalized;
             // ひび割れ処理
             // ひび割れとの最小交差距離を求める
             float minDistance = float.MaxValue;
@@ -215,7 +235,7 @@ public class TerrainPolygon
             
                     // 辺とひび割れとの交差判定
                     IntercectResult result;
-                    result = RaySegmentIntersection(localCenter, data[idx].dir, a, b);
+                    result = RaySegmentIntersection(localCenter, normalizedDir, a, b);
             
                     if (!result.isHit)
                         continue;
@@ -240,13 +260,25 @@ public class TerrainPolygon
                 // ひび割れ形状を作る
                 crackPath = CreateCrackPath(localCenter, data[idx].dir, data[idx].length, 0.0f);
             }
-
-            // ひび割れ形状でポリゴンを削る
-            terrainPaths = PolygonDifference(terrainPaths, crackPath);
+            
+            // ひび割れ形状をリストに追加し、後で一括処理
+            allCrackPaths.Add(crackPath);
+        }
+        
+        // リストアップしたひび割れ形状を一括で削る
+        if (allCrackPaths.Count > 0)
+        {
+            terrainPaths = PolygonDifference(terrainPaths, allCrackPaths);
         }
 
         // 時計回りのエッジループ(穴のエッジループ)は削除する
-        terrainPaths.RemoveAll(x => IsClockwise(x));
+        for (int i = terrainPaths.Count - 1; i >= 0; --i)
+        {
+            if (IsClockwise(terrainPaths[i]))
+            {
+                terrainPaths.RemoveAt(i);
+            }
+        }
 
         // 地形パスを更新
         _terrainPaths.Clear();
@@ -289,7 +321,7 @@ public class TerrainPolygon
         // Vector2配列に変換
         return PathsDToVectorPaths(newPathsD);
     }
-
+    
     // ポリゴンの減算を行う
     private List<Vector2[]> PolygonDifference(List<Vector2[]> mainPaths, Vector2[] clipPath)
     {
@@ -299,6 +331,22 @@ public class TerrainPolygon
 
         // ポリゴン減算
         PathsD newPathsD = Clipper.Difference(mainPathsD, new PathsD() { clipPathD }, Clipper2Lib.FillRule.NonZero);
+
+        // Vector2配列に変換
+        return PathsDToVectorPaths(newPathsD);
+    }
+    
+    // ポリゴンの減算を行う(一括処理対応)
+    private List<Vector2[]> PolygonDifference(List<Vector2[]> mainPaths, List<Vector2[]> clipPaths)
+    {
+        if (clipPaths == null || clipPaths.Count == 0) return mainPaths;
+
+        // Clipper2用の配列に変換
+        PathsD mainPathsD = VectorPathsToPathsD(mainPaths);
+        PathsD clipPathsD = VectorPathsToPathsD(clipPaths);
+
+        // ポリゴン減算
+        PathsD newPathsD = Clipper.Difference(mainPathsD, clipPathsD, Clipper2Lib.FillRule.NonZero);
 
         // Vector2配列に変換
         return PathsDToVectorPaths(newPathsD);
@@ -370,8 +418,8 @@ public class TerrainPolygon
         return circlePath;
     }
 
-    // ひび割れ破壊処理
-    private List<Vector2[]> CrackDestruct(List<Vector2[]> mainPaths, Vector2 center, CrackParameter crack)
+    // ひび割れ形状生成処理
+    private Vector2[] GenerateCrackPath(List<Vector2[]> mainPaths, Vector2 center, CrackParameter crack)
     {
         TerrainSettings settings = _terrainContext.TerrainSettings;
         TerrainParameter parameter = _terrainContext.TerrainParameter;
@@ -380,6 +428,7 @@ public class TerrainPolygon
         Vector2 crackDir = _terrainContext.transform.InverseTransformDirection(crack.direction);
         float rotateAngle = UnityEngine.Random.Range(-crack.angleNoise, crack.angleNoise) * 0.5f;
         crackDir = Quaternion.Euler(0.0f, 0.0f, rotateAngle) * crackDir;
+        crackDir.Normalize();
 
         // ひび割れ距離を求める
         float crackDistance = settings.CrackDistance * parameter.FractureMultiplier;
@@ -419,22 +468,23 @@ public class TerrainPolygon
             }
         }
 
-        // ひび割れ形状でポリゴンを削る
+        // ひび割れ形状を返す
         if (minDistance < crackDistance)
         {
-            Vector2[] crackPath = CreateCrackPath(center, crackDir, minDistance);
-            mainPaths = PolygonDifference(mainPaths, crackPath);
+            return CreateCrackPath(center, crackDir, minDistance);
         }
 
-        return mainPaths;
+        return null;
     }
 
     // レイと線分の交差判定を行う
+    // rayDirは正規化してから渡してください！！
     private IntercectResult RaySegmentIntersection(
         Vector2 rayOrigin, Vector2 rayDir, Vector2 segA, Vector2 segB)
     {
         IntercectResult result = new IntercectResult();
-        rayDir = rayDir.normalized;
+        // 最適化のため正規化をスキップ
+        //rayDir = rayDir.normalized;
 
         // ポリゴン内部に入る交差はスキップ
         Vector2 segVec = segB - segA;
