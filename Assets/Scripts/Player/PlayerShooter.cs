@@ -146,13 +146,25 @@ public class PlayerShooter : MonoBehaviour
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
         bulletObj.GetComponent<PlayerBullet>().Init(
             dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer);
+        // ShotLineの終点を決める
+        Vector2 end = origin + dir * _shootRange;
+
+        // プレイヤーの位置からマウス方向に向かってRayを飛ばす
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, _shootRange, _hitLayer);
+
+        //rayに何かが当たっていたら
+        if(hit.collider)
+        {
+            // 終点をRayが当たった座標に上書きする
+            end = hit.point;
+        }
 
         // エイムライン描画
         if (_showAimLine)
         {
             _lineRenderer.positionCount = 2;
             _lineRenderer.SetPosition(0, origin);
-            _lineRenderer.SetPosition(1, origin + dir * _shootRange);
+            _lineRenderer.SetPosition(1, end);
             _lineTimer = _lineDisplayDuration;
         }
     }
