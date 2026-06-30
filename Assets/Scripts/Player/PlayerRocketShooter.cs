@@ -165,7 +165,7 @@ public class PlayerRocketShooter : MonoBehaviour
         {
             _lineRenderer.positionCount = 2;
             _lineRenderer.SetPosition(0, origin);
-            _lineRenderer.SetPosition(1, origin + dir * _shootRange);
+            _lineRenderer.SetPosition(1, end);
             _lineTimer = _lineDisplayDuration;
         }
     }
