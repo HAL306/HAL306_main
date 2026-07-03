@@ -22,5 +22,15 @@ public class WeaponDirection : MonoBehaviour
 
         // オブジェクトのZ軸（2Dの回転軸）を計算した角度に回す
         transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        // エイムのターゲットが左側（X座標が0未満）の場合はスプライトを上下反転させる
+        if (playerShooter.ShootAimTarget.x < 0)
+        {
+            spriteRenderer.flipY = true;
+        }
+        else
+        {
+            spriteRenderer.flipY = false;
+        }
     }
 }
