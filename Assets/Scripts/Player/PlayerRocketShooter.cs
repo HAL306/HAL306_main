@@ -36,8 +36,12 @@ public class PlayerRocketShooter : MonoBehaviour
     [SerializeField, Tooltip("エイムラインの表示時間")]
     private float _lineDisplayDuration = 0.1f;
 
+    [Header("フィーバー中の設定")]
     [SerializeField, Tooltip("フィーバー中のロケランのクールタイムが減るスピード")]
     private float feverCoolSpeed = 0.5f;
+
+    [SerializeField, Tooltip("フィーバー開始時にロケランのリチャージするかどうか")]
+    private bool canFeverCharge = true;
 
     // 入力
     private bool _inputShoot;           // ショット入力
@@ -180,6 +184,9 @@ public class PlayerRocketShooter : MonoBehaviour
     public void SetFever(bool fever)
     {
         isFever = fever;
+
+        if (canFeverCharge && fever)    // フィーバー開始時にチャージ
+            _cooldownTimer = 0.0f;
     }
 
     public void Charge(float amount)

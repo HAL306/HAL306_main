@@ -207,7 +207,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFever
   maxCharge: 15
   feverTime: 10
-  speedRatio: 1.2
 --- !u!114 &5308044220147577639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,8 +481,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
   _shootRange: 20
-  _shootInterval: 0.15
-  _explodeRadius: 0.3
+  _shootInterval: 0.1
+  _explodeRadius: 0.25
   _hitLayer:
     serializedVersion: 2
     m_Bits: 72
@@ -494,7 +493,7 @@ MonoBehaviour:
   penetrationPower: 0.1
   _showAimLine: 1
   _lineDisplayDuration: 0.1
-  penetrationRatio: 2
+  penetrationRatio: 2.5
 --- !u!1 &4636640035820007146
 GameObject:
   m_ObjectHideFlags: 0
@@ -988,7 +987,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 72b008e4055b0f648a2710df12b9559a, type: 3}
-  penetrationPower: 0.3
+  penetrationPower: 0.5
   _showAimLine: 1
   _lineDisplayDuration: 0.1
-  feverCoolSpeed: 0.3
+  feverCoolSpeed: 2.5
+  canFeverCharge: 1
