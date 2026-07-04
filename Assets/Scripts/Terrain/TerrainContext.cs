@@ -126,7 +126,7 @@ public class TerrainContext : MonoBehaviour
 
     private void Update()
     {
-        if (_rigidbody == null)
+        if (_rigidbody != null)
         {
             // 画面外の場合はRigidbodyを無効化する
             Bounds bounds = _polygonCollider.bounds;
