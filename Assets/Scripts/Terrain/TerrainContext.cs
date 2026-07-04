@@ -4,34 +4,37 @@ using System.Collections.Generic;
 
 
 /// <summary>
-/// ’nŒ`‚ÌƒRƒAƒRƒ“ƒ|[ƒlƒ“ƒg
+/// åœ°å½¢ã®ã‚³ã‚¢ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
 /// </summary>
 [RequireComponent(typeof(PolygonCollider2D))]
 public class TerrainContext : MonoBehaviour
 {
-    [SerializeField, Tooltip("’nŒ`‚ÌÚ×İ’è")]
+    [SerializeField, Tooltip("åœ°å½¢ã®è©³ç´°è¨­å®š")]
     private TerrainSettings _terrainSettings;
 
-    [SerializeField, Tooltip("’nŒ`‚Ìƒpƒ‰ƒ[ƒ^")]
+    [SerializeField, Tooltip("åœ°å½¢ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿")]
     private TerrainParameter _terrainParameter;
 
-    [SerializeField, Tooltip("ŠJn’n“_‚Å‘¶İ‚µ‚Ä‚¢‚é’nŒ`ƒtƒ‰ƒO")]
+    [SerializeField, Tooltip("é–‹å§‹åœ°ç‚¹ã§å­˜åœ¨ã—ã¦ã„ã‚‹åœ°å½¢ãƒ•ãƒ©ã‚°")]
     private bool _isStartTerrain = false;
 
-    [SerializeField, Tooltip("ƒx[ƒX’nŒ`‚ÌƒŒƒCƒ„[")]
+    [SerializeField, Tooltip("ãƒ™ãƒ¼ã‚¹åœ°å½¢ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼")]
     private LayerMask _baseTerrainLayer;
+    
+    public bool IsDirtyDot { get; set; } = true;    // MeshDotManagerã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‹ã‚‰å¤‰æ›´ãŒã‚ã£ãŸã‹
 
 
-    private TerrainPolygon _terrainPolygon;         // ’nŒ`Œ`ó
-    private Action _onChangeTerrainEvent;           // ’nŒ`•ÏXƒCƒxƒ“ƒg
+    private TerrainPolygon _terrainPolygon;         // åœ°å½¢å½¢çŠ¶
+    private Action _onChangeTerrainEvent;           // åœ°å½¢å¤‰æ›´æ™‚ã‚¤ãƒ™ãƒ³ãƒˆ
 
     private PolygonCollider2D _polygonCollider;
     private Rigidbody2D _rigidbody;
     private TerrainDestructEffect _destructEffect;
-    private MeshDotRenderer _dotRenderer;
 
-    private List<Collider2D> _overlapColliderList;      // d‚È‚Á‚Ä‚¢‚éƒRƒ‰ƒCƒ_[‚ÌƒŠƒXƒg
+    private List<Collider2D> _overlapColliderList;      // é‡ãªã£ã¦ã„ã‚‹ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ãƒªã‚¹ãƒˆ
     private float _mass;
+
+    static private Boss _boss;
 
 
     public TerrainSettings TerrainSettings => _terrainSettings;
@@ -42,14 +45,14 @@ public class TerrainContext : MonoBehaviour
     public float Mass => _mass;
 
 
-    // •ª—£‚Ì‰Šú‰»ˆ—
+    // åˆ†é›¢æ™‚ã®åˆæœŸåŒ–å‡¦ç†
     public void InitializeOnSplit(SplitTerrainData splitTerrain)
     {
         _terrainPolygon.Initialize(this, splitTerrain);
     }
 
-    // ’nŒ`”j‰óˆ—
-    // ”j‰ó–ÊÏ‚ğ•Ô‚·
+    // åœ°å½¢ç ´å£Šå‡¦ç†
+    // ç ´å£Šé¢ç©ã‚’è¿”ã™
     public float Destruct(Vector2 worldCenter, float radius, CrackParameter crack)
     {
         List<SplitTerrainData> splitTerrains;
@@ -58,23 +61,23 @@ public class TerrainContext : MonoBehaviour
 
         for (int i = 0;i< splitTerrains.Count;++i)
         {
-            // ’nŒ`•ª—£
+            // åœ°å½¢åˆ†é›¢
             CreateSplitTerrain(splitTerrains[i]);
         }
         OnChangeTerrain();
         return area;
     }
 
-    // O•i—å
-    // ’nŒ`‚É‚Ğ‚Ñ‚ğ“ü‚ê‚éˆ—
-    // ”j‰ó–ÊÏ‚ğ•Ô‚·
+    // ä¸‰å“æ€œ
+    // åœ°å½¢ã«ã²ã³ã‚’å…¥ã‚Œã‚‹å‡¦ç†
+    // ç ´å£Šé¢ç©ã‚’è¿”ã™
     public float Crack(CrackData[] data,CrackParameter crack)
     {
         List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonCrack(data, crack);
         float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
         for (int i = 0; i < splitTerrains.Count; ++i)
         {
-            // ’nŒ`•ª—£
+            // åœ°å½¢åˆ†é›¢
             CreateSplitTerrain(splitTerrains[i]);
         }
         OnChangeTerrain();
@@ -82,7 +85,7 @@ public class TerrainContext : MonoBehaviour
     }
 
 
-    // ’nŒ`•ÏXƒCƒxƒ“ƒg‚ğ“o˜^‚·‚é
+    // åœ°å½¢å¤‰æ›´æ™‚ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™»éŒ²ã™ã‚‹
     public void AddChangeTerrainEvent(Action onDestructEvent)
     {
         _onChangeTerrainEvent += onDestructEvent;
@@ -94,11 +97,10 @@ public class TerrainContext : MonoBehaviour
         _polygonCollider = GetComponent<PolygonCollider2D>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _destructEffect = GetComponent<TerrainDestructEffect>();
-        _dotRenderer = GetComponent<MeshDotRenderer>();
 
         if (_isStartTerrain)
         {
-            // ƒRƒ‰ƒCƒ_[Œ`ó‚ğ’nŒ`ƒpƒX‚Æ‚µ‚Ä—˜—p
+            // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å½¢çŠ¶ã‚’åœ°å½¢ãƒ‘ã‚¹ã¨ã—ã¦åˆ©ç”¨
             List<Vector2[]> terrainPath = new List<Vector2[]>(_polygonCollider.pathCount);
             for (int i = 0; i < _polygonCollider.pathCount; ++i)
             {
@@ -110,23 +112,66 @@ public class TerrainContext : MonoBehaviour
 
     private void Start()
     {
+        // ãƒ‰ãƒƒãƒˆæç”»ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã«ç™»éŒ²
+        if (MeshDotManager.Instance != null)
+        {
+            MeshDotManager.Instance.Register(this);
+        }
+        
         if (_isStartTerrain)
         {
             OnChangeTerrain();
         }
+    }
 
-        _dotRenderer.DotSize = _terrainSettings.DotSize;
-        _dotRenderer.instancedMaterial = _terrainParameter.Material;
+    private void Update()
+    {
+        if (_rigidbody != null)
+        {
+            // ç”»é¢å¤–ã®å ´åˆã¯Rigidbodyã‚’ç„¡åŠ¹åŒ–ã™ã‚‹
+            Bounds bounds = _polygonCollider.bounds;
+            Vector3 camPos = Camera.main.transform.position;
+            float space = 1.0f; // ç”»é¢å¤–åˆ¤å®šã®ä½™ç™½
+            float halfHeight = Camera.main.orthographicSize + space;
+            float halfWidth = halfHeight * Camera.main.aspect;
+
+            bool inCamera =
+                bounds.max.x >= camPos.x - halfWidth &&
+                bounds.min.x <= camPos.x + halfWidth &&
+                bounds.max.y >= camPos.y - halfHeight &&
+                bounds.min.y <= camPos.y + halfHeight;
+
+            _rigidbody.simulated = inCamera;
+        }
+
+        // ä¸è¦ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‰Šé™¤
+        if (_boss == null)
+        {
+            _boss = FindAnyObjectByType<Boss>();
+            if(_boss == null)
+                return;
+        }
+        if (_polygonCollider.bounds.max.x < _boss.transform.position.x) 
+            Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        // ãƒ‰ãƒƒãƒˆæç”»ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã‹ã‚‰ç™»éŒ²è§£é™¤
+        if (MeshDotManager.Instance != null)
+        {
+            MeshDotManager.Instance.Unregister(this);
+        }
     }
 
 
-    // •ª—£’nŒ`‚ÌƒIƒuƒWƒFƒNƒg‚ğ¶¬‚·‚é
+    // åˆ†é›¢åœ°å½¢ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆã™ã‚‹
     private void CreateSplitTerrain(SplitTerrainData splitTerrain)
     {
         TerrainContext newTerrain = Instantiate(
             _terrainSettings.BaseTerrainPrefab, transform.position, transform.rotation);
 
-        // •ª—£’nŒ`‚Ì‰Šú‰»
+        // åˆ†é›¢åœ°å½¢ã®åˆæœŸåŒ–
         newTerrain.InitializeOnSplit(splitTerrain);
         newTerrain._terrainSettings = _terrainSettings;
         newTerrain._terrainParameter = _terrainParameter;
@@ -135,10 +180,10 @@ public class TerrainContext : MonoBehaviour
         newTerrain.OnChangeTerrain();
     }
 
-    // ’nŒ`•ÏX‚Ìˆ—‚ğs‚¤
+    // åœ°å½¢å¤‰æ›´æ™‚ã®å‡¦ç†ã‚’è¡Œã†
     private void OnChangeTerrain()
     {
-        // Å¬ƒTƒCƒY‚æ‚è¬‚³‚­‚È‚Á‚½‚çíœ
+        // æœ€å°ã‚µã‚¤ã‚ºã‚ˆã‚Šå°ã•ããªã£ãŸã‚‰å‰Šé™¤
         if (_terrainPolygon.Area < _terrainSettings.MinArea)
         {
             if (_destructEffect != null)
@@ -149,14 +194,14 @@ public class TerrainContext : MonoBehaviour
             return;
         }
 
-        // ƒRƒ‰ƒCƒ_[Œ`ó‚ğXV
+        // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å½¢çŠ¶ã‚’æ›´æ–°
         UpdateCollider();
 
         if (_rigidbody == null)
         {
             if (_overlapColliderList == null)
             {
-                // d‚È‚Á‚½ƒRƒ‰ƒCƒ_[‚ğæ“¾‚·‚é
+                // é‡ãªã£ãŸã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’å–å¾—ã™ã‚‹
                 GetOverlapCollider();
 
                 if (_overlapColliderList.Count == 0)
@@ -170,33 +215,35 @@ public class TerrainContext : MonoBehaviour
         }
         else
         {
-            // d‚³‚ğİ’è
+            // é‡ã•ã‚’è¨­å®š
             _mass = _terrainPolygon.Area * _terrainParameter.Density;
             _rigidbody.mass = _mass;
         }
 
-        // ‘¼‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì’nŒ`”j‰óƒCƒxƒ“ƒgŒÄ‚Ño‚µ
+        // ä»–ã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®åœ°å½¢ç ´å£Šæ™‚ã‚¤ãƒ™ãƒ³ãƒˆå‘¼ã³å‡ºã—
         if (_onChangeTerrainEvent != null)
             _onChangeTerrainEvent.Invoke();
+        
+        IsDirtyDot = true;
     }
 
-    // ƒRƒ‰ƒCƒ_[Œ`ó‚ğXV‚·‚é
+    // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å½¢çŠ¶ã‚’æ›´æ–°ã™ã‚‹
     private void UpdateCollider()
     {
         List<EdgeLoop> terrainPath = _terrainPolygon.TerrainPaths;
         _polygonCollider.pathCount = terrainPath.Count;
         for (int i = 0; i < terrainPath.Count; ++i)
         {
-            // ƒGƒbƒWƒ‹[ƒvŠÈ—ª‰»
+            // ã‚¨ãƒƒã‚¸ãƒ«ãƒ¼ãƒ—ç°¡ç•¥åŒ–
             List<Vector2> path = new List<Vector2>(terrainPath[i].points);
-            path = RamerDouglasPeucker.RamerDouglasPeuckerAlgorithm(path, 0.1f);
+            path = RamerDouglasPeucker.RamerDouglasPeuckerAlgorithm(path, 0.5f);
 
-            // ƒRƒ‰ƒCƒ_[Œ`ó‚ğXV
+            // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å½¢çŠ¶ã‚’æ›´æ–°
             _polygonCollider.SetPath(i, path);
         }
     }
 
-    // d‚È‚Á‚Ä‚¢‚éƒx[ƒX’nŒ`‚ÌƒRƒ‰ƒCƒ_[‚ğæ“¾‚·‚é (Œµ–§‚È”»’è‚Ís‚¢‚Ü‚¹‚ñ)
+    // é‡ãªã£ã¦ã„ã‚‹ãƒ™ãƒ¼ã‚¹åœ°å½¢ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚’å–å¾—ã™ã‚‹ (å³å¯†ãªåˆ¤å®šã¯è¡Œã„ã¾ã›ã‚“)
     private void GetOverlapCollider()
     {
         _overlapColliderList = new List<Collider2D>();
@@ -205,35 +252,35 @@ public class TerrainContext : MonoBehaviour
         filter.useLayerMask = true;
         filter.useTriggers = false;
 
-        // d‚È‚Á‚Ä‚¢‚éƒx[ƒX’nŒ`‚ÌƒRƒ‰ƒCƒ_[æ“¾
+        // é‡ãªã£ã¦ã„ã‚‹ãƒ™ãƒ¼ã‚¹åœ°å½¢ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼å–å¾—
         _polygonCollider.Overlap(filter, _overlapColliderList);
     }
 
-    // ƒx[ƒX’nŒ`‚Æ‚Ìd‚È‚è‚ğ’²‚×‚é
+    // ãƒ™ãƒ¼ã‚¹åœ°å½¢ã¨ã®é‡ãªã‚Šã‚’èª¿ã¹ã‚‹
     private bool CheckOverlapCollider()
     {
         for(int i = 0; i < _overlapColliderList.Count ; ++i)
         {
             if (_overlapColliderList[i] == null)
             {
-                // ƒŠƒXƒg‚©‚çíœ‚µ‚ÄAƒCƒ“ƒfƒbƒNƒX‚ğ•â³
+                // ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤ã—ã¦ã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è£œæ­£
                 _overlapColliderList.RemoveAt(i);
                 i--;
             }
 
-            // d‚È‚è‚ğ’²‚×‚é
+            // é‡ãªã‚Šã‚’èª¿ã¹ã‚‹
             ColliderDistance2D distance;
             distance = _polygonCollider.Distance(_overlapColliderList[i]);
 
-            // d‚È‚Á‚Ä‚¢‚È‚¯‚ê‚ÎœŠO
+            // é‡ãªã£ã¦ã„ãªã‘ã‚Œã°é™¤å¤–
             if(distance.isOverlapped)
             {
-                // ˆê‚Â‚Å‚àd‚È‚Á‚Ä‚¢‚ê‚ÎI—¹
+                // ä¸€ã¤ã§ã‚‚é‡ãªã£ã¦ã„ã‚Œã°çµ‚äº†
                 break;
             }
             else
             {
-                // ƒŠƒXƒg‚©‚çíœ‚µ‚ÄAƒCƒ“ƒfƒbƒNƒX‚ğ•â³
+                // ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤ã—ã¦ã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è£œæ­£
                 _overlapColliderList.RemoveAt(i);
                 i--;
             }
@@ -242,7 +289,7 @@ public class TerrainContext : MonoBehaviour
         return _overlapColliderList.Count != 0;
     }
 
-    // RigidbodyƒRƒ“ƒ|[ƒlƒ“ƒg‚ğ’Ç‰Á‚µA‰Šúİ’è‚ğs‚¤
+    // Rigidbodyã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’è¿½åŠ ã—ã€åˆæœŸè¨­å®šã‚’è¡Œã†
     private void AddRigidbody()
     {
         if (_rigidbody != null)
@@ -250,7 +297,7 @@ public class TerrainContext : MonoBehaviour
 
         _rigidbody = gameObject.AddComponent<Rigidbody2D>();
 
-        // d‚³‚ğİ’è
+        // é‡ã•ã‚’è¨­å®š
         _mass = _terrainPolygon.Area * _terrainParameter.Density;
         _rigidbody.mass = _mass;
     }

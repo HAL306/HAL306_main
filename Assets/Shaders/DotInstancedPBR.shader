@@ -67,22 +67,22 @@ Shader "Custom/DotInstancedPBR"
                 float3 positionWS : TEXCOORD0;
                 float2 uv : TEXCOORD1;
                 float3 normalWS : NORMAL;
-                
                 float3 tangentWS : TEXCOORD2;
                 float3 bitangentWS : TEXCOORD3;
-                
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct PixelData
             {
-                float2 position;
+                float3 worldPosition;
                 float3 normal;
+                float2 localPosition;
+                float3 axisX;
+                float3 axisY;
             };
 
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
-            
             TEXTURE2D(_BumpMap);
 
             CBUFFER_START(UnityPerMaterial)
@@ -90,7 +90,6 @@ Shader "Custom/DotInstancedPBR"
                 float _PixelSize;
                 float2 _UVScale;
                 float2 _UVOffset;
-                float4x4 _ObjectToWorldMatrix;
                 float _Metallic;
                 float _Smoothness;
                 float _EnvLightStrength;
@@ -108,35 +107,44 @@ Shader "Custom/DotInstancedPBR"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
 
-                float3 localPos = input.positionOS.xyz * _PixelSize;
-                float2 pixelCenter = float2(0, 0);
-                float3 localNormal = float3(0, 0, 1);
+                float3 localQuadOffset = input.positionOS.xyz * _PixelSize;
+                float3 worldCenter = float3(0, 0, 0);
+                float3 worldNormal = float3(0, 0, 1);
+                float2 localCenter = float2(0, 0);
+                float3 axisX = float3(1, 0, 0);
+                float3 axisY = float3(0, 1, 0);
+                float3 axisZ = float3(0, 0, 1);
 
             #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
                 PixelData data = positionBuffer[instanceID];
-                pixelCenter = data.position;
-                localNormal = data.normal; 
-                localPos.xy += pixelCenter;
+                worldCenter = data.worldPosition; 
+                worldNormal = data.normal;
+                localCenter = data.localPosition;
+                axisX = data.axisX;
+                axisY = data.axisY;
             #endif
 
-                output.uv = pixelCenter * _UVScale + _UVOffset;
-                
-                float3 worldPos = mul(_ObjectToWorldMatrix, float4(localPos, 1.0)).xyz;
-                output.positionWS = worldPos;
-                output.positionCS = TransformWorldToHClip(worldPos);
+                axisZ = normalize(cross(axisX, axisY));
+                float3 rotatedOffset = localQuadOffset.x * axisX + localQuadOffset.y * axisY + localQuadOffset.z * axisZ;
 
-                output.normalWS = normalize(mul((float3x3)_ObjectToWorldMatrix, localNormal));
+                float3 finalWorldPos = worldCenter + rotatedOffset;
+                
+                output.positionWS = finalWorldPos;
+                output.positionCS = TransformWorldToHClip(finalWorldPos);
+                output.normalWS = worldNormal;
 
                 float3 t = float3(1, 0, 0);
-                if (abs(localNormal.x) > 0.999) 
+                if (abs(worldNormal.x) > 0.999) 
                 {
                     t = float3(0, 1, 0);
                 }
-                t = normalize(t - localNormal * dot(localNormal, t));
-                float3 b = cross(localNormal, t);
+                t = normalize(t - worldNormal * dot(worldNormal, t));
+                float3 b = cross(worldNormal, t);
 
-                output.tangentWS = normalize(mul((float3x3)_ObjectToWorldMatrix, t));
-                output.bitangentWS = normalize(mul((float3x3)_ObjectToWorldMatrix, b));
+                output.tangentWS = t;
+                output.bitangentWS = b;
+
+                output.uv = localCenter * _UVScale + _UVOffset;
 
                 return output;
             }
@@ -155,7 +163,6 @@ Shader "Custom/DotInstancedPBR"
                 float3 tangentWS = normalize(input.tangentWS);
                 float3 bitangentWS = normalize(input.bitangentWS);
                 float3x3 tbn = float3x3(tangentWS, bitangentWS, normalWS);
-
                 float3 finalNormalWS = normalize(mul(tangentNormal, tbn));
 
                 InputData inputData = (InputData)0;
@@ -176,9 +183,7 @@ Shader "Custom/DotInstancedPBR"
                 surfaceData.clearCoatMask = 0.0;
                 surfaceData.clearCoatSmoothness = 0.0;
 
-                half4 finalColor = UniversalFragmentPBR(inputData, surfaceData);
-
-                return finalColor;
+                return UniversalFragmentPBR(inputData, surfaceData);
             }
             ENDHLSL
         }
@@ -219,8 +224,11 @@ Shader "Custom/DotInstancedPBR"
 
             struct PixelData
             {
-                float2 position;
+                float3 worldPosition;
                 float3 normal;
+                float2 localPosition;
+                float3 axisX;
+                float3 axisY;
             };
 
             TEXTURE2D(_BaseMap);
@@ -231,7 +239,6 @@ Shader "Custom/DotInstancedPBR"
                 float _PixelSize;
                 float2 _UVScale;
                 float2 _UVOffset;
-                float4x4 _ObjectToWorldMatrix;
             CBUFFER_END
 
             StructuredBuffer<PixelData> positionBuffer;
@@ -244,19 +251,28 @@ Shader "Custom/DotInstancedPBR"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
 
-                float3 localPos = input.positionOS.xyz * _PixelSize;
-                float2 pixelCenter = float2(0, 0);
+                float3 localQuadOffset = input.positionOS.xyz * _PixelSize;
+                float3 worldCenter = float3(0, 0, 0);
+                float2 localCenter = float2(0, 0);
+                float3 axisX = float3(1, 0, 0);
+                float3 axisY = float3(0, 1, 0);
+                float3 axisZ = float3(0, 0, 1);
 
             #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
                 PixelData data = positionBuffer[instanceID];
-                pixelCenter = data.position;
-                localPos.xy += pixelCenter;
+                worldCenter = data.worldPosition;
+                localCenter = data.localPosition;
+                axisX = data.axisX;
+                axisY = data.axisY;
             #endif
 
-                output.uv = pixelCenter * _UVScale + _UVOffset;
+                axisZ = normalize(cross(axisX, axisY));
+                float3 rotatedOffset = localQuadOffset.x * axisX + localQuadOffset.y * axisY + localQuadOffset.z * axisZ;
+
+                float3 finalWorldPos = worldCenter + rotatedOffset;
+                output.positionCS = TransformWorldToHClip(finalWorldPos);
                 
-                float3 worldPos = mul(_ObjectToWorldMatrix, float4(localPos, 1.0)).xyz;
-                output.positionCS = TransformWorldToHClip(worldPos);
+                output.uv = localCenter * _UVScale + _UVOffset;
 
                 return output;
             }

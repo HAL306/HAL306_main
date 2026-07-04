@@ -27,7 +27,8 @@ public class MeshDotRenderer : MonoBehaviour
     private Dictionary<ulong, int> _edgeCounts = new Dictionary<ulong, int>();
     private Dictionary<ulong, Vector2Int> _edgeOriginalDirs = new Dictionary<ulong, Vector2Int>();
     private List<Vector4> _boundaryEdges = new List<Vector4>();
-    
+    private Camera _mainCamera;
+
     private static readonly int TriangleCount = Shader.PropertyToID("TriangleCount");
     private static readonly int GridSpacing = Shader.PropertyToID("GridSpacing");
     private static readonly int GridOffset = Shader.PropertyToID("GridOffset");
@@ -50,12 +51,25 @@ public class MeshDotRenderer : MonoBehaviour
         _argsBuffer.SetData(_args);
         
         _mpb = new MaterialPropertyBlock();
+        
+        _mainCamera = Camera.main;
     }
 
     void LateUpdate()
     {
         if (!_meshFilter || !_meshFilter.sharedMesh) return;
         Mesh mesh = _meshFilter.sharedMesh;
+        
+        Bounds bounds = mesh.bounds;
+        bounds.center = transform.TransformPoint(bounds.center);
+        bounds.extents = Vector3.Scale(bounds.extents, transform.lossyScale);
+
+        // 画面外外なら描画しない
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(_mainCamera);
+        if (!GeometryUtility.TestPlanesAABB(planes, bounds))
+        {
+            return; 
+        }
 
         // 動的メッシュの頂点とインデックスを取得
         Vector3[] vertices3D = mesh.vertices;
@@ -167,10 +181,10 @@ public class MeshDotRenderer : MonoBehaviour
         _mpb.SetFloat(PixelSize, DotSize);
         _mpb.SetBuffer(PositionBuffer, _resultBuffer);
         _mpb.SetMatrix(ObjectToWorldMatrix, transform.localToWorldMatrix);
-
+        
         Graphics.DrawMeshInstancedIndirect(
             quadMesh, 0, instancedMaterial,
-            new Bounds(transform.position, Vector3.one * 20f),
+            bounds,
             _argsBuffer, 0, _mpb, UnityEngine.Rendering.ShadowCastingMode.Off,
             true, gameObject.layer, null, UnityEngine.Rendering.LightProbeUsage.Off
         );

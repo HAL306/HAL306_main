@@ -18,6 +18,7 @@ public class TileMapDestructionSide : MonoBehaviour
     private void OnTriggerStay2D(
         Collider2D collision)
     {
+        return;
         if (((1 << collision.gameObject.layer)
             & targetLayer) == 0)
             return;
