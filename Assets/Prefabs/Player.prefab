@@ -190,6 +190,10 @@ MonoBehaviour:
   _inputBufferDuration: 0.1
   _maxSlopeAngle: 50
   _minSlopeAngle: 10
+  _moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  _jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  _cutsceneState: {fileID: 11400000, guid: c91c848090a7c014b8a68e9ed5296213, type: 2}
+  _playerMoveOverrideState: {fileID: 11400000, guid: 645849090ca76d54f820bbf3b28e927f, type: 2}
   _groundSpeedRatio: 1.2
   _airSpeedRatio: 1.2
   _airAccelerationRatio: 1.2
@@ -320,6 +324,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: b7a66173-5963-4d68-aaef-edf549555c32
     m_ActionName: 'UI/Interact[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c993ae5b-a333-428b-b2b2-ecfd9129b3fa
+    m_ActionName: 'Player/Interact[/Keyboard/f]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
@@ -493,6 +501,9 @@ MonoBehaviour:
   penetrationPower: 0.1
   _showAimLine: 1
   _lineDisplayDuration: 0.1
+  _shootAction: {fileID: 2268548341916877799, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  _aimAction: {fileID: -1905135895345338570, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  _cutsceneState: {fileID: 11400000, guid: c91c848090a7c014b8a68e9ed5296213, type: 2}
   penetrationRatio: 2.5
 --- !u!1 &4636640035820007146
 GameObject:
