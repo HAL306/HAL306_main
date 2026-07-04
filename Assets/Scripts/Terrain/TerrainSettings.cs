@@ -11,7 +11,7 @@ public class TerrainSettings : ScriptableObject
     private TerrainContext _terrainPrefab;
 
     [SerializeField, Tooltip("地形の最小サイズ")]
-    [Range(0.0f, 0.1f)]
+    [Range(0.0f, 1.0f)]
     private float _minArea = 0.05f;
 
     [SerializeField, Tooltip("破壊円の頂点数")]
@@ -46,13 +46,6 @@ public class TerrainSettings : ScriptableObject
     [Range(0.0f, 1.0f)]
     private float _dotSize = 0.05f;
 
-
-    [Header("衝突時破壊設定")]
-    //[SerializeField, Tooltip("衝突時破壊を起こさない衝撃のしきい値")]
-    //private float _minImpulse = 5.0f;
-
-    //[SerializeField, Tooltip("衝撃に対する地形破壊範囲")]
-    //private float _impulseToRadius = 0.05f;
 
 
     public TerrainContext BaseTerrainPrefab => _terrainPrefab;
