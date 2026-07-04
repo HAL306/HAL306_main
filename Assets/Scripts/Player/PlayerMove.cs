@@ -73,6 +73,18 @@ public class PlayerMove : MonoBehaviour
     private CutsceneState _cutsceneState;
     [SerializeField]
     private PlayerMoveOverrideState _playerMoveOverrideState;
+    [Header("フィーバー中の設定")]
+    [SerializeField, Tooltip("地上移動速度倍率")]
+    [Range(0.0f, 5.0f)]
+    public float _groundSpeedRatio = 1.2f;
+
+    [SerializeField, Tooltip("空中移動速度倍率")]
+    [Range(0.0f, 5.0f)]
+    public float _airSpeedRatio = 1.2f;
+
+    [SerializeField, Tooltip("空中移動加速度倍率")]
+    [Range(0.0f, 5.0f)]
+    public float _airAccelerationRatio = 1.2f;
 
 
     private Rigidbody2D _rigidbody;
@@ -92,6 +104,7 @@ public class PlayerMove : MonoBehaviour
     private float _jumpBufferTimer;             // ジャンプ先行入力計測用タイマー
 
     private float _rotateLockTimer;             // 向き固定時間計測用タイマー
+    private bool isFever = false;  
 
     private bool _wasOverrideMoveTargetReachedPrevFrame;    // オーバーライドされた移動の目標地点に前のフレームで到達していたか
 
@@ -281,7 +294,14 @@ public class PlayerMove : MonoBehaviour
             tangentVelocity = Vector2.Dot(rightMoveDir, _currentVelicity);
 
             // 目標速度を求める
-            targetVelocity = _inputMove.x * _groundSpeed;
+            if(isFever)
+            {
+                targetVelocity = _inputMove.x * _groundSpeed * _groundSpeedRatio;
+            }
+            else
+            {
+                targetVelocity = _inputMove.x * _groundSpeed;
+            }
 
             if(_isLandingSlope)
             {
@@ -301,10 +321,18 @@ public class PlayerMove : MonoBehaviour
             float targetVelocity;       // 目標速度
 
             // 目標速度を求める
-            targetVelocity = _inputMove.x * _airSpeed;
-
-            // 移動速度を目標速度に近づける
-            _currentVelicity.x = Mathf.MoveTowards(_currentVelicity.x, targetVelocity, _airAcceleration * Time.fixedDeltaTime);
+            if (isFever)
+            {
+                targetVelocity = _inputMove.x * _airSpeed * _airSpeedRatio;
+                // 移動速度を目標速度に近づける
+                _currentVelicity.x = Mathf.MoveTowards(_currentVelicity.x, targetVelocity, _airAcceleration * _airAccelerationRatio * Time.fixedDeltaTime);
+            }
+            else
+            {
+                targetVelocity = _inputMove.x * _airSpeed;
+                // 移動速度を目標速度に近づける
+                _currentVelicity.x = Mathf.MoveTowards(_currentVelicity.x, targetVelocity, _airAcceleration * Time.fixedDeltaTime);
+            }
         }
 
         // 向き変更
@@ -446,5 +474,10 @@ public class PlayerMove : MonoBehaviour
             _rigidbody.linearVelocity = Vector2.zero;
             _isLandingSlope = true;
         }
+    }
+
+    public void SetFever(bool fever)
+    {
+        isFever = fever;
     }
 }
