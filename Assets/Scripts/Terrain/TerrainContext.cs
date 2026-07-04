@@ -34,7 +34,7 @@ public class TerrainContext : MonoBehaviour
     private List<Collider2D> _overlapColliderList;      // 重なっているコライダーのリスト
     private float _mass;
 
-    static private Boss _boss;
+    static private BOSScharge _boss;
 
 
     public TerrainSettings TerrainSettings => _terrainSettings;
@@ -147,7 +147,7 @@ public class TerrainContext : MonoBehaviour
         // 不要なオブジェクト削除
         if (_boss == null)
         {
-            _boss = FindAnyObjectByType<Boss>();
+            _boss = FindAnyObjectByType<BOSScharge>();
             if(_boss == null)
                 return;
         }

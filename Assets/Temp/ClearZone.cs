@@ -3,7 +3,7 @@ using UnityEngine;
 public class ClearZone : MonoBehaviour
 {
     [SerializeField]
-    Boss _boss;
+    BOSScharge _boss;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
