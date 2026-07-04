@@ -36,8 +36,12 @@ public class PlayerRocketShooter : MonoBehaviour
     [SerializeField, Tooltip("エイムラインの表示時間")]
     private float _lineDisplayDuration = 0.1f;
 
+    [Header("フィーバー中の設定")]
     [SerializeField, Tooltip("フィーバー中のロケランのクールタイムが減るスピード")]
     private float feverCoolSpeed = 0.5f;
+
+    [SerializeField, Tooltip("フィーバー開始時にロケランのリチャージするかどうか")]
+    private bool canFeverCharge = true;
 
     // 入力
     private bool _inputShoot;           // ショット入力
@@ -161,12 +165,25 @@ public class PlayerRocketShooter : MonoBehaviour
         bulletObj.GetComponent<PlayerRocket>().Init(
             dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer,playerFever,this,penetrationPower);
 
+        // ShotLineの終点を決める
+        Vector2 end = origin + dir * _shootRange;
+
+        // プレイヤーの位置からマウス方向に向かってRayを飛ばす
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, _shootRange, _hitLayer);
+
+        //rayに何かが当たっていたら
+        if (hit.collider)
+        {
+            // 終点をRayが当たった座標に上書きする
+            end = hit.point;
+        }
+
         // エイムライン描画
         if (_showAimLine)
         {
             _lineRenderer.positionCount = 2;
             _lineRenderer.SetPosition(0, origin);
-            _lineRenderer.SetPosition(1, origin + dir * _shootRange);
+            _lineRenderer.SetPosition(1, end);
             _lineTimer = _lineDisplayDuration;
         }
     }
@@ -180,6 +197,9 @@ public class PlayerRocketShooter : MonoBehaviour
     public void SetFever(bool fever)
     {
         isFever = fever;
+
+        if (canFeverCharge && fever)    // フィーバー開始時にチャージ
+            _cooldownTimer = 0.0f;
     }
 
     public void Charge(float amount)

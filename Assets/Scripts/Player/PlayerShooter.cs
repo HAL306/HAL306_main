@@ -35,6 +35,16 @@ public class PlayerShooter : MonoBehaviour
 
     [SerializeField, Tooltip("エイムラインの表示時間")]
     private float _lineDisplayDuration = 0.1f;
+    
+    [Header("InputAction登録")]
+    [SerializeField, Tooltip("射撃")]
+    private InputActionReference _shootAction;
+    [SerializeField, Tooltip("エイム")]
+    private InputActionReference _aimAction;
+    
+    [Header("参照登録")]
+    [SerializeField]
+    private CutsceneState _cutsceneState;
 
 
     [Header("フィーバー中の設定設定")]
@@ -66,10 +76,21 @@ public class PlayerShooter : MonoBehaviour
 
     // -- 入力イベント --
 
+    private void OverrideInput()
+    {
+        if (_cutsceneState.IsPlaying)
+        {
+            _inputShoot = false;
+        }
+    }
+
     public void OnShoot(InputAction.CallbackContext context)
     {
-        ChangeDeviceMode(context);
-        _inputShoot = context.performed;
+        if (!_cutsceneState.IsPlaying)
+        {
+            ChangeDeviceMode(context);
+            _inputShoot = context.performed;
+        }
     }
 
     public void OnAim(InputAction.CallbackContext context)
@@ -84,6 +105,36 @@ public class PlayerShooter : MonoBehaviour
     {
         _lineRenderer = GetComponent<LineRenderer>();
     }
+    
+    private void OnEnable()
+    {
+        if (_shootAction != null)
+        {
+            _shootAction.action.performed += OnShoot;
+            _shootAction.action.canceled += OnShoot;
+        }
+        if (_aimAction != null)
+        {
+            _aimAction.action.started += OnAim;
+            _aimAction.action.performed += OnAim;
+            _aimAction.action.canceled += OnAim;
+        }
+    }
+    
+    private void OnDisable()
+    {
+        if (_shootAction != null)
+        {
+            _shootAction.action.performed -= OnShoot;
+            _shootAction.action.canceled -= OnShoot;
+        }
+        if (_aimAction != null)
+        {
+            _aimAction.action.started -= OnAim;
+            _aimAction.action.performed -= OnAim;
+            _aimAction.action.canceled -= OnAim;
+        }
+    }
 
     private void Start()
     {
@@ -97,6 +148,7 @@ public class PlayerShooter : MonoBehaviour
 
     private void Update()
     {
+        OverrideInput();
         UpdateAimLine();
         UpdateAimTarget();
         UpdateShoot();
@@ -171,12 +223,25 @@ public class PlayerShooter : MonoBehaviour
                 dir, _explodeRadius, _hitLayer, _shootRange, _destructibleLayer, playerFever, penetrationPower);
         }
 
+        // ShotLineの終点を決める
+        Vector2 end = origin + dir * _shootRange;
+
+        // プレイヤーの位置からマウス方向に向かってRayを飛ばす
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, _shootRange, _hitLayer);
+
+        //rayに何かが当たっていたら
+        if (hit.collider)
+        {
+            // 終点をRayが当たった座標に上書きする
+            end = hit.point;
+        }
+
         // エイムライン描画
         if (_showAimLine)
         {
             _lineRenderer.positionCount = 2;
             _lineRenderer.SetPosition(0, origin);
-            _lineRenderer.SetPosition(1, origin + dir * _shootRange);
+            _lineRenderer.SetPosition(1, end);
             _lineTimer = _lineDisplayDuration;
         }
     }

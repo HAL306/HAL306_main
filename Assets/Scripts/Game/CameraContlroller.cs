@@ -16,6 +16,9 @@ public class CameraController : MonoBehaviour
 
     [SerializeField, Tooltip("エイム方向へのカメラ移動速度")]
     private float _aimOffsetSpeed = 2.0f;
+    
+    [SerializeField]
+    private CutsceneState _cutsceneState;
 
     private Vector2 _aimOffset;
 
