@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 public class BaseTerrain : MonoBehaviour
 {
     [SerializeField, Tooltip("ボス")]
-    private Boss _boss;
+    private BOSScharge _boss;
 
     [SerializeField, Tooltip("非表示ラインのオフセット")]
     private float _offset_x;
