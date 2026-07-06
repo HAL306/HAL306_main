@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -88,6 +88,8 @@ public class PlayerMove : MonoBehaviour
 
 
     private Rigidbody2D _rigidbody;
+
+    Animator animator;                          // アニメーター
 
     private Vector2 _inputMove;                 // 移動入力
     private bool _inputJump;                    // ジャンプ入力
@@ -220,6 +222,7 @@ public class PlayerMove : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _rigidbody.sleepMode = RigidbodySleepMode2D.NeverSleep;
+        animator = GetComponent<Animator>();    // アニメーターの取得
     }
 
     private void OnEnable()
@@ -265,6 +268,7 @@ public class PlayerMove : MonoBehaviour
         _rigidbody.linearVelocity = _currentVelicity;
 
         // 各種タイマー・フラグ更新
+        UpdateAnimator();       // アニメーターの更新
         UpdateTimer(Time.fixedDeltaTime);
         UpdateFlags();
     }
@@ -479,5 +483,41 @@ public class PlayerMove : MonoBehaviour
     public void SetFever(bool fever)
     {
         isFever = fever;
+    }
+
+
+    // アニメーターの更新
+    private void UpdateAnimator()
+    {
+        if (_currentVelicity.y <= -2.1f)
+        {
+            animator.SetBool("IsGround", false);
+
+        }
+        else
+        {
+            animator.SetBool("IsGround", true);
+        }
+
+        animator.SetBool("IsJump", _isJumping);
+
+        if (_inputMove.x >= 0.5f)
+        {
+            animator.SetBool("IsSprint", true);
+            animator.SetBool("IsIdle", false);
+        }
+        else if (_inputMove != Vector2.zero)
+        {
+            animator.SetBool("IsSprint", false);
+            animator.SetBool("IsMove", true);
+            animator.SetBool("IsIdle", false);
+        }
+        else
+        {
+            animator.SetBool("IsSprint", false);
+            animator.SetBool("IsMove", false);
+            animator.SetBool("IsIdle", true);
+        }
+
     }
 }
