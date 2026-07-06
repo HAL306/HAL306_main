@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main/StageTemplate.unity
     guid: 1aeeca3367688e54daa32439bec00caa
+  - enabled: 1
+    path: Assets/Scenes/GameOver.unity
+    guid: 2739160f43e122b4cb39b8f5cc2eb043
+  - enabled: 1
+    path: Assets/Scenes/AlphaGameScene.unity
+    guid: 3876536cb017abb41a0cc0e66ad2486d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
