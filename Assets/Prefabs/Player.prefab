@@ -529,6 +529,7 @@ MonoBehaviour:
   _aimAction: {fileID: -1905135895345338570, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _cutsceneState: {fileID: 11400000, guid: c91c848090a7c014b8a68e9ed5296213, type: 2}
   penetrationRatio: 2.5
+  _shootSound: {fileID: 8300000, guid: 1efcaba9a7321a64da6c0dede59794b0, type: 3}
 --- !u!1 &4636640035820007146
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,6 +1028,7 @@ MonoBehaviour:
   _lineDisplayDuration: 0.1
   feverCoolSpeed: 2.5
   canFeverCharge: 1
+  _shootSound: {fileID: 8300000, guid: 4e6270424ec91d9459e2a13c4149aefb, type: 3}
 --- !u!1001 &4361204718586845409
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -51,6 +51,8 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField, Tooltip("貫通力にかかる倍率")]
     private float penetrationRatio = 1.2f;
 
+    [SerializeField] private AudioClip _shootSound; // ショット音
+
     // 入力
     private bool _inputShoot;           // ショット入力
     private Vector2 _inputAim;          // エイム方向入力 (スティック限定)
@@ -208,7 +210,7 @@ public class PlayerShooter : MonoBehaviour
     {
         Vector2 origin = transform.position;
         Vector2 dir = _shootAimTarget.normalized;
-
+        PlaySoundEffect();
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
 
@@ -255,5 +257,10 @@ public class PlayerShooter : MonoBehaviour
     public void SetFever(bool fever)
     {
         isFever = fever;
+    }
+
+    void PlaySoundEffect()
+    {
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
     }
 }
