@@ -61,7 +61,7 @@ public class GameOverUI : MonoBehaviour
 
     private void LoadTitleScene()
     {
-        SceneManager.LoadScene("TitleScene");
+        SceneManager.LoadScene("ModeSelectScene");
     }
 
     private void LoadGameScene()
