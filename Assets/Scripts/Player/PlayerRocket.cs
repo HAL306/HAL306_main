@@ -34,6 +34,15 @@ public class PlayerRocket : MonoBehaviour
     [SerializeField, Tooltip("ロケランチャージ倍率")]
     private float rocketChrgeRatio = 0.9f;
 
+    [SerializeField] private AudioClip _explodeSound; // 爆破音
+    [SerializeField] private AudioClip _explodeCrystalSound; // 水晶爆破音
+
+    private enum SoundEffectType
+    {
+        EXPLODE,
+        EXPLODE_CRYSTAL,
+    }
+
     private Vector2 _direction;        // 移動方向
     private float _explodeRadius;      // 爆発半径
     private LayerMask _hitLayer;       // 衝突レイヤー
@@ -122,6 +131,7 @@ public class PlayerRocket : MonoBehaviour
                     if(penetrationPower < terrain.TerrainPolygon.Area)
                     {
                         // 貫通力より大きい地形に当たったら弾は消滅する
+                        PlaySoundEffect(SoundEffectType.EXPLODE_CRYSTAL);
                         Destroy(gameObject);
                         return;
                     }
@@ -130,6 +140,7 @@ public class PlayerRocket : MonoBehaviour
             else
             {
                 // どの地形に当たっても弾は消滅する
+                PlaySoundEffect(SoundEffectType.EXPLODE);
                 Destroy(gameObject);
                 return;
             }
@@ -206,6 +217,19 @@ public class PlayerRocket : MonoBehaviour
                 if(collider.attachedRigidbody != null)
                     collider.attachedRigidbody.AddForce(dir * windPower,ForceMode2D.Impulse);
             }
+        }
+
+    }
+    void PlaySoundEffect(SoundEffectType soundEffectType)
+    {
+        switch (soundEffectType)
+        {
+            case SoundEffectType.EXPLODE:
+                AudioSource.PlayClipAtPoint(_explodeSound, transform.position);
+                break;
+            case SoundEffectType.EXPLODE_CRYSTAL:
+                AudioSource.PlayClipAtPoint(_explodeSound, transform.position);
+                break;
         }
 
     }

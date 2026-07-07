@@ -20,7 +20,10 @@ public class TerrainContext : MonoBehaviour
 
     [SerializeField, Tooltip("ベース地形のレイヤー")]
     private LayerMask _baseTerrainLayer;
-    
+
+
+    [SerializeField] private AudioClip _minDestructionSound; // 最小単位の破壊時に再生するサウンドエフェクト
+    [SerializeField] private AudioClip _crackSound; // 最小単位の破壊時に再生するサウンドエフェクト
     public bool IsDirtyDot { get; set; } = true;    // MeshDotManagerのキャッシュから変更があったか
 
 
@@ -44,6 +47,12 @@ public class TerrainContext : MonoBehaviour
     public Rigidbody2D Rigidbody => _rigidbody;
     public float Mass => _mass;
 
+    private enum SoundEffectType
+    {
+        MIN,
+        CRACK,
+        DESTRUCT,
+    };
 
     // 分離時の初期化処理
     public void InitializeOnSplit(SplitTerrainData splitTerrain)
@@ -189,7 +198,7 @@ public class TerrainContext : MonoBehaviour
             if (_destructEffect != null)
                 //_destructEffect.EmitDestructEffect(_terrainPolygon.TerrainPaths);
                 _destructEffect.EmitDestructEffect(_terrainPolygon.DestructPaths);
-
+            PlaySoundEffect(SoundEffectType.MIN);
             Destroy(this.gameObject);
             return;
         }
@@ -232,6 +241,7 @@ public class TerrainContext : MonoBehaviour
     {
         List<EdgeLoop> terrainPath = _terrainPolygon.TerrainPaths;
         _polygonCollider.pathCount = terrainPath.Count;
+        PlaySoundEffect(SoundEffectType.CRACK);
         for (int i = 0; i < terrainPath.Count; ++i)
         {
             // エッジループ簡略化
@@ -300,5 +310,24 @@ public class TerrainContext : MonoBehaviour
         // 重さを設定
         _mass = _terrainPolygon.Area * _terrainParameter.Density;
         _rigidbody.mass = _mass;
+    }
+
+    void PlaySoundEffect(SoundEffectType soundEffect)
+    {
+        switch (soundEffect)
+        {
+            case SoundEffectType.MIN:
+                AudioSource.PlayClipAtPoint(_minDestructionSound, transform.position);
+                break;
+            case SoundEffectType.CRACK:
+                AudioSource.PlayClipAtPoint(_crackSound, transform.position);
+                break;
+            case SoundEffectType.DESTRUCT:
+                AudioSource.PlayClipAtPoint(_minDestructionSound, transform.position);
+                break;
+            default:
+                break;
+        }
+
     }
 }

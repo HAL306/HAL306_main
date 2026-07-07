@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -43,6 +43,7 @@ public class PlayerRocketShooter : MonoBehaviour
     [SerializeField, Tooltip("フィーバー開始時にロケランのリチャージするかどうか")]
     private bool canFeverCharge = true;
 
+    [SerializeField] private AudioClip _shootSound; // ショット音
     // 入力
     private bool _inputShoot;           // ショット入力
     private Vector2 _inputAim;          // エイム方向入力 (スティック限定)
@@ -159,7 +160,7 @@ public class PlayerRocketShooter : MonoBehaviour
     {
         Vector2 origin = transform.position;
         Vector2 dir = _shootAimTarget.normalized;
-
+        PlaySoundEffect();
         // 弾オブジェクトを生成して初期化
         GameObject bulletObj = Instantiate(_bulletPrefab, origin, Quaternion.identity);
         bulletObj.GetComponent<PlayerRocket>().Init(
@@ -208,5 +209,9 @@ public class PlayerRocketShooter : MonoBehaviour
         {
             _cooldownTimer -= amount * feverCoolSpeed;
         }
+    }
+    void PlaySoundEffect()
+    {
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
     }
 }

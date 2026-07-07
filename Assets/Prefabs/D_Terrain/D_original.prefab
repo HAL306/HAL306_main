@@ -146,6 +146,8 @@ MonoBehaviour:
   _baseTerrainLayer:
     serializedVersion: 2
     m_Bits: 64
+  _minDestructionSound: {fileID: 8300000, guid: d7dc76c2d92f91247b9035343b5a2baf, type: 3}
+  _crackSound: {fileID: 8300000, guid: 5e4cc29a21cd98d4cbfb65a42a0d5b4c, type: 3}
 --- !u!114 &976181807826979226
 MonoBehaviour:
   m_ObjectHideFlags: 0
