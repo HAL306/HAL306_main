@@ -18,6 +18,13 @@ public class BaseTerrain : MonoBehaviour
 
     private void Update()
     {
-        _material.SetFloat("_BossPosition", _boss.transform.position.x + _offset_x);
+        if (_boss && _boss.gameObject.activeInHierarchy)
+        {
+            _material.SetFloat("_BossPosition", _boss.transform.position.x + _offset_x);
+        }
+        else
+        {
+            _material.SetFloat("_BossPosition", -10000f);
+        }
     }
 }
