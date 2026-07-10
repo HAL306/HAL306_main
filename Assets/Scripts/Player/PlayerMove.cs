@@ -277,12 +277,14 @@ public class PlayerMove : MonoBehaviour
 
         // 移動処理
         OverrideInput();
-        CheckBaseTerrainWall();
-        Move();
-        
-        OvercomeWall();//壁乗り越え
-        Jump();
-        AddGravity();
+        CheckBaseTerrainWall();// ベース地形の壁に接触しているか判定
+
+        if (!OvercomeWall()) // 壁を乗り越える処理が行われた場合は、Move, Jump, AddGravityの処理をスキップ
+        {
+            Move();
+            Jump();
+            AddGravity();
+        }
         _rigidbody.linearVelocity = _currentVelicity;
 
         // 各種タイマー・フラグ更新
@@ -462,8 +464,6 @@ public class PlayerMove : MonoBehaviour
         _wasGround = _isGround;
         _isGround = false;
         _isLandingSlope = false;
-        // 接触している壁の方向をリセット
-        _contactWallDir = 0; 
     }
 
     // 接地判定
@@ -479,7 +479,7 @@ public class PlayerMove : MonoBehaviour
             // 地面として扱う角度か判定
             float angle = Vector2.Angle(contact.normal, Vector2.up);
 
-            //最大角度より大きい場合は地面として扱わない
+            // 最大角度より大きい場合は地面として扱わない
             if (angle > _maxSlopeAngle)
                 continue;
       
@@ -518,33 +518,31 @@ public class PlayerMove : MonoBehaviour
             _contactWallDir = 0;
             return;
         }
+        // コライダーの情報を取得
+        Collider2D col = GetComponent<Collider2D>();
 
-        Vector2 origin = (Vector2)transform.position + new Vector2(0, 0.2f);
-        float rayLength =1.2f;
-
-        // Terrainレイヤーのみを対象にするマスクを作成
+        Bounds bounds = col.bounds; // ワールド座標での実際の範囲を取得
+        float rayLength = 1.0f;
         int terrainLayerMask = 1 << LayerMask.NameToLayer("BaseTerrain");
 
-        // Physics2D.Raycastの第4引数にマスクを指定すると、
-        // そのレイヤー以外のものは全て無視（通り抜けて）してくれます
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right * dir, rayLength, terrainLayerMask);
-        // デバッグ表示：赤なら壁検知、緑なら未検知
-        Debug.DrawRay(origin, Vector2.right * dir * rayLength, hit.collider != null ? Color.red : Color.green, 0.1f);
+        // コライダーの下端 + 0.1f を始点にする
+        Vector2 pos = transform.position;
+        Vector2 origin = new Vector2(pos.x, bounds.min.y + 0.1f); // 足元少し上
+        bool isHit = false;
 
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right * dir, rayLength, terrainLayerMask);
         if (hit.collider != null)
         {
-            _contactWallDir = (int)dir;
+            isHit = true;
         }
-        else
-        {
-            _contactWallDir = 0;
-        }
+
+        _contactWallDir = isHit ? (int)dir : 0;
     }
 
     // 壁を乗り越える処理
-    private void OvercomeWall()
+    private bool OvercomeWall()
     {
-        if (!_isOvercomeBaseTerrain || _contactWallDir == 0) return;
+        if (!_isOvercomeBaseTerrain || _contactWallDir == 0) return false;
 
         // 右入力があって右に壁がある、または左入力があって左に壁がある場合
         bool isPushingWall = (_inputMove.x > 0.1f && _contactWallDir == 1) ||
@@ -552,12 +550,13 @@ public class PlayerMove : MonoBehaviour
 
         if (isPushingWall)
         {
-            // 上方向への速度を与えて駆け上がらせる
+            // 壁登り中は速度を強制固定（Moveや重力に邪魔されないようにする）
             _currentVelicity.y = _climbUpSpeed;
-
-            // 角に引っかかって止まらないよう、前進する横速度も強制的に維持して滑り込ませる
             _currentVelicity.x = _inputMove.x * _groundSpeed;
+            return true;
         }
+
+        return false;
     }
     public void SetFever(bool fever)
     {
