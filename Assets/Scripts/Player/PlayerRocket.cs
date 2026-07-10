@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// プレイヤーの弾オブジェクトを制御するコンポーネント
@@ -54,6 +55,13 @@ public class PlayerRocket : MonoBehaviour
     private PlayerFever playerFever;
     private PlayerRocketShooter playerRocketShooter;
     private float penetrationPower = 0.1f;
+
+    [SerializeField, Tooltip("ロケラン爆破エフェクト")]
+    private ParticleSystem explosionEffect = null;
+
+    [SerializeField, Tooltip("ロケラン爆破ライト")]
+    private GameObject explosionLight = null;
+
 
     /// <summary>
     /// 弾を初期化する
@@ -125,6 +133,11 @@ public class PlayerRocket : MonoBehaviour
             if (isDestructible)
             {
                 HitDestruct(hit.point);
+
+                // エフェクト再生
+                Instantiate(explosionEffect,transform.position,Quaternion.Euler(-90.0f,0.0f,0.0f));
+                Instantiate(explosionLight, transform.position,Quaternion.Euler(0.0f,0.0f,-1.0f));
+                //explosionEffect.Play();
 
                 if (hit.collider.TryGetComponent(out TerrainContext terrain))
                 {
@@ -218,7 +231,6 @@ public class PlayerRocket : MonoBehaviour
                     collider.attachedRigidbody.AddForce(dir * windPower,ForceMode2D.Impulse);
             }
         }
-
     }
     void PlaySoundEffect(SoundEffectType soundEffectType)
     {
