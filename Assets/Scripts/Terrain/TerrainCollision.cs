@@ -2,7 +2,7 @@ using UnityEngine;
 
 
 /// <summary>
-/// ’nŒ`‚ÌÕ“Ëˆ—‚ğs‚¤ƒRƒ“ƒ|[ƒlƒ“ƒg
+/// åœ°å½¢ã®è¡çªæ™‚å‡¦ç†ã‚’è¡Œã†ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
 /// </summary>
 [RequireComponent(typeof(TerrainContext))]
 public class TerrainCollision : MonoBehaviour
@@ -18,6 +18,17 @@ public class TerrainCollision : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹åˆ¤å®š
+        if ( collision.gameObject.tag == "Player")
+        {
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’å–å¾—ã™ã‚‹
+            if (collision.gameObject.TryGetComponent(out PlayerMove player))
+            {
+                // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å´ã®ç ´å£Šãƒ•ãƒ©ã‚°ãŒOFFãªã‚‰å‡¦ç†ã‚’ä¸­æ–­ã™ã‚‹
+                if (!player._isDestroyCrystalByWeight) return;
+            }
+        }
         float impact = GetImpact(collision);
         if (impact < 5.0f)
             return;
@@ -28,27 +39,27 @@ public class TerrainCollision : MonoBehaviour
         crack.minCrackCount = 1;
         crack.maxCrackCount = 2;
 
-        // ‚³‚ç‚É•â³‚µ‚Ä”j‰ó”ÍˆÍì¬
+        // ã•ã‚‰ã«è£œæ­£ã—ã¦ç ´å£Šç¯„å›²ä½œæˆ
         float radius = Mathf.Pow(impact, 0.3f) * 0.1f;
         _terrainContext.Destruct(collision.contacts[0].point, radius, crack);
     }
 
 
-    // ÕŒ‚‚Ì‹­‚³‚ğ‹‚ß‚é
+    // è¡æ’ƒã®å¼·ã•ã‚’æ±‚ã‚ã‚‹
     private float GetImpact(Collision2D collision)
     {
         Rigidbody2D otherRigid = collision.rigidbody;
 
         float speed = collision.relativeVelocity.magnitude;
 
-        // ‚Ô‚Â‚©‚Á‚½ƒIƒuƒWƒFƒNƒg‚Ì¿—Ê”ä‚ğ‹‚ß‚é
+        // ã¶ã¤ã‹ã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è³ªé‡æ¯”ã‚’æ±‚ã‚ã‚‹
         float massRatio = 1.0f;
         if (otherRigid != null)
         {
             massRatio = otherRigid.mass / _terrainContext.Mass;
         }
 
-        // d‚³‚É‚æ‚è•Ï‰»‚ª‘å‚«‚­‚È‚è‚·‚¬‚È‚¢‚æ‚¤•â³
+        // é‡ã•ã«ã‚ˆã‚Šå¤‰åŒ–ãŒå¤§ãããªã‚Šã™ããªã„ã‚ˆã†è£œæ­£
         massRatio = Mathf.Sqrt(massRatio);
         return massRatio * speed / Mathf.Pow(_terrainContext.Mass, 0.2f);
     }
