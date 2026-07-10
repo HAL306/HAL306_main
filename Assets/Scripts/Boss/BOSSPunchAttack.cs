@@ -3,142 +3,150 @@ using UnityEngine;
 
 public class BOSSPunchAttack : MonoBehaviour
 {
-    [Header("ƒfƒoƒbƒO")]
+    [Header("ãƒ‡ãƒãƒƒã‚°")]
 
-    // ƒfƒoƒbƒOƒƒO‚ğo‚·‚©‚Ç‚¤‚©
+    // ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã‚’å‡ºã™ã‹ã©ã†ã‹
     [SerializeField]
     private bool debugLog = true;
 
-    // •\¦ŠÔƒƒO‚ğ‰½•b‚²‚Æ‚Éo‚·‚©
+    // è¡¨ç¤ºæ™‚é–“ãƒ­ã‚°ã‚’ä½•ç§’ã”ã¨ã«å‡ºã™ã‹
     [SerializeField]
     private float visibleLogInterval = 1.0f;
 
-    [Header("QÆ")]
+    [Header("å‚ç…§")]
 
-    // ƒvƒŒƒCƒ„[‚ÌˆÊ’u
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®
     [SerializeField]
     private Transform player;
 
-    // Œ‚ğ”­Ë‚·‚éˆÊ’u
-    // Boss‚Ìè‚ÌˆÊ’u‚É‹óƒIƒuƒWƒFƒNƒg‚ğ’u‚¢‚Ä“ü‚ê‚é
+    // æ‹³ã‚’ç™ºå°„ã™ã‚‹ä½ç½®
+    // Bossã®æ‰‹ã®ä½ç½®ã«ç©ºã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç½®ã„ã¦å…¥ã‚Œã‚‹
     [SerializeField]
     private Transform fistStartPoint;
 
-    // Ô‚¢—\ƒ}[ƒJ[
+    // èµ¤ã„äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼
     [SerializeField]
     private GameObject punchMarker;
 
-    // ”ò‚Î‚·Œ‚ÌPrefab
+    // å…ƒã€…ã®æ‹³
     [SerializeField]
-    private BossPunchFist fistPrefab;
+    private BossPunchFist fist;
 
 
-    [Header("UŒ‚ğŒ")]
+    [Header("æ”»æ’ƒæ¡ä»¶")]
 
-    // Boss‚ÆPlayer‚ª‚±‚Ì‹——£ˆÈã—£‚ê‚Ä‚¢‚½‚çƒpƒ“ƒ`UŒ‚Œó•â‚É‚È‚é
+    // Bossã¨PlayerãŒã“ã®è·é›¢ä»¥ä¸Šé›¢ã‚Œã¦ã„ãŸã‚‰ãƒ‘ãƒ³ãƒæ”»æ’ƒå€™è£œã«ãªã‚‹
     [SerializeField]
     private float attackDistance = 10.0f;
 
-    // Boss‚ª‰æ–Ê‚É‰½•b‰f‚Á‚Ä‚¢‚È‚©‚Á‚½‚çƒpƒ“ƒ`‚·‚é‚©
+    // BossãŒç”»é¢ã«ä½•ç§’æ˜ ã£ã¦ã„ãªã‹ã£ãŸã‚‰ãƒ‘ãƒ³ãƒã™ã‚‹ã‹
     [SerializeField]
     private float attackWaitTime = 5.0f;
 
-    // Ÿ‚Ìƒpƒ“ƒ`‚Ü‚Å‚Ì‘Ò‚¿ŠÔ
+    // æ¬¡ã®ãƒ‘ãƒ³ãƒã¾ã§ã®å¾…ã¡æ™‚é–“
     [SerializeField]
     private float attackCoolTime = 2.0f;
 
 
-    [Header("—\")]
+    [Header("äºˆå‘Š")]
 
-    // Ô‚¢—\‚ğ•\¦‚·‚éŠÔ
+    // èµ¤ã„äºˆå‘Šã‚’è¡¨ç¤ºã™ã‚‹æ™‚é–“
     [SerializeField]
     private float warningTime = 0.7f;
 
-    // —\ƒ}[ƒJ[‚Ì‘å‚«‚³
+    // äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼ã®å¤§ãã•
     [SerializeField]
     private float markerSize = 4.0f;
 
 
-    [Header("Œ‚ÌˆÚ“®")]
+    [Header("æ‹³ã®ç§»å‹•")]
 
-    // Œ‚ª’…’e‚·‚é‚Ü‚Å‚ÌŠÔ
+    // æ‹³ãŒç€å¼¾ã™ã‚‹ã¾ã§ã®æ™‚é–“
     [SerializeField]
     private float fistMoveTime = 0.6f;
 
-    // Œ‚ª•ú•¨ü‚É”ò‚Ô‚‚³
+    // æ‹³ãŒæ”¾ç‰©ç·šã«é£›ã¶é«˜ã•
     [SerializeField]
     private float arcHeight = 4.0f;
 
-    // ’…’eˆÊ’u‚ğƒvƒŒƒCƒ„[‚Ìü•Ó‚É­‚µ‚¸‚ç‚·”ÍˆÍ
+    // ç€å¼¾ä½ç½®ã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘¨è¾ºã«å°‘ã—ãšã‚‰ã™ç¯„å›²
     [SerializeField]
     private float targetRandomX = 2.0f;
 
-    // ƒvƒŒƒCƒ„[‚Ì­‚µ‰œ‚ÉŒ‚Ì’…’e“_‚ğˆÚ“®‚·‚é
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å°‘ã—å¥¥ã«æ‹³ã®ç€å¼¾ç‚¹ã‚’ç§»å‹•ã™ã‚‹
     [SerializeField]
     private float targetOffsetX = 2.0f;
 
-    [Header("’nŒ`”j‰ó")]
+    [Header("åœ°å½¢ç ´å£Š")]
 
-    // Œ‚ª’nŒ`‚ğ”j‰ó‚·‚é”ÍˆÍ
+    // æ‹³ãŒåœ°å½¢ã‚’ç ´å£Šã™ã‚‹ç¯„å›²
     [SerializeField]
     private float destructRadius = 3.0f;
 
-    // ’nŒ`”j‰ó‚Ì‚Ğ‚ÑŠ„‚êİ’è
+    // åœ°å½¢ç ´å£Šæ™‚ã®ã²ã³å‰²ã‚Œè¨­å®š
     [SerializeField]
     private CrackParameter crackParameter;
 
 
-    // Boss‚ª‰æ–Ê‚É‰f‚Á‚Ä‚¢‚éŠÔ
+    // BossãŒç”»é¢ã«æ˜ ã£ã¦ã„ã‚‹æ™‚é–“
     private float visibleTimer;
 
-    // •\¦ŠÔƒƒO—pƒ^ƒCƒ}[
+    // è¡¨ç¤ºæ™‚é–“ãƒ­ã‚°ç”¨ã‚¿ã‚¤ãƒãƒ¼
     private float visibleDebugTimer;
 
-    // UŒ‚’†‚©‚Ç‚¤‚©
+    // æ”»æ’ƒä¸­ã‹ã©ã†ã‹
     private bool isAttacking;
 
-    // Boss‚ª‰æ–Ê‚É‰f‚Á‚Ä‚¢‚È‚¢‚©Šm”F‚·‚é‚½‚ß‚ÌRenderer
+    // BossãŒç”»é¢ã«æ˜ ã£ã¦ã„ãªã„ã‹ç¢ºèªã™ã‚‹ãŸã‚ã®Renderer
     private Renderer bossRenderer;
 
+    // å®Ÿéš›ã«ä½¿ã†æ‹³
+    //private BossPunchFist fist;
 
     private void Start()
     {
-        // Boss‚ÌŒ©‚½–Ú‚ğæ“¾
+        // Bossã®è¦‹ãŸç›®ã‚’å–å¾—
         bossRenderer = GetComponentInChildren<Renderer>();
 
-        // Å‰‚Í—\ƒ}[ƒJ[‚ğ”ñ•\¦‚É‚·‚é
+        // æœ€åˆã¯äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼ã‚’éè¡¨ç¤ºã«ã™ã‚‹
         if (punchMarker != null)
         {
             punchMarker.SetActive(false);
+        }
+
+        // ã‚‚ã¨ã‚‚ã¨ã‚ã‚‹æ‹³ã‚’é–‹å§‹ä½ç½®ã«åˆã‚ã›ã‚‹ã ã‘
+        if (fist != null)
+        {
+            fist.transform.position = fistStartPoint.position;
         }
     }
 
 
     private void Update()
     {
-        // UŒ‚’†‚ÍV‚µ‚¢UŒ‚‚ğn‚ß‚È‚¢
+        // æ”»æ’ƒä¸­ã¯æ–°ã—ã„æ”»æ’ƒã‚’å§‹ã‚ãªã„
         if (isAttacking)
         {
             return;
         }
 
-        // Boss‚ÆPlayer‚Ì‰¡•ûŒü‚Ì‹——£‚ğ’²‚×‚é
+        // Bossã¨Playerã®æ¨ªæ–¹å‘ã®è·é›¢ã‚’èª¿ã¹ã‚‹
         float distanceX = Mathf.Abs(transform.position.x - player.position.x);
 
-        // Boss‚ª‰æ–Ê‚É‰f‚Á‚Ä‚¢‚È‚¢‚©Šm”F
+        // BossãŒç”»é¢ã«æ˜ ã£ã¦ã„ãªã„ã‹ç¢ºèª
         bool visible = !IsVisible();
 
-        // Boss‚ª‰æ–Ê‚É‰f‚Á‚Ä‚¢‚È‚­‚ÄAPlayer‚Æ‚ ‚é’ö“x—£‚ê‚Ä‚¢‚é‚¾‚¯ƒJƒEƒ“ƒg‚·‚é
-        if (visible && distanceX >= attackDistance)
+        // BossãŒç”»é¢ã«æ˜ ã£ã¦ã„ãªãã¦ã€Playerã¨ã‚ã‚‹ç¨‹åº¦é›¢ã‚Œã¦ã„ã‚‹æ™‚ã ã‘ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹
+        if (/*visible &&*/ distanceX >= attackDistance)
         {
             visibleTimer += Time.deltaTime;
             visibleDebugTimer += Time.deltaTime;
 
-            // ƒƒO‚ªo‚·‚¬‚È‚¢‚æ‚¤‚Éˆê’èŠÔŠu‚Å•\¦
+            // ãƒ­ã‚°ãŒå‡ºã™ããªã„ã‚ˆã†ã«ä¸€å®šé–“éš”ã§è¡¨ç¤º
             if (visibleDebugTimer >= visibleLogInterval)
             {
-                Log("ƒpƒ“ƒ`ğŒƒJƒEƒ“ƒg’† / •\¦ŠÔ: " + visibleTimer.ToString("F2") +
-                    "•b / ‹——£X: " + distanceX.ToString("F2"));
+                Log("ãƒ‘ãƒ³ãƒæ¡ä»¶ã‚«ã‚¦ãƒ³ãƒˆä¸­ / è¡¨ç¤ºæ™‚é–“: " + visibleTimer.ToString("F2") +
+                    "ç§’ / è·é›¢X: " + distanceX.ToString("F2"));
 
                 visibleDebugTimer = 0.0f;
             }
@@ -147,18 +155,18 @@ public class BOSSPunchAttack : MonoBehaviour
         {
             if (visibleTimer > 0.0f)
             {
-                Log("ƒpƒ“ƒ`ğŒƒŠƒZƒbƒg / visible: " + visible +
-                    " / ‹——£X: " + distanceX.ToString("F2"));
+                Log("ãƒ‘ãƒ³ãƒæ¡ä»¶ãƒªã‚»ãƒƒãƒˆ / visible: " + visible +
+                    " / è·é›¢X: " + distanceX.ToString("F2"));
             }
 
             visibleTimer = 0.0f;
             visibleDebugTimer = 0.0f;
         }
 
-        // ˆê’èŠÔğŒ‚ğ–‚½‚µ‚½‚çƒpƒ“ƒ`UŒ‚ŠJn
+        // ä¸€å®šæ™‚é–“æ¡ä»¶ã‚’æº€ãŸã—ãŸã‚‰ãƒ‘ãƒ³ãƒæ”»æ’ƒé–‹å§‹
         if (visibleTimer >= attackWaitTime)
         {
-            Log("ƒpƒ“ƒ`UŒ‚ŠJnğŒ’B¬");
+            Log("ãƒ‘ãƒ³ãƒæ”»æ’ƒé–‹å§‹æ¡ä»¶é”æˆ");
 
             StartCoroutine(LongPunch());
         }
@@ -167,58 +175,56 @@ public class BOSSPunchAttack : MonoBehaviour
 
     private IEnumerator LongPunch()
     {
-        // UŒ‚’†‚É‚·‚é
+        // æ”»æ’ƒä¸­ã«ã™ã‚‹
         isAttacking = true;
 
-        // ‰æ–Ê•\¦ŠÔ‚ğƒŠƒZƒbƒg
+        // ç”»é¢è¡¨ç¤ºæ™‚é–“ã‚’ãƒªã‚»ãƒƒãƒˆ
         visibleTimer = 0.0f;
         visibleDebugTimer = 0.0f;
 
-        Log("LongPunch ŠJn");
+        Log("LongPunch é–‹å§‹");
 
-        // ’…’eˆÊ’u‚ğŒˆ‚ß‚é
+        // ç€å¼¾ä½ç½®ã‚’æ±ºã‚ã‚‹
         Vector2 targetPosition = player.position;
 
-        // ƒvƒŒƒCƒ„[‚Ì‰œ‚É’…’e“_‚ğİ’u
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å¥¥ã«ç€å¼¾ç‚¹ã‚’è¨­ç½®
         targetPosition.x += targetOffsetX;
 
-        // –ˆ‰ñ“¯‚¶êŠ‚É‚È‚ç‚È‚¢‚æ‚¤‚ÉA­‚µƒ‰ƒ“ƒ_ƒ€‚Å¶‰E‚É‚¸‚ç‚·
-        float randomX = Random.Range(-targetRandomX, targetRandomX);
+        // æ¯å›åŒã˜å ´æ‰€ã«ãªã‚‰ãªã„ã‚ˆã†ã«ã€å°‘ã—ãƒ©ãƒ³ãƒ€ãƒ ã§å·¦å³ã«ãšã‚‰ã™
+        float randomX = Random.Range(0.0f, targetRandomX);
         targetPosition.x += randomX;
 
-        Log("’…’eˆÊ’uŒˆ’è: " + targetPosition + " / ƒ‰ƒ“ƒ_ƒ€X: " + randomX.ToString("F2"));
+        Log("ç€å¼¾ä½ç½®æ±ºå®š: " + targetPosition + " / ãƒ©ãƒ³ãƒ€ãƒ X: " + randomX.ToString("F2"));
 
-        // —\ƒ}[ƒJ[‚ğ’…’e’n“_‚É’u‚­
+        // äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼ã‚’ç€å¼¾åœ°ç‚¹ã«ç½®ã
         punchMarker.transform.position =
             new Vector3(targetPosition.x, targetPosition.y, -1.0f);
 
-        // —\ƒ}[ƒJ[‚ğUŒ‚”ÍˆÍ‚É‡‚í‚¹‚½‘å‚«‚³‚É‚·‚é
+        // äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼ã‚’æ”»æ’ƒç¯„å›²ã«åˆã‚ã›ãŸå¤§ãã•ã«ã™ã‚‹
         punchMarker.transform.localScale =
             new Vector3(markerSize, markerSize, 1.0f);
 
-        // —\ƒ}[ƒJ[‚ğ•\¦‚·‚é
+        // äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹
         punchMarker.SetActive(true);
 
-        Log("—\ƒ}[ƒJ[•\¦ / ˆÊ’u: " + punchMarker.transform.position +
+        Log("äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼è¡¨ç¤º / ä½ç½®: " + punchMarker.transform.position +
             " / Scale: " + punchMarker.transform.localScale);
 
-        // —\‚ğ­‚µŒ©‚¹‚é
+        // äºˆå‘Šã‚’å°‘ã—è¦‹ã›ã‚‹
         yield return new WaitForSeconds(warningTime);
 
-        Log("Œ¶¬ŠJn");
+        Log("æ‹³ç”ŸæˆæˆåŠŸ / å‡ºç™ºä½ç½®: " + fistStartPoint.position);
 
-        // Œ‚ğ¶¬‚·‚é
-        BossPunchFist fist = Instantiate(
-            fistPrefab,
-            fistStartPoint.position,
-            Quaternion.identity
-        );
+        Log("æ‹³ç™ºå°„é–‹å§‹");
 
-        Log("Œ¶¬¬Œ÷ / o”­ˆÊ’u: " + fistStartPoint.position);
+        if (fist == null)
+        {
+            Log("æ‹³ãŒå…¥ã£ã¦ã„ã¾ã›ã‚“");
+            yield break;
+        }
 
-        // Œ‚ÌˆÚ“®î•ñ‚ğ“n‚·
         fist.Initialize(
-            fistStartPoint.position,
+            fistStartPoint,
             targetPosition,
             fistMoveTime,
             arcHeight,
@@ -226,39 +232,39 @@ public class BOSSPunchAttack : MonoBehaviour
             crackParameter
         );
 
-        Log("Œ‰Šú‰»Š®—¹ / –Ú•WˆÊ’u: " + targetPosition +
-            " / ˆÚ“®ŠÔ: " + fistMoveTime +
-            " / R‚È‚è‚‚³: " + arcHeight);
+        Log("æ‹³åˆæœŸåŒ–å®Œäº† / ç›®æ¨™ä½ç½®: " + targetPosition +
+            " / ç§»å‹•æ™‚é–“: " + fistMoveTime +
+            " / å±±ãªã‚Šé«˜ã•: " + arcHeight);
 
-        // Œ‚ª”ò‚ÑI‚í‚é‚Ü‚Å‘Ò‚Â
+        // æ‹³ãŒé£›ã³çµ‚ã‚ã‚‹ã¾ã§å¾…ã¤
         yield return new WaitForSeconds(fistMoveTime);
 
-        // —\ƒ}[ƒJ[‚ğÁ‚·
+        // äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼ã‚’æ¶ˆã™
         punchMarker.SetActive(false);
 
-        Log("—\ƒ}[ƒJ[”ñ•\¦");
+        Log("äºˆå‘Šãƒãƒ¼ã‚«ãƒ¼éè¡¨ç¤º");
 
-        // Ÿ‚ÌUŒ‚‚Ü‚Å‘Ò‚Â
+        // æ¬¡ã®æ”»æ’ƒã¾ã§å¾…ã¤
         yield return new WaitForSeconds(attackCoolTime);
 
-        // UŒ‚I—¹
+        // æ”»æ’ƒçµ‚äº†
         isAttacking = false;
 
-        Log("LongPunch I—¹");
+        Log("LongPunch çµ‚äº†");
     }
 
-    // Boss‚ª‰æ–Ê‚É‰f‚Á‚Ä‚¢‚é‚©Šm”F‚·‚é
+    // BossãŒç”»é¢ã«æ˜ ã£ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹
     private bool IsVisible()
     {
         if (Camera.main == null)
         {
-            Log("Main Camera ‚ªŒ©‚Â‚©‚ç‚È‚¢");
+            Log("Main Camera ãŒè¦‹ã¤ã‹ã‚‰ãªã„");
             return false;
         }
 
         if (bossRenderer == null)
         {
-            Log("bossRenderer ‚ª‚È‚¢‚½‚ß‰æ–Ê“à”»’è‚Å‚«‚È‚¢");
+            Log("bossRenderer ãŒãªã„ãŸã‚ç”»é¢å†…åˆ¤å®šã§ããªã„");
             return false;
         }
 
@@ -270,7 +276,7 @@ public class BOSSPunchAttack : MonoBehaviour
     }
 
 
-    // ƒfƒoƒbƒOƒƒO‚ğo‚·
+    // ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°ã‚’å‡ºã™
     private void Log(string message)
     {
         if (!debugLog) return;
