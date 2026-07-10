@@ -113,3 +113,5 @@ MonoBehaviour:
   rocketChrgeRatio: 0.9
   _explodeSound: {fileID: 8300000, guid: 5440e4a3d5bf3214597ea713d6386ff6, type: 3}
   _explodeCrystalSound: {fileID: 8300000, guid: 19dfee9a19b61384386380eaf5119f5d, type: 3}
+  explosionEffect: {fileID: 6524357835060572689, guid: 5a55ef695d2de4f4e9e4d3ee7fd74fef, type: 3}
+  explosionLight: {fileID: 4414853868598332696, guid: d4185fe6cb5030e4b81a53f184920c02, type: 3}
