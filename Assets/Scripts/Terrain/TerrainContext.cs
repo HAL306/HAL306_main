@@ -21,9 +21,38 @@ public class TerrainContext : MonoBehaviour
     [SerializeField, Tooltip("ベース地形のレイヤー")]
     private LayerMask _baseTerrainLayer;
 
+    [Header("サウンド設定")]
+    [SerializeField, Tooltip("結晶の破壊音を再生するか")]
+    private bool _enableBreakSound = true;
 
-    [SerializeField] private AudioClip _minDestructionSound; // 最小単位の破壊時に再生するサウンドエフェクト
-    [SerializeField] private AudioClip _crackSound; // 最小単位の破壊時に再生するサウンドエフェクト
+    [SerializeField, Tooltip("小さいひび割れ音（複数からランダム再生）")]
+    private AudioClip[] _smallCrackSounds;
+
+    [SerializeField, Tooltip("大きいひび割れ音（複数からランダム再生・完全破壊時にも使用）")]
+    private AudioClip[] _bigCrackSounds;
+
+    [SerializeField, Tooltip("小と大のひびを区別する面積のしきい値")]
+    private float _bigCrackAreaThreshold = 1.0f;
+
+    [SerializeField, Tooltip("再生ピッチの範囲（最小）")]
+    [Range(0.1f, 3.0f)] private float _pitchMin = 0.85f;
+
+    [SerializeField, Tooltip("再生ピッチの範囲（最大）")]
+    [Range(0.1f, 3.0f)] private float _pitchMax = 1.15f;
+
+    [SerializeField, Tooltip("再生音量の範囲（最小）")]
+    [Range(0.0f, 1.0f)] private float _volumeMin = 0.7f;
+
+    [SerializeField, Tooltip("再生音量の範囲（最大）")]
+    [Range(0.0f, 1.0f)] private float _volumeMax = 1.0f;
+
+    [SerializeField, Tooltip("同種の音の最短再生間隔（秒）")]
+    [Range(0.0f, 1.0f)] private float _soundInterval = 0.03f;
+
+    private static AudioSource _sfxSource;
+    private static readonly Dictionary<SoundEffectType, float> _lastPlayTime = new Dictionary<SoundEffectType, float>();
+    private float _lastActionArea;
+
     public bool IsDirtyDot { get; set; } = true;    // MeshDotManagerのキャッシュから変更があったか
 
 
@@ -49,9 +78,8 @@ public class TerrainContext : MonoBehaviour
 
     private enum SoundEffectType
     {
-        MIN,
-        CRACK,
-        DESTRUCT,
+        SMALL_CRACK,
+        BIG_CRACK,
     };
 
     // 分離時の初期化処理
@@ -67,10 +95,10 @@ public class TerrainContext : MonoBehaviour
         List<SplitTerrainData> splitTerrains;
         splitTerrains = _terrainPolygon.PolygonDestruct(worldCenter, radius, crack);
         float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
+        _lastActionArea = area;
 
-        for (int i = 0;i< splitTerrains.Count;++i)
+        for (int i = 0; i < splitTerrains.Count; ++i)
         {
-            // 地形分離
             CreateSplitTerrain(splitTerrains[i]);
         }
         OnChangeTerrain();
@@ -80,13 +108,14 @@ public class TerrainContext : MonoBehaviour
     // 三品怜
     // 地形にひびを入れる処理
     // 破壊面積を返す
-    public float Crack(CrackData[] data,CrackParameter crack)
+    public float Crack(CrackData[] data, CrackParameter crack)
     {
         List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonCrack(data, crack);
         float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
+        _lastActionArea = area;
+
         for (int i = 0; i < splitTerrains.Count; ++i)
         {
-            // 地形分離
             CreateSplitTerrain(splitTerrains[i]);
         }
         OnChangeTerrain();
@@ -198,7 +227,7 @@ public class TerrainContext : MonoBehaviour
             if (_destructEffect != null)
                 //_destructEffect.EmitDestructEffect(_terrainPolygon.TerrainPaths);
                 _destructEffect.EmitDestructEffect(_terrainPolygon.DestructPaths);
-            PlaySoundEffect(SoundEffectType.MIN);
+            PlaySoundEffect(SoundEffectType.BIG_CRACK);
             Destroy(this.gameObject);
             return;
         }
@@ -241,14 +270,13 @@ public class TerrainContext : MonoBehaviour
     {
         List<EdgeLoop> terrainPath = _terrainPolygon.TerrainPaths;
         _polygonCollider.pathCount = terrainPath.Count;
-        PlaySoundEffect(SoundEffectType.CRACK);
+
+        PlaySoundEffect(_lastActionArea >= _bigCrackAreaThreshold ? SoundEffectType.BIG_CRACK : SoundEffectType.SMALL_CRACK);
+
         for (int i = 0; i < terrainPath.Count; ++i)
         {
-            // エッジループ簡略化
             List<Vector2> path = new List<Vector2>(terrainPath[i].points);
             path = RamerDouglasPeucker.RamerDouglasPeuckerAlgorithm(path, 0.5f);
-
-            // コライダー形状を更新
             _polygonCollider.SetPath(i, path);
         }
     }
@@ -312,22 +340,34 @@ public class TerrainContext : MonoBehaviour
         _rigidbody.mass = _mass;
     }
 
-    void PlaySoundEffect(SoundEffectType soundEffect)
+    private void PlaySoundEffect(SoundEffectType soundEffect)
     {
-        switch (soundEffect)
+        if (!_enableBreakSound)
+            return;
+
+        if (_soundInterval > 0.0f)
         {
-            case SoundEffectType.MIN:
-                AudioSource.PlayClipAtPoint(_minDestructionSound, transform.position);
-                break;
-            case SoundEffectType.CRACK:
-                AudioSource.PlayClipAtPoint(_crackSound, transform.position);
-                break;
-            case SoundEffectType.DESTRUCT:
-                AudioSource.PlayClipAtPoint(_minDestructionSound, transform.position);
-                break;
-            default:
-                break;
+            if (_lastPlayTime.TryGetValue(soundEffect, out float last) &&
+                Time.time - last < _soundInterval)
+                return;
+            _lastPlayTime[soundEffect] = Time.time;
         }
 
+        AudioClip[] clipPool = soundEffect == SoundEffectType.BIG_CRACK ? _bigCrackSounds : _smallCrackSounds;
+        if (clipPool == null || clipPool.Length == 0)
+            return;
+
+        AudioClip clip = clipPool[UnityEngine.Random.Range(0, clipPool.Length)];
+        if (clip == null)
+            return;
+
+        if (_sfxSource == null)
+        {
+            GameObject go = new GameObject("TerrainSFX");
+            _sfxSource = go.AddComponent<AudioSource>();
+        }
+
+        _sfxSource.pitch = UnityEngine.Random.Range(_pitchMin, _pitchMax);
+        _sfxSource.PlayOneShot(clip, UnityEngine.Random.Range(_volumeMin, _volumeMax));
     }
 }

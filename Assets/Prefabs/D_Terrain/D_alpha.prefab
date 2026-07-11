@@ -115,8 +115,18 @@ MonoBehaviour:
   _baseTerrainLayer:
     serializedVersion: 2
     m_Bits: 64
-  _minDestructionSound: {fileID: 8300000, guid: d4cdfd95d25b38240a35f37fd9329abe, type: 3}
-  _crackSound: {fileID: 8300000, guid: 5e4cc29a21cd98d4cbfb65a42a0d5b4c, type: 3}
+  _enableBreakSound: 1
+  _smallCrackSounds:
+  - {fileID: 8300000, guid: 23ad731821bed014f843f8457ea71015, type: 3}
+  _bigCrackSounds:
+  - {fileID: 8300000, guid: 5e4cc29a21cd98d4cbfb65a42a0d5b4c, type: 3}
+  - {fileID: 8300000, guid: d4cdfd95d25b38240a35f37fd9329abe, type: 3}
+  _bigCrackAreaThreshold: 1
+  _pitchMin: 0.63
+  _pitchMax: 1.1
+  _volumeMin: 0.5
+  _volumeMax: 0.8
+  _soundInterval: 0.23
 --- !u!114 &2622828493201408670
 MonoBehaviour:
   m_ObjectHideFlags: 0
