@@ -376,6 +376,7 @@ GameObject:
   - component: {fileID: 8985337801111703087}
   - component: {fileID: 774413819769222218}
   - component: {fileID: 8193858301255343865}
+  - component: {fileID: 8063316394773853594}
   m_Layer: 0
   m_Name: FistStartPoint
   m_TagString: Untagged
@@ -521,6 +522,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &8063316394773853594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5418668686520794037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4488a88bfc0f76945aa5a22e029fbb19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossPunchFist
+  waitTime: 3
 --- !u!1 &6039698409937138395
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,9 +826,9 @@ MonoBehaviour:
   debugLog: 0
   visibleLogInterval: 1
   player: {fileID: 0}
-  fistStartPoint: {fileID: 8272257692971563554}
+  fistStartPoint: {fileID: 7341256430231842582}
   punchMarker: {fileID: 0}
-  fistPrefab: {fileID: 5834178351952921622, guid: 68b659aac6647864e932eeb7ac21fc65, type: 3}
+  fist: {fileID: 8063316394773853594}
   attackDistance: 5
   attackWaitTime: 5
   attackCoolTime: 2
