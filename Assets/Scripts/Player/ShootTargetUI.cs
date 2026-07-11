@@ -1,21 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// Æ€UI‚ğ§Œä‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒg
-/// ƒRƒ“ƒgƒ[ƒ‰[‘€ì‚ÍƒXƒeƒBƒbƒN•ûŒü~ˆê’è‹——£‚ÉÆ€‚ğˆÚ“®‚³‚¹‚é
-/// ƒ}ƒEƒX‘€ì‚Íƒ}ƒEƒX‚Ìƒ[ƒ‹ƒhÀ•W‚ÉÆ€‚ğˆÚ“®‚³‚¹‚é
+/// ï¿½Æï¿½UIï¿½ğ§Œä‚·ï¿½ï¿½Rï¿½ï¿½ï¿½|ï¿½[ï¿½lï¿½ï¿½ï¿½g
+/// ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ìï¿½ÍƒXï¿½eï¿½Bï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½ï¿½è‹—ï¿½ï¿½ï¿½ÉÆï¿½ï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+/// ï¿½}ï¿½Eï¿½Xï¿½ï¿½ï¿½ìï¿½Íƒ}ï¿½Eï¿½Xï¿½Ìƒï¿½ï¿½[ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Wï¿½ÉÆï¿½ï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class ShootTargetUI : MonoBehaviour
 {  
-    [SerializeField, Tooltip("Æ€‚ÌƒTƒCƒY")]
+    [SerializeField, Tooltip("ï¿½Æï¿½ï¿½ÌƒTï¿½Cï¿½Y")]
     [Range(0.1f, 5.0f)]
     private float _reticleSize = 1.0f;
 
-    [SerializeField, Tooltip("ƒRƒ“ƒgƒ[ƒ‰[‘€ì‚ÌÆ€‹——£")]
+    [SerializeField, Tooltip("ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ìï¿½ÌÆï¿½ï¿½ï¿½ï¿½ï¿½")]
     [Range(0.0f, 20.0f)]
     private float _controllerAimDist = 5.0f;
 
-    private PlayerShooter _playerShooter;
+    [SerializeField] private PlayerShooter _playerShooter;
 
     private void Update()
     {
@@ -23,22 +23,26 @@ public class ShootTargetUI : MonoBehaviour
     }
     private void Start()
     {
-        // ƒV[ƒ““à‚ÌPlayerShooter‚ğ©“®‚Åæ“¾‚·‚é
-        _playerShooter = FindAnyObjectByType<PlayerShooter>();
+        // ï¿½Vï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PlayerShooterï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åæ“¾ï¿½ï¿½ï¿½ï¿½
         transform.localScale = Vector3.one * _reticleSize;
     }
 
-    // Æ€‚ÌˆÊ’u‚ğXV‚·‚é
+    // ï¿½Æï¿½ï¿½ÌˆÊ’uï¿½ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½
     private void UpdateReticlePosition()
     {
+        if (!_playerShooter)
+        {
+            return;
+        }
+        
         if (_playerShooter.IsMouseAim)
         {
-            // ƒ}ƒEƒX‘€ìFƒ}ƒEƒX‚Ìƒ[ƒ‹ƒhÀ•W‚ÉÆ€‚ğˆÚ“®
+            // ï¿½}ï¿½Eï¿½Xï¿½ï¿½ï¿½ï¿½Fï¿½}ï¿½Eï¿½Xï¿½Ìƒï¿½ï¿½[ï¿½ï¿½ï¿½hï¿½ï¿½ï¿½Wï¿½ÉÆï¿½ï¿½ï¿½ï¿½Ú“ï¿½
             transform.position = _playerShooter.MouseWorldPos;
         }
         else
         {
-            // ƒRƒ“ƒgƒ[ƒ‰[‘€ìFƒvƒŒƒCƒ„[À•W‚©‚çƒXƒeƒBƒbƒN•ûŒü~‹——£‚ÉÆ€‚ğˆÚ“®
+            // ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½Fï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½Xï¿½eï¿½Bï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½ï¿½ï¿½ÉÆï¿½ï¿½ï¿½ï¿½Ú“ï¿½
             Vector2 playerPos = _playerShooter.transform.position;
             Vector2 aimDir = _playerShooter.ShootAimTarget.normalized;
             transform.position = playerPos + aimDir * _controllerAimDist;
