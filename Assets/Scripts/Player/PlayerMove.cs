@@ -66,7 +66,18 @@ public class PlayerMove : MonoBehaviour
     private InputActionReference _moveAction;
     [SerializeField, Tooltip("ジャンプ")]
     private InputActionReference _jumpAction;
-    
+
+    [SerializeField, Tooltip("自重でクリスタル破壊可能 == true")]
+    //True : 破壊可能
+    public bool _isDestroyCrystalByWeight = false;
+
+    [SerializeField, Tooltip("ベース地形の乗り越え")]
+    //True : 乗り越え可能
+    public bool _isOvercomeBaseTerrain = false;
+
+    [SerializeField, Tooltip("壁を駆け上がる速度")]
+    private float _climbUpSpeed = 7.0f;
+
 
     [Header("参照登録")]
     [SerializeField]
@@ -87,6 +98,8 @@ public class PlayerMove : MonoBehaviour
     public float _airAccelerationRatio = 1.2f;
 
 
+
+ 
     private Rigidbody2D _rigidbody;
 
     Animator animator;                          // アニメーター
@@ -109,6 +122,8 @@ public class PlayerMove : MonoBehaviour
     private bool isFever = false;  
 
     private bool _wasOverrideMoveTargetReachedPrevFrame;    // オーバーライドされた移動の目標地点に前のフレームで到達していたか
+
+    private int _contactWallDir = 0; // 1:右に壁がある, -1:左に壁がある, 0:壁なし
 
     private void OverrideInput()
     {
@@ -262,9 +277,14 @@ public class PlayerMove : MonoBehaviour
 
         // 移動処理
         OverrideInput();
-        Move();
-        Jump();
-        AddGravity();
+        CheckBaseTerrainWall();// ベース地形の壁に接触しているか判定
+
+        if (!OvercomeWall()) // 壁を乗り越える処理が行われた場合は、Move, Jump, AddGravityの処理をスキップ
+        {
+            Move();
+            Jump();
+            AddGravity();
+        }
         _rigidbody.linearVelocity = _currentVelicity;
 
         // 各種タイマー・フラグ更新
@@ -458,9 +478,11 @@ public class PlayerMove : MonoBehaviour
         {
             // 地面として扱う角度か判定
             float angle = Vector2.Angle(contact.normal, Vector2.up);
+
+            // 最大角度より大きい場合は地面として扱わない
             if (angle > _maxSlopeAngle)
                 continue;
-
+      
             _isGround = true;
 
             // 最も水平に近い地面の角度と法線方向を記録
@@ -469,9 +491,10 @@ public class PlayerMove : MonoBehaviour
                 minGroundAngle = angle;
                 _groundNormal = contact.normal;
             }
+
         }
 
-        // 坂道に着地した瞬間は一瞬速度をゼロにする(滑り落ち対策)
+        //坂道に着地した瞬間は一瞬速度をゼロにする(滑り落ち対策)
         if (_isGround && !_wasGround &&
             minGroundAngle > _minSlopeAngle)
         {
@@ -480,6 +503,61 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    //baseTerrainの壁に接触しているか判定
+    private void CheckBaseTerrainWall()
+    {
+        if (!_isOvercomeBaseTerrain)
+        {
+            _contactWallDir = 0;
+            return;
+        }
+
+        float dir = Mathf.Sign(_inputMove.x);
+        if (Mathf.Abs(_inputMove.x) < 0.1f)
+        {
+            _contactWallDir = 0;
+            return;
+        }
+        // コライダーの情報を取得
+        Collider2D col = GetComponent<Collider2D>();
+
+        Bounds bounds = col.bounds; // ワールド座標での実際の範囲を取得
+        float rayLength = 1.0f;
+        int terrainLayerMask = 1 << LayerMask.NameToLayer("BaseTerrain");
+
+        // コライダーの下端 + 0.1f を始点にする
+        Vector2 pos = transform.position;
+        Vector2 origin = new Vector2(pos.x, bounds.min.y + 0.1f); // 足元少し上
+        bool isHit = false;
+
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right * dir, rayLength, terrainLayerMask);
+        if (hit.collider != null)
+        {
+            isHit = true;
+        }
+
+        _contactWallDir = isHit ? (int)dir : 0;
+    }
+
+    // 壁を乗り越える処理
+    private bool OvercomeWall()
+    {
+        if (!_isOvercomeBaseTerrain || _contactWallDir == 0) return false;
+
+        // 右入力があって右に壁がある、または左入力があって左に壁がある場合
+        bool isPushingWall = (_inputMove.x > 0.1f && _contactWallDir == 1) ||
+                             (_inputMove.x < -0.1f && _contactWallDir == -1);
+
+        if (isPushingWall)
+        {
+            // 壁登り中は速度を強制固定（Moveや重力に邪魔されないようにする）
+            _currentVelicity.y = _climbUpSpeed;
+            _currentVelicity.x = _inputMove.x * _groundSpeed;
+            return true;
+        }
+
+        return false;
+    }
     public void SetFever(bool fever)
     {
         isFever = fever;
