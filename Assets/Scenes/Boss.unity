@@ -1186,6 +1186,7 @@ MonoBehaviour:
   _aimAction: {fileID: 0}
   _cutsceneState: {fileID: 11400000, guid: c91c848090a7c014b8a68e9ed5296213, type: 2}
   penetrationRatio: 1.2
+  _shootSound: {fileID: 0}
 --- !u!120 &1830940782
 LineRenderer:
   serializedVersion: 3
@@ -1367,6 +1368,7 @@ GameObject:
   - component: {fileID: 2143157066}
   - component: {fileID: 2143157065}
   - component: {fileID: 2143157070}
+  - component: {fileID: 2143157071}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -1656,6 +1658,28 @@ MonoBehaviour:
   m_DefaultActionMap: 
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!95 &2143157071
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2143157064}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &4920636725339663263
 PrefabInstance:
   m_ObjectHideFlags: 0

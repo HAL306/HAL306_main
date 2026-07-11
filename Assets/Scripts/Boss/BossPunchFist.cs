@@ -2,34 +2,54 @@ using UnityEngine;
 
 public class BossPunchFist : MonoBehaviour
 {
-    // Œ‚Ìo”­’n“_
+    // æ‹³ã®å‡ºç™ºåœ°ç‚¹
     private Vector2 startPosition;
 
-    // Œ‚Ì’…’e“_
+    // æ‹³ã®ç€å¼¾ç‚¹
     private Vector2 targetPosition;
 
-    // Œ‚ª”ò‚ñ‚Å‚¢‚éŠÔ
+    // æ‹³ãŒé£›ã‚“ã§ã„ã‚‹æ™‚é–“
     private float moveTimer;
 
-    // Œ‚ª’…’e‚·‚é‚Ü‚Å‚ÌŠÔ
+    // æ‹³ãŒç€å¼¾ã™ã‚‹ã¾ã§ã®æ™‚é–“
     private float moveTime;
 
-    // ˆÚ“®’†‚Ì‚‚³
+    // ç§»å‹•ä¸­ã®é«˜ã•
     private float arcHeight;
 
-    // ’nŒ`‚ğ”j‰ó‚·‚é”ÍˆÍ
+    // åœ°å½¢ã‚’ç ´å£Šã™ã‚‹ç¯„å›²
     private float destructRadius;
 
-    // ’nŒ`”j‰ó‚Ì‚Ğ‚ÑŠ„‚êİ’è
+    // åœ°å½¢ç ´å£Šæ™‚ã®ã²ã³å‰²ã‚Œè¨­å®š
     private CrackParameter crackParameter;
 
-    // ’nŒ`”j‰ó‚ÌŠ´Šo‚ğŠÇ—‚·‚éƒ^ƒCƒ}[
+    // åœ°å½¢ç ´å£Šã®æ„Ÿè¦šã‚’ç®¡ç†ã™ã‚‹ã‚¿ã‚¤ãƒãƒ¼
     private float destructTimer;
 
-    // Œ‚Ì‰Šúİ’è
-    public void Initialize(Vector2 start, Vector2 target, float time, float height, float radius, CrackParameter crack)
+    //
+    private bool IsMoving;
+
+    // 
+    private bool IsReturning;
+
+    //
+    private bool IsWaiting;
+
+    // 
+    private float waitTimer;
+
+    // æˆ»ã‚‹å ´æ‰€
+    private Transform returnPoint;
+
+    [SerializeField]
+    private float waitTime = 3.0f;
+
+    // æ‹³ã®åˆæœŸè¨­å®š
+    public void Initialize(Transform startPoint, Vector2 target, float time, float height, float radius, CrackParameter crack)
     {
-        startPosition = start;
+        returnPoint = startPoint;
+
+        startPosition = startPoint.position;
         targetPosition = target;
         moveTime = time;
         arcHeight = height;
@@ -37,47 +57,100 @@ public class BossPunchFist : MonoBehaviour
         crackParameter = crack;
 
         moveTimer = 0.0f;
+        waitTimer = 0.0f;
+        destructTimer = 0.0f;
+
+        IsWaiting = false;
+        IsMoving = true;
+        IsReturning = false;
+
+        // é£›ã‚“ã§ã„ã‚‹é–“ã¯Bossã®å­ã‹ã‚‰å¤–ã™
+        transform.SetParent(null, true);
 
         transform.position = startPosition;
     }
-
     private void Update()
     {
-        // ŠÔ‚ği‚ß‚é
+        if (!IsMoving) return;
+
+        // ç€å¼¾å¾Œæ•°ç§’æ®‹ã‚‹
+        if (IsWaiting)
+        {
+            waitTimer += Time.deltaTime;
+
+            if (waitTimer >= waitTime)
+            {
+                IsWaiting = false;
+                IsReturning = true;
+                moveTimer = 0.0f;
+            }
+            return;
+        }
+
+        // æ™‚é–“ã‚’é€²ã‚ã‚‹
         moveTimer += Time.deltaTime;
 
-        // 0~1‚ÌŠ„‡‚É•ÏŠ·‚·‚é
+        // 0~1ã®å‰²åˆã«å¤‰æ›ã™ã‚‹
         float t = moveTimer / moveTime;
         t = Mathf.Clamp01(t);
 
-        // o”­’n“_‚©‚ç’…’e“_‚ÖˆÚ“®‚·‚é
-        Vector2 position = Vector2.Lerp(startPosition, targetPosition, t);
+        // å‡ºç™ºåœ°ç‚¹ã‹ã‚‰ç€å¼¾ç‚¹ã¸ç§»å‹•ã™ã‚‹
+        Vector2 position;
 
-        // •ú•¨üã‚É”ò‚Î‚·
-        position.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
-
-        // ˆÊ’u‚ğ”½‰f
-        transform.position = position;
-
-        // ’…’e‚µ‚½‚çÁ‚·
-        if (t >= 1.0f)
+        if (!IsReturning)
         {
-            Destroy(gameObject);
+            position = Vector2.Lerp(startPosition, targetPosition, t);
+            position.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
+
+            transform.position = position;
+
+            // ç€å¼¾ã—ãŸã‚‰ã€å¸°ã‚Šã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+            if (t >= 1.0f)
+            {
+                IsWaiting = true;
+                waitTimer = 0.0f;
+                moveTimer = 0.0f;
+                transform.position = targetPosition;
+
+            }
+        }
+        else
+        {
+            // å¸°ã‚Šã®ç§»å‹•
+            Vector2 nowReturnPosition = returnPoint.position;
+
+            position = Vector2.Lerp(targetPosition, nowReturnPosition, t);
+
+            transform.position = position;
+
+            // å…ƒã®ä½ç½®ã«æˆ»ã£ãŸã‚‰åœæ­¢
+            if (t >= 1.0f)
+            {
+                IsWaiting = false;
+                IsMoving = false;
+                IsReturning = false;
+                // Bossã®æ‰‹å…ƒã«æˆ»ã™
+                transform.position = returnPoint.position;
+                transform.SetParent(returnPoint, true);
+                transform.localPosition = Vector3.zero;
+            }
         }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        // Fieldƒ^ƒOˆÈŠO‚Í”j‰ó‚µ‚È‚¢
+        if (!IsMoving) return;
+
+        // Fieldã‚¿ã‚°ä»¥å¤–ã¯ç ´å£Šã—ãªã„
         if (!collision.CompareTag("Field")) return;
 
-        // ’nŒ`”j‰ó—pƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+        // åœ°å½¢ç ´å£Šç”¨ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
         TerrainContext terrain = collision.GetComponentInParent<TerrainContext>();
 
-        // TerrainContext‚ª‚È‚¢ê‡‚Í”j‰ó‚Å‚«‚È‚¢
+        // TerrainContextãŒãªã„å ´åˆã¯ç ´å£Šã§ããªã„
         if (terrain == null) return;
 
-        // ˆê’èŠÔ‚²‚Æ‚É’nŒ`‚ğ”j‰ó‚·‚é
+        // ä¸€å®šæ™‚é–“ã”ã¨ã«åœ°å½¢ã‚’ç ´å£Šã™ã‚‹
         destructTimer += Time.deltaTime;
 
         if (destructTimer >= 0.1f)
