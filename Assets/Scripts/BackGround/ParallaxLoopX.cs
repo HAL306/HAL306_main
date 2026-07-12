@@ -1,16 +1,16 @@
 using UnityEngine;
 
 /// <summary>
-/// X²•ûŒü‚É”wŒi‚ğ–³ŒÀƒ‹[ƒv‚³‚¹‚éiƒGƒbƒW‚ğŒ©‚¹‚È‚¢‚æ‚¤‚É‚·‚éj
-/// ƒXƒNƒŠƒvƒg•t‚«ƒIƒuƒWƒFƒNƒg‚ğ•¡»‚·‚é‚Æ–³ŒÀ‘B‚·‚é‚½‚ßA
-/// ƒ^ƒCƒ‹‚ÍŒ©‚½–Ú‚¾‚¯‚Ì‹óƒIƒuƒWƒFƒNƒg‚Æ‚µ‚Äè“®¶¬‚·‚é
+/// Xè»¸æ–¹å‘ã«èƒŒæ™¯ã‚’ç„¡é™ãƒ«ãƒ¼ãƒ—ã•ã›ã‚‹ï¼ˆã‚¨ãƒƒã‚¸ã‚’è¦‹ã›ãªã„ã‚ˆã†ã«ã™ã‚‹ï¼‰
+/// ã‚¹ã‚¯ãƒªãƒ—ãƒˆä»˜ãã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¤‡è£½ã™ã‚‹ã¨ç„¡é™å¢—æ®–ã™ã‚‹ãŸã‚ã€
+/// ã‚¿ã‚¤ãƒ«ã¯è¦‹ãŸç›®ã ã‘ã®ç©ºã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¨ã—ã¦æ‰‹å‹•ç”Ÿæˆã™ã‚‹
 /// </summary>
 public class ParallaxLoopX : MonoBehaviour
 {
-    [SerializeField, Tooltip("¶‰E‚É•¡»‚·‚é–‡”B1‚È‚ç¶‰E1–‡‚¸‚ÂiŒv3–‡\¬j")]
+    [SerializeField, Tooltip("å·¦å³ã«è¤‡è£½ã™ã‚‹æšæ•°ã€‚1ãªã‚‰å·¦å³1æšãšã¤ï¼ˆè¨ˆ3æšæ§‹æˆï¼‰")]
     private int _loopCount = 1;
 
-    [SerializeField, Tooltip("ƒ^ƒCƒ‹ŠÔ‚ÌŒ„ŠÔ’²®i0‚ÅŒ„ŠÔ‚È‚µA•‰‚Ì’l‚Åd‚Ë‚éj")]
+    [SerializeField, Tooltip("ã‚¿ã‚¤ãƒ«é–“ã®éš™é–“èª¿æ•´ï¼ˆ0ã§éš™é–“ãªã—ã€è² ã®å€¤ã§é‡ã­ã‚‹ï¼‰")]
     private float _gapOffset = 0f;
 
     private Camera _cam;
@@ -25,7 +25,7 @@ public class ParallaxLoopX : MonoBehaviour
 
         if (_sourceRenderer == null)
         {
-            Debug.LogError($"{name}: SpriteRenderer‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+            Debug.LogError($"{name}: SpriteRendererãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
             enabled = false;
             return;
         }
@@ -59,7 +59,7 @@ public class ParallaxLoopX : MonoBehaviour
         sr.flipX = _sourceRenderer.flipX;
         sr.flipY = _sourceRenderer.flipY;
 
-        // Œ³ƒIƒuƒWƒFƒNƒg‚ÉParallaxBackground‚ª•t‚¢‚Ä‚¢‚ê‚ÎAƒ^ƒCƒ‹‚É‚à“¯‚¶İ’è‚ÅƒRƒs[‚·‚é
+        // å…ƒã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ParallaxBackgroundãŒä»˜ã„ã¦ã„ã‚Œã°ã€ã‚¿ã‚¤ãƒ«ã«ã‚‚åŒã˜è¨­å®šã§ã‚³ãƒ”ãƒ¼ã™ã‚‹
         ParallaxBackground sourceParallax = GetComponent<ParallaxBackground>();
         if (sourceParallax != null)
         {
@@ -84,5 +84,10 @@ public class ParallaxLoopX : MonoBehaviour
                 tile.position += new Vector3(_tileWidth * (_loopCount * 2 + 1) * direction, 0, 0);
             }
         }
+    }
+
+    public void CameraReset()
+    {
+        _cam = Camera.main;
     }
 }

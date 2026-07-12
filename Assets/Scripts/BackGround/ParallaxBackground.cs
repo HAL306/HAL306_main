@@ -1,17 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// Ž‹·ƒXƒNƒ[ƒ‹‚ðs‚¤ƒRƒ“ƒ|[ƒlƒ“ƒg
-/// ƒJƒƒ‰‚Ìâ‘ÎÀ•W‚ðŠî€‚É‚µ‚ÄŽ‹·ƒXƒNƒ[ƒ‹‚ðs‚¤
-/// ‰º’[‚Ì‚ÝƒNƒ‰ƒ“ƒv‚µA”wŒi‚ªƒJƒƒ‰‚Ì‰º’[‚æ‚è“à‘¤‚É—ˆ‚È‚¢‚æ‚¤‚É‚·‚é
+/// è¦–å·®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã‚’è¡Œã†ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
+/// ã‚«ãƒ¡ãƒ©ã®çµ¶å¯¾åº§æ¨™ã‚’åŸºæº–ã«ã—ã¦è¦–å·®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã‚’è¡Œã†
+/// ä¸‹ç«¯ã®ã¿ã‚¯ãƒ©ãƒ³ãƒ—ã—ã€èƒŒæ™¯ãŒã‚«ãƒ¡ãƒ©ã®ä¸‹ç«¯ã‚ˆã‚Šå†…å´ã«æ¥ãªã„ã‚ˆã†ã«ã™ã‚‹
 /// </summary>
 public class ParallaxBackground : MonoBehaviour
 {
-    [SerializeField, Tooltip("Ž‹·ƒXƒNƒ[ƒ‹ŒW”i0=“®‚©‚È‚¢A1=ƒJƒƒ‰‚Æ“¯‘¬j")]
+    [SerializeField, Tooltip("è¦–å·®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä¿‚æ•°ï¼ˆ0=å‹•ã‹ãªã„ã€1=ã‚«ãƒ¡ãƒ©ã¨åŒé€Ÿï¼‰")]
     [Range(0.0f, 1.0f)]
     private float _parallaxFactor_X = 0.5f;
 
-    [SerializeField, Tooltip("Ž‹·ƒXƒNƒ[ƒ‹ŒW”i0=“®‚©‚È‚¢A1=ƒJƒƒ‰‚Æ“¯‘¬j")]
+    [SerializeField, Tooltip("è¦–å·®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ä¿‚æ•°ï¼ˆ0=å‹•ã‹ãªã„ã€1=ã‚«ãƒ¡ãƒ©ã¨åŒé€Ÿï¼‰")]
     [Range(0.0f, 1.0f)]
     private float _parallaxFactor_Y = 0.5f;
 
@@ -30,7 +30,7 @@ public class ParallaxBackground : MonoBehaviour
 
         if (_spriteRenderers.Length == 0)
         {
-            Debug.LogError($"{name}: SpriteRenderer‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+            Debug.LogError($"{name}: SpriteRendererãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
         }
 
         _startPos = transform.position;
@@ -50,7 +50,7 @@ public class ParallaxBackground : MonoBehaviour
 
     private float ClampToCoverCamera(float desiredY)
     {
-        // ‰º’[‚Ì‚ÝƒNƒ‰ƒ“ƒv‚·‚éiã’[‚Í§ŒÀ‚µ‚È‚¢A—v–]‚É‚æ‚èˆêŽž“I‚ÈŠÈˆÕ‘Î‰žj
+        // ä¸‹ç«¯ã®ã¿ã‚¯ãƒ©ãƒ³ãƒ—ã™ã‚‹ï¼ˆä¸Šç«¯ã¯åˆ¶é™ã—ãªã„ã€è¦æœ›ã«ã‚ˆã‚Šä¸€æ™‚çš„ãªç°¡æ˜“å¯¾å¿œï¼‰
         float maxY = GetMaxY();
         return Mathf.Min(desiredY, maxY);
     }
@@ -65,7 +65,7 @@ public class ParallaxBackground : MonoBehaviour
         return combined;
     }
 
-    // ã’[‚ªƒJƒƒ‰ã’[‚ð•¢‚¤‚½‚ß‚ÌÅ¬YÀ•W
+    // ä¸Šç«¯ãŒã‚«ãƒ¡ãƒ©ä¸Šç«¯ã‚’è¦†ã†ãŸã‚ã®æœ€å°Yåº§æ¨™
     public float GetMinY()
     {
         Bounds bounds = GetCombinedBounds();
@@ -74,7 +74,7 @@ public class ParallaxBackground : MonoBehaviour
         return camTop - topExtent;
     }
 
-    // ‰º’[‚ªƒJƒƒ‰‰º’[‚ð•¢‚¤‚½‚ß‚ÌÅ‘åYÀ•W
+    // ä¸‹ç«¯ãŒã‚«ãƒ¡ãƒ©ä¸‹ç«¯ã‚’è¦†ã†ãŸã‚ã®æœ€å¤§Yåº§æ¨™
     public float GetMaxY()
     {
         Bounds bounds = GetCombinedBounds();
@@ -83,14 +83,19 @@ public class ParallaxBackground : MonoBehaviour
         return camBottom + bottomExtent;
     }
 
-    // ƒ^ƒCƒ‹•¡»Žž‚É“¯‚¶Ž‹·Ý’è‚ðƒRƒs[‚·‚é‚½‚ß‚ÌŒöŠJƒƒ\ƒbƒh
+    // ã‚¿ã‚¤ãƒ«è¤‡è£½æ™‚ã«åŒã˜è¦–å·®è¨­å®šã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ãŸã‚ã®å…¬é–‹ãƒ¡ã‚½ãƒƒãƒ‰
     public void CopySettingsFrom(ParallaxBackground source)
     {
         _parallaxFactor_X = source._parallaxFactor_X;
         _parallaxFactor_Y = source._parallaxFactor_Y;
     }
 
-    // ŠO•”‚©‚çŽ‹·‚Ì‹–—e”ÍˆÍ‚ðŠm”F‚µ‚½‚¢ê‡‚Ì‚½‚ß‚ÉŽc‚·iGroupSync‚ÉˆË‘¶‚µ‚È‚¢j
+    // å¤–éƒ¨ã‹ã‚‰è¦–å·®ã®è¨±å®¹ç¯„å›²ã‚’ç¢ºèªã—ãŸã„å ´åˆã®ãŸã‚ã«æ®‹ã™ï¼ˆGroupSyncã«ä¾å­˜ã—ãªã„ï¼‰
     public float GetMinOffset() => GetMinY() - _startPos.y;
     public float GetMaxOffset() => GetMaxY() - _startPos.y;
+
+    public void CameraReset()
+    {
+        _cam = Camera.main;
+    }
 }
