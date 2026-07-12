@@ -17,6 +17,7 @@ public class ShootTargetUI : MonoBehaviour
 
     [SerializeField] private PlayerShooter _playerShooter;
 
+
     private void Update()
     {
         UpdateReticlePosition();

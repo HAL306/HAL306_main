@@ -1,27 +1,27 @@
-using UnityEditor.U2D.Aseprite;
+//using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
 /// <summary>
-/// ƒvƒŒƒCƒ„[‚Ì’eƒIƒuƒWƒFƒNƒg‚ğ§Œä‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒg
-/// CircleCast‚ÅˆÚ“®”ÍˆÍ“à‚ÌÕ“Ë‚ğ³Šm‚Éæ“¾‚·‚é
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å¼¾ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’åˆ¶å¾¡ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
+/// CircleCastã§ç§»å‹•ç¯„å›²å†…ã®è¡çªã‚’æ­£ç¢ºã«å–å¾—ã™ã‚‹
 /// </summary>
 public class PlayerBullet : MonoBehaviour
 {
-    [SerializeField, Tooltip("’e‚ÌˆÚ“®‘¬“x")]
+    [SerializeField, Tooltip("å¼¾ã®ç§»å‹•é€Ÿåº¦")]
     [Range(0.0f, 100.0f)]
     private float _speed = 30.0f;
 
-    [SerializeField, Tooltip("CircleCast‚Ì”»’è”¼Œa")]
+    [SerializeField, Tooltip("CircleCastã®åˆ¤å®šåŠå¾„")]
     [Range(0.0f, 1.0f)]
     private float _radius = 0.1f;
 
-    [SerializeField, Tooltip("ƒAƒTƒ‹ƒgƒ`ƒƒ[ƒW”{—¦")]
+    [SerializeField, Tooltip("ã‚¢ã‚µãƒ«ãƒˆãƒãƒ£ãƒ¼ã‚¸å€ç‡")]
     private float asultChrgeRatio = 1.1f;
 
-    private Vector2 _direction;        // ˆÚ“®•ûŒü
-    private float _explodeRadius;      // ”š”­”¼Œa
-    private LayerMask _hitLayer;       // Õ“ËƒŒƒCƒ„[
-    private LayerMask _destructibleLayer;  // ”j‰ó‰Â”\’nŒ`‚ÌƒŒƒCƒ„[
+    private Vector2 _direction;        // ç§»å‹•æ–¹å‘
+    private float _explodeRadius;      // çˆ†ç™ºåŠå¾„
+    private LayerMask _hitLayer;       // è¡çªãƒ¬ã‚¤ãƒ¤ãƒ¼
+    private LayerMask _destructibleLayer;  // ç ´å£Šå¯èƒ½åœ°å½¢ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼
     private PlayerFever playerFever;
     private float penetrationPower = 0.1f;
 
@@ -29,8 +29,8 @@ public class PlayerBullet : MonoBehaviour
 
 
     /// <summary>
-    /// ’e‚ğ‰Šú‰»‚·‚é
-    /// PlayerShooter‚©‚ç”­Ë‚ÉŒÄ‚Ño‚·
+    /// å¼¾ã‚’åˆæœŸåŒ–ã™ã‚‹
+    /// PlayerShooterã‹ã‚‰ç™ºå°„æ™‚ã«å‘¼ã³å‡ºã™
     /// </summary>
     public void Init(Vector2 direction, float explodeRadius, LayerMask hitLayer, float range, LayerMask destructibleLayer, PlayerFever fever,
         float power)
@@ -42,7 +42,7 @@ public class PlayerBullet : MonoBehaviour
         playerFever = fever;
         penetrationPower = power;
 
-        // Ë’ö‹——£‚Æ‘¬“x‚©‚ç¶‘¶ŠÔ‚ğŒvZ‚·‚é
+        // å°„ç¨‹è·é›¢ã¨é€Ÿåº¦ã‹ã‚‰ç”Ÿå­˜æ™‚é–“ã‚’è¨ˆç®—ã™ã‚‹
         float lifetime = range / _speed;
         Destroy(gameObject, lifetime);
     }
@@ -52,18 +52,18 @@ public class PlayerBullet : MonoBehaviour
         Move();
     }
 
-    // ˆÚ“®ˆ— + CircleCast‚É‚æ‚éÕ“Ë”»’è
+    // ç§»å‹•å‡¦ç† + CircleCastã«ã‚ˆã‚‹è¡çªåˆ¤å®š
     private void Move()
     {
         float moveDist = _speed * Time.deltaTime;
 
-        // ˆÚ“®”ÍˆÍ“à‚ÌÕ“Ë‚ğCircleCast‚Åæ“¾
+        // ç§»å‹•ç¯„å›²å†…ã®è¡çªã‚’CircleCastã§å–å¾—
         RaycastHit2D hit = Physics2D.CircleCast(
             transform.position, _radius, _direction, moveDist, _hitLayer);
 
         if (hit.collider != null)
         {
-            // ”j‰ó‰Â”\’nŒ`‚Ìê‡‚Ì‚İ”j‰óˆ—‚ğŒÄ‚Ño‚·
+            // ç ´å£Šå¯èƒ½åœ°å½¢ã®å ´åˆã®ã¿ç ´å£Šå‡¦ç†ã‚’å‘¼ã³å‡ºã™
             bool isDestructible = (_destructibleLayer.value & (1 << hit.collider.gameObject.layer)) != 0;
             if (isDestructible)
             {
@@ -72,7 +72,7 @@ public class PlayerBullet : MonoBehaviour
                 {
                     if (penetrationPower < terrain.TerrainPolygon.Area)
                     {
-                        // ŠÑ’Ê—Í‚æ‚è‘å‚«‚¢’nŒ`‚É“–‚½‚Á‚½‚ç’e‚ÍÁ–Å‚·‚é
+                        // è²«é€šåŠ›ã‚ˆã‚Šå¤§ãã„åœ°å½¢ã«å½“ãŸã£ãŸã‚‰å¼¾ã¯æ¶ˆæ»…ã™ã‚‹
                         Destroy(gameObject);
                         return;
                     }
@@ -80,23 +80,23 @@ public class PlayerBullet : MonoBehaviour
             }
             else
             {
-                // ‚Ç‚Ì’nŒ`‚É“–‚½‚Á‚Ä‚à’e‚ÍÁ–Å‚·‚é
+                // ã©ã®åœ°å½¢ã«å½“ãŸã£ã¦ã‚‚å¼¾ã¯æ¶ˆæ»…ã™ã‚‹
                 Destroy(gameObject);
                 return;
             }
         }
 
-        // Õ“Ë‚È‚µFˆÚ“®‚ğŒp‘±
+        // è¡çªãªã—ï¼šç§»å‹•ã‚’ç¶™ç¶š
         transform.Translate(_direction * moveDist);
     }
 
-    // ”j‰óˆ—
+    // ç ´å£Šå‡¦ç†
     private void HitDestruct(Vector2 hitPoint)
     {
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
             hitPoint, _explodeRadius, _hitLayer);
 
-        float area = 0.0f;  // ”j‰ó–ÊÏ
+        float area = 0.0f;  // ç ´å£Šé¢ç©
 
         foreach (Collider2D collider in hitColliders)
         {
