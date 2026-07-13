@@ -112,6 +112,9 @@ public class BossPunchFist : MonoBehaviour
                 moveTimer = 0.0f;
                 transform.position = targetPosition;
 
+                // 帰りはプレイヤーに攻撃しない
+                PlayerKiller killer = GetComponent<PlayerKiller>();
+                killer.enabled = false;
             }
         }
         else
@@ -133,6 +136,10 @@ public class BossPunchFist : MonoBehaviour
                 transform.position = returnPoint.position;
                 transform.SetParent(returnPoint, true);
                 transform.localPosition = Vector3.zero;
+
+                // 攻撃判定戻す
+                PlayerKiller killer = GetComponent<PlayerKiller>();
+                killer.enabled = true;
             }
         }
     }
