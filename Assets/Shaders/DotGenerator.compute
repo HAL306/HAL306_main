@@ -1,0 +1,172 @@
+#pragma kernel CSMainBatch
+
+struct PolygonData
+{
+    float4x4 objectToWorld;
+    int vertexStart;
+    int vertexCount;
+    int triangleStart;
+    int triangleCount;
+    int edgeStart;
+    int edgeCount;
+    float2 gridOffset;
+    int gridWidth;
+    int gridHeight;
+};
+
+struct PixelData
+{
+    float3 worldPosition;
+    float3 normal;
+    float2 localPosition;
+    float3 axisX;
+    float3 axisY;
+};
+
+int TotalPolygonCount;
+float2 _GridSpacing;
+float _EdgeSize;
+
+StructuredBuffer<PolygonData> Polygons;
+StructuredBuffer<float2> Vertices;
+StructuredBuffer<int> Triangles;
+StructuredBuffer<float4> BoundaryEdges;
+AppendStructuredBuffer<PixelData> ResultBuffer;
+
+bool PointInTriangle(float2 pt, float2 v1, float2 v2, float2 v3)
+{
+    float d1 = (pt.x - v2.x) * (v1.y - v2.y) - (v1.x - v2.x) * (pt.y - v2.y);
+    float d2 = (pt.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (pt.y - v3.y);
+    float d3 = (pt.x - v1.x) * (v3.y - v1.y) - (v3.x - v1.x) * (pt.y - v1.y);
+    return !(((d1 < 0) || (d2 < 0) || (d3 < 0)) && ((d1 > 0) || (d2 > 0) || (d3 > 0)));
+}
+
+float DistanceToSegment(float2 p, float2 a, float2 b, out float2 outNormal)
+{
+    float2 ab = b - a;
+    float2 ap = p - a;
+    float t = saturate(dot(ap, ab) / (dot(ab, ab) + 1e-6));
+    float2 closest = a + t * ab;
+    
+    float2 n = float2(-ab.y, ab.x);
+    float len = length(n);
+    outNormal = len > 1e-6 ? n / len : float2(0, 0);
+    return distance(p, closest);
+}
+
+[numthreads(64, 1, 1)]
+void CSMainBatch (uint3 id : SV_DispatchThreadID)
+{
+    int globalPixelIdx = (int)id.x;
+    
+    int polyIdx = -1;
+    int accumulatedPixels = 0;
+    
+    for (int p = 0; p < TotalPolygonCount; p++)
+    {
+        int polySize = Polygons[p].gridWidth * Polygons[p].gridHeight;
+        if (globalPixelIdx >= accumulatedPixels && globalPixelIdx < accumulatedPixels + polySize)
+        {
+            polyIdx = p;
+            break;
+        }
+        accumulatedPixels += polySize;
+    }
+
+    if (polyIdx == -1) return;
+
+    PolygonData poly = Polygons[polyIdx];
+    int localPixelIdx = globalPixelIdx - accumulatedPixels;
+    
+    int gridX = localPixelIdx % poly.gridWidth;
+    int gridY = localPixelIdx / poly.gridWidth;
+
+    float2 localPos = poly.gridOffset + float2(gridX, gridY) * _GridSpacing;
+
+    float2 posC = localPos;
+    float2 posL = localPos + float2(-_GridSpacing.x * _EdgeSize, 0);
+    float2 posR = localPos + float2(_GridSpacing.x * _EdgeSize, 0);
+    float2 posD = localPos + float2(0, -_GridSpacing.y * _EdgeSize);
+    float2 posU = localPos + float2(0, _GridSpacing.y * _EdgeSize);
+
+    bool insideC = false, insideL = false, insideR = false, insideD = false, insideU = false;
+    
+    float padding = max(_GridSpacing.x, _GridSpacing.y) * _EdgeSize;
+
+    for (int i = 0; i < poly.triangleCount; i++)
+    {
+        int tBase = poly.triangleStart + i * 3;
+        float2 vA = Vertices[poly.vertexStart + Triangles[tBase + 0]];
+        float2 vB = Vertices[poly.vertexStart + Triangles[tBase + 1]];
+        float2 vC = Vertices[poly.vertexStart + Triangles[tBase + 2]];
+
+        float minX = min(vA.x, min(vB.x, vC.x)) - padding;
+        float maxX = max(vA.x, max(vB.x, vC.x)) + padding;
+        float minY = min(vA.y, min(vB.y, vC.y)) - padding;
+        float maxY = max(vA.y, max(vB.y, vC.y)) + padding;
+
+        if (posC.x < minX || posC.x > maxX || posC.y < minY || posC.y > maxY)
+            continue;
+
+        if (!insideC) insideC = PointInTriangle(posC, vA, vB, vC);
+        if (!insideL) insideL = PointInTriangle(posL, vA, vB, vC);
+        if (!insideR) insideR = PointInTriangle(posR, vA, vB, vC);
+        if (!insideD) insideD = PointInTriangle(posD, vA, vB, vC);
+        if (!insideU) insideU = PointInTriangle(posU, vA, vB, vC);
+    }
+
+    if (insideC)
+    {
+        float3 normal = float3(0, 0, -1);
+
+        if (!insideL || !insideR || !insideD || !insideU)
+        {
+            float2 roughEdgeVec = float2(0, 0);
+            if (!insideL) roughEdgeVec.x -= 1.0;
+            if (!insideR) roughEdgeVec.x += 1.0;
+            if (!insideD) roughEdgeVec.y -= 1.0;
+            if (!insideU) roughEdgeVec.y += 1.0;
+
+            float minBufferDist = 999999.0;
+            float2 bestNormal2D = float2(0, 0);
+
+            for (int t = 0; t < poly.edgeCount; t++)
+            {
+                float4 edge = BoundaryEdges[poly.edgeStart + t];
+                
+                float minX = min(edge.x, edge.z) - _GridSpacing.x * 2.0;
+                float maxX = max(edge.x, edge.z) + _GridSpacing.x * 2.0;
+                float minY = min(edge.y, edge.w) - _GridSpacing.y * 2.0;
+                float maxY = max(edge.y, edge.w) + _GridSpacing.y * 2.0;
+
+                if (posC.x < minX || posC.x > maxX || posC.y < minY || posC.y > maxY)
+                    continue;
+
+                float2 n; float d;
+                d = DistanceToSegment(posC, edge.xy, edge.zw, n);
+                if (d < minBufferDist) 
+                { 
+                    minBufferDist = d; 
+                    bestNormal2D = n; 
+                }
+            }
+
+            if (length(bestNormal2D) > 0.0)
+            {
+                if (dot(bestNormal2D, roughEdgeVec) < 0.0) bestNormal2D = -bestNormal2D;
+                normal = normalize(float3(bestNormal2D * 0.75, -0.66));
+            }
+        }
+
+        float3 worldNormal = normalize(mul((float3x3)poly.objectToWorld, normal));
+        float3 worldPos = mul(poly.objectToWorld, float4(localPos, 0, 1)).xyz;
+
+        PixelData data;
+        data.worldPosition = worldPos;
+        data.normal = worldNormal;
+        data.localPosition = localPos;
+        data.axisX = normalize(mul((float3x3)poly.objectToWorld, float3(1, 0, 0)));
+        data.axisY = normalize(mul((float3x3)poly.objectToWorld, float3(0, 1, 0)));
+        ResultBuffer.Append(data);
+    }
+}
