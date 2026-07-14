@@ -44,6 +44,8 @@ public class BossPunchFist : MonoBehaviour
     [SerializeField]
     private float waitTime = 3.0f;
 
+    private bool isAtack;
+
     // 拳の初期設定
     public void Initialize(Transform startPoint, Vector2 target, float time, float height, float radius, CrackParameter crack)
     {
@@ -71,6 +73,15 @@ public class BossPunchFist : MonoBehaviour
     }
     private void Update()
     {
+        if(isAtack)
+        {
+            // 帰りはプレイヤーに攻撃しない
+            PlayerKiller killer = GetComponent<PlayerKiller>();
+            killer.enabled = false;
+            isAtack = false;
+        }
+
+
         if (!IsMoving) return;
 
         // 着弾後数秒残る
@@ -107,14 +118,15 @@ public class BossPunchFist : MonoBehaviour
             // 着弾したら、帰りに切り替える
             if (t >= 1.0f)
             {
+                // 攻撃判定戻す
+                PlayerKiller killer = GetComponent<PlayerKiller>();
+                killer.enabled = true;
+                isAtack = true;
+
                 IsWaiting = true;
                 waitTimer = 0.0f;
                 moveTimer = 0.0f;
                 transform.position = targetPosition;
-
-                // 帰りはプレイヤーに攻撃しない
-                PlayerKiller killer = GetComponent<PlayerKiller>();
-                killer.enabled = false;
             }
         }
         else
@@ -136,10 +148,6 @@ public class BossPunchFist : MonoBehaviour
                 transform.position = returnPoint.position;
                 transform.SetParent(returnPoint, true);
                 transform.localPosition = Vector3.zero;
-
-                // 攻撃判定戻す
-                PlayerKiller killer = GetComponent<PlayerKiller>();
-                killer.enabled = true;
             }
         }
     }

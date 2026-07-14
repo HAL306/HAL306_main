@@ -25,6 +25,11 @@ public class StageStartObserver : MonoBehaviour
         cutsceneState.OnCutsceneStopped += OnStageStart;
     }
 
+    private void OnDisable()
+    {
+        cutsceneState.OnCutsceneStopped -= OnStageStart;
+    }
+
     private void OnStageStart(int cutsceneHash, bool isCompleted)
     {
         if (cutsceneHash == _cutsceneNameHash)

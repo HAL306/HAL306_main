@@ -12,7 +12,7 @@ public class PlayerKiller : MonoBehaviour
     private int _cutsceneIdHash;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         _cutsceneIdHash = Animator.StringToHash("PlayerDeath");
     }
@@ -26,6 +26,9 @@ public class PlayerKiller : MonoBehaviour
         Collider2D collision)
     {
         if (!collision.CompareTag("Player"))
+            return;
+
+        if(enabled == false)
             return;
 
         Time.timeScale = 0.0f; // 時間を止める
