@@ -137,7 +137,7 @@ public class BOSSPunchAttack : MonoBehaviour
         bool visible = !IsVisible();
 
         // Bossが画面に映っていなくて、Playerとある程度離れている時だけカウントする
-        if (/*visible &&*/ distanceX >= attackDistance)
+        if (visible && distanceX >= attackDistance)
         {
             visibleTimer += Time.deltaTime;
             visibleDebugTimer += Time.deltaTime;
