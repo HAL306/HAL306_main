@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StageClearObserver : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class StageClearObserver : MonoBehaviour
     {
         cutsceneState.OnCutsceneStopped += OnStageClear;
     }
+    private void OnDisable()
+    {
+        cutsceneState.OnCutsceneStopped += OnStageClear;
+    }
 
     private void OnStageClear(int cutsceneHash, bool isCompleted)
     {
@@ -34,5 +39,10 @@ public class StageClearObserver : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void ChangeScene()
+    {
+        SceneManager.LoadScene("ModeSelectScene");
     }
 }
