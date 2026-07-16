@@ -1,6 +1,7 @@
 using System;
 using Unity.VectorGraphics;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement; 
 public class PlayerKiller : MonoBehaviour
 {
@@ -42,5 +43,17 @@ public class PlayerKiller : MonoBehaviour
     {
         Time.timeScale = 1.0f; // 動かす
         SceneManager.LoadScene("GameOver");
+
+        // rendererを念のためデフォルトにする
+        Camera camera = Camera.main;
+
+        if (camera == null) return;
+
+        // カメラのURP追加データを取得
+        var cameraData = camera.GetUniversalAdditionalCameraData();
+
+        // 指定したインデックスのRendererへ切り替え
+        // フィーバー用のインデックスは1
+        cameraData.SetRenderer(0);
     }
 }
