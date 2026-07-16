@@ -98,5 +98,7 @@ public class ParallaxBackground : MonoBehaviour
     public void CameraReset()
     {
         _cam = Camera.main;
+        _startPos = transform.position;
+        _startCamPos = _cam.transform.position;
     }
 }
