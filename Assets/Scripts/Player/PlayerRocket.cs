@@ -137,11 +137,10 @@ public class PlayerRocket : MonoBehaviour
                 // エフェクト再生
                 Instantiate(explosionEffect,transform.position,Quaternion.Euler(-90.0f,0.0f,0.0f));
                 Instantiate(explosionLight, transform.position,Quaternion.Euler(0.0f,0.0f,-1.0f));
-                //explosionEffect.Play();
 
-                if (hit.collider.TryGetComponent(out TerrainContext terrain))
+                if (hit.collider.TryGetComponent(out TerrainContextA terrain))
                 {
-                    if(penetrationPower < terrain.TerrainPolygon.Area)
+                    if(penetrationPower < terrain.Area)
                     {
                         // 貫通力より大きい地形に当たったら弾は消滅する
                         PlaySoundEffect(SoundEffectType.EXPLODE_CRYSTAL);
@@ -173,7 +172,7 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider2D collider in hitColliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            if (collider.TryGetComponent(out TerrainContextA terrain))
             {
                 CrackParameter crack;
                 crack.direction = _direction;
@@ -197,7 +196,7 @@ public class PlayerRocket : MonoBehaviour
         
         foreach (Collider2D collider in crackColliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            if (collider.TryGetComponent(out TerrainContextA terrain))
             {
                 CrackParameter crack;
                 crack.direction = _direction;
@@ -219,7 +218,7 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider2D collider in colliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            if (collider.TryGetComponent(out TerrainContextA terrain))
             {
                 // 向き計算
                 Vector2 dir = Vector2.zero;

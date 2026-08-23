@@ -68,9 +68,9 @@ public class PlayerBullet : MonoBehaviour
             if (isDestructible)
             {
                 HitDestruct(hit.point);
-                if (hit.collider.TryGetComponent(out TerrainContext terrain))
+                if (hit.collider.TryGetComponent(out TerrainContextA terrain))
                 {
-                    if (penetrationPower < terrain.TerrainPolygon.Area)
+                    if (penetrationPower < terrain.Area)
                     {
                         // 貫通力より大きい地形に当たったら弾は消滅する
                         Destroy(gameObject);
@@ -100,7 +100,7 @@ public class PlayerBullet : MonoBehaviour
 
         foreach (Collider2D collider in hitColliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            if (collider.TryGetComponent(out TerrainContextA terrain))
             {
                 CrackParameter crack;
                 crack.direction = _direction;
