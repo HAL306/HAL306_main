@@ -280,6 +280,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1385036857345117470, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: _bulletPrefab
+      value: 
+      objectReference: {fileID: 2590035284781143901, guid: 0cc729f5fe097cf41b22a0e2997eb478, type: 3}
+    - target: {fileID: 3009328418883844808, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: _bulletPrefab
+      value: 
+      objectReference: {fileID: 2590035284781143901, guid: 1434fea26dbd0e146b6e317d83b74fca, type: 3}
     - target: {fileID: 5191795459572827382, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_IsActive
       value: 0

@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4190747474615663362}
   - component: {fileID: 5310161714501496037}
-  - component: {fileID: -6850814189826914842}
+  - component: {fileID: 1900469098086872625}
   m_Layer: 0
-  m_Name: PlayerRocket
+  m_Name: PlayerBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.07999923, g: 1, b: 0.040880322, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -92,7 +92,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &-6850814189826914842
+--- !u!114 &1900469098086872625
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,18 +101,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2590035284781143901}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90c2cb5e57bf6914ca0ed2b759d9b440, type: 3}
+  m_Script: {fileID: 11500000, guid: 47eb9b26a2cc2fe4881ed9c67c14abd3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerRocket
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBullet
   _speed: 30
   _radius: 0.1
-  crackNum: 8
-  crackRadius: 3.08
-  windRadius: 6.1
-  windPower: 21.6
-  rocketChrgeRatio: 0.9
-  _explodeSound: {fileID: 8300000, guid: 5440e4a3d5bf3214597ea713d6386ff6, type: 3}
-  _explodeCrystalSound: {fileID: 8300000, guid: 19dfee9a19b61384386380eaf5119f5d, type: 3}
-  explosionEffect: {fileID: 6524357835060572689, guid: 5a55ef695d2de4f4e9e4d3ee7fd74fef, type: 3}
-  explosionLight: {fileID: 4414853868598332696, guid: d4185fe6cb5030e4b81a53f184920c02, type: 3}
-  _terrainDestructVersion: 0
+  asultChrgeRatio: 1.1
+  _terrainDestructVersion: 1
