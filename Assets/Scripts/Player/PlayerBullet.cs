@@ -1,5 +1,6 @@
 //using UnityEditor.U2D.Aseprite;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// プレイヤーの弾オブジェクトを制御するコンポーネント
@@ -7,6 +8,13 @@ using UnityEngine;
 /// </summary>
 public class PlayerBullet : MonoBehaviour
 {
+    // 地形破壊のバージョン　いずれ消す
+    enum TerrainDestructVersion
+    {
+        OLD,
+        NEW
+    }
+
     [SerializeField, Tooltip("弾の移動速度")]
     [Range(0.0f, 100.0f)]
     private float _speed = 30.0f;
@@ -17,6 +25,10 @@ public class PlayerBullet : MonoBehaviour
 
     [SerializeField, Tooltip("アサルトチャージ倍率")]
     private float asultChrgeRatio = 1.1f;
+
+
+    [SerializeField, Tooltip("地形破壊のバージョン")]
+    private TerrainDestructVersion _terrainDestructVersion = TerrainDestructVersion.OLD;
 
     private Vector2 _direction;        // 移動方向
     private float _explodeRadius;      // 爆発半径
@@ -68,7 +80,21 @@ public class PlayerBullet : MonoBehaviour
             if (isDestructible)
             {
                 HitDestruct(hit.point);
-                if (hit.collider.TryGetComponent(out TerrainContext terrain))
+
+                // 地形破壊のバージョン変える いずれ消す
+                if (_terrainDestructVersion == TerrainDestructVersion.NEW)
+                {
+                    if (hit.collider.TryGetComponent(out TerrainContextA terrain))
+                    {
+                        if (penetrationPower < terrain.Area)
+                        {
+                            // 貫通力より大きい地形に当たったら弾は消滅する
+                            Destroy(gameObject);
+                            return;
+                        }
+                    }
+                }
+                else if (hit.collider.TryGetComponent(out TerrainContext terrain))
                 {
                     if (penetrationPower < terrain.TerrainPolygon.Area)
                     {
@@ -100,7 +126,20 @@ public class PlayerBullet : MonoBehaviour
 
         foreach (Collider2D collider in hitColliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            // 地形破壊のバージョン変える いずれ消す
+            if (_terrainDestructVersion == TerrainDestructVersion.NEW)
+            {
+                if (collider.TryGetComponent(out TerrainContextA terrain))
+                {
+                    CrackParameter crack;
+                    crack.direction = _direction;
+                    crack.angleNoise = 240.0f;
+                    crack.minCrackCount = 1;
+                    crack.maxCrackCount = 2;
+                    area += terrain.Destruct(hitPoint, _explodeRadius, crack);
+                }
+            }
+            else if (collider.TryGetComponent(out TerrainContext terrain))
             {
                 CrackParameter crack;
                 crack.direction = _direction;
