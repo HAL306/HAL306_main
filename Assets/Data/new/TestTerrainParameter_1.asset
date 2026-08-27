@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f95aa57b6b5974f85d787c710bd342, type: 3}
   m_Name: TestTerrainParameter_1
   m_EditorClassIdentifier: Assembly-CSharp::TerrainParameterA
-  _material: {fileID: 0}
+  _material: {fileID: 2100000, guid: ca89cad2ccd87c7449cc86022273e679, type: 2}
   _destructibility: 1
   _fractureMultiplier: 1
   _density: 5
   _destructEffect: {fileID: 7019593061133393526, guid: e54828396f03ce1468eb117b49675761, type: 3}
   _effectAmount: 30
+  _destructObject: {fileID: 0}
+  _destructObjectAmount: 5
   _isSoundEnabled: 1

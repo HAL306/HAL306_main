@@ -132,6 +132,13 @@ public class TerrainContextA : MonoBehaviour
         newTerrain._terrainParameter = _terrainParameter;
         newTerrain._area = area;
 
+        // マテリアル引き継ぎの仮処理
+        MeshRenderer meshRenderer = newTerrain.GetComponent<MeshRenderer>();
+        if(meshRenderer != null)
+        {
+            meshRenderer.sharedMaterial = _terrainParameter.Material;
+        }
+
         // 関連コンポーネントの初期化
         if (newTerrain._terrainShape != null)
         {

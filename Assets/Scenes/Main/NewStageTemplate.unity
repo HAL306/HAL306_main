@@ -498,6 +498,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DestructTerrain_1
       objectReference: {fileID: 0}
+    - target: {fileID: 3074363210259240967, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3084877988208828519, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.94
@@ -545,6 +549,10 @@ PrefabInstance:
     - target: {fileID: 4782260935152885903, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[0].y
       value: -3.8630996
+      objectReference: {fileID: 0}
+    - target: {fileID: 7773961823618065620, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7773961823618065620, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -989,6 +997,10 @@ PrefabInstance:
       propertyPath: _terrainParameter
       value: 
       objectReference: {fileID: 11400000, guid: 8d36b04b0502b6a4d8e2ea2397491e06, type: 2}
+    - target: {fileID: 7773961823618065620, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7773961823618065620, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
