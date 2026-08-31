@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: TestTerrainParameter_2
   m_EditorClassIdentifier: Assembly-CSharp::TerrainParameterA
   _material: {fileID: 2100000, guid: 45a8235c4fbc7754985019faef83bd4f, type: 2}
-  _destructibility: 1.8
-  _fractureMultiplier: 0
-  _density: 5
+  _destructibility: 2
+  _fractureMultiplier: 0.47
+  _density: 20
   _destructEffect: {fileID: 7019593061133393526, guid: 675c3099cc1eef6428e4b99aa70c4359, type: 3}
   _effectAmount: 30
   _destructObject: {fileID: 8599176397622633106, guid: 1b85b18c02428b7429a56d9bcdfea8d5, type: 3}

@@ -92,10 +92,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 4.09745, y: -2.0409882}
-      - {x: 4.436919, y: -4.173501}
-      - {x: 4.8773727, y: -4.4896994}
-      - {x: 5.5538645, y: -3.3505244}
+    - - {x: 3.256043, y: -2.9124463}
+      - {x: 3.2649565, y: -4.3237534}
+      - {x: 5.2980766, y: -4.369498}
+      - {x: 5.283412, y: -2.8997703}
   m_UseDelaunayMesh: 0
 --- !u!114 &636895902775416519
 MonoBehaviour:
@@ -115,6 +115,15 @@ MonoBehaviour:
   _baseTerrainLayer:
     serializedVersion: 2
     m_Bits: 64
+  _enableBreakSound: 1
+  _smallCrackSounds: []
+  _bigCrackSounds: []
+  _bigCrackAreaThreshold: 1
+  _pitchMin: 0.85
+  _pitchMax: 1.15
+  _volumeMin: 0.7
+  _volumeMax: 1
+  _soundInterval: 0.03
 --- !u!114 &261326054001955783
 MonoBehaviour:
   m_ObjectHideFlags: 0

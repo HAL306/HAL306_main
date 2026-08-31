@@ -1,0 +1,179 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6153472916967708649
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3293652886038113421}
+  - component: {fileID: 1484256748684368195}
+  - component: {fileID: 2469091540544823533}
+  - component: {fileID: 9025534002766276977}
+  - component: {fileID: 1343475281257443031}
+  - component: {fileID: 284149592755125730}
+  - component: {fileID: 2770028128622294887}
+  - component: {fileID: 3397163278878198955}
+  m_Layer: 3
+  m_Name: D_5
+  m_TagString: Field
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3293652886038113421
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.65, y: -5.14, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &1484256748684368195
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  m_Mesh: {fileID: 0}
+--- !u!60 &2469091540544823533
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 4.2922745, y: -2.0953617}
+      - {x: 3.256043, y: -2.9124463}
+      - {x: 3.775813, y: -4.1134014}
+      - {x: 4.78722, y: -4.189197}
+      - {x: 5.283412, y: -2.8997703}
+  m_UseDelaunayMesh: 0
+--- !u!114 &9025534002766276977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a6f8d96159b664180d867f299c6b0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainContext
+  _terrainSettings: {fileID: 11400000, guid: 55b538e2e3582654e8fd54370d30645b, type: 2}
+  _terrainParameter: {fileID: 11400000, guid: 11c2a903f2b17aa4a8a7357f1bc47568, type: 2}
+  _isStartTerrain: 1
+  _baseTerrainLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _enableBreakSound: 1
+  _smallCrackSounds: []
+  _bigCrackSounds: []
+  _bigCrackAreaThreshold: 1
+  _pitchMin: 0.85
+  _pitchMax: 1.15
+  _volumeMin: 0.7
+  _volumeMax: 1
+  _soundInterval: 0.03
+--- !u!114 &1343475281257443031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7939070a4f172da4d9ba26614292462f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainCollision
+--- !u!114 &284149592755125730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebb84141bbf57634896f660339e47e5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainRenderer
+--- !u!114 &2770028128622294887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df6a47e77caf9784781f3163dac1afde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDestructEffect
+--- !u!114 &3397163278878198955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153472916967708649}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38e9ac079880ac0449551ad7d78b60fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeshDotRenderer
+  computeShader: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
+  instancedMaterial: {fileID: 2100000, guid: ec24e5e1d5735ab4f8303d558856abbb, type: 2}
+  quadMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  edgeSize: 3
