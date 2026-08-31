@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -8792748437829766378}
   - component: {fileID: 6238761395986042282}
   - component: {fileID: 7173341239045837919}
+  - component: {fileID: 7340044744940120928}
   m_Layer: 6
   m_Name: BaseTerrain_1
   m_TagString: Untagged
@@ -186,3 +187,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TerrainContextA
   _terrainSettings: {fileID: 11400000, guid: 7c020cd3c81aa474c84db119a2d047fa, type: 2}
   _terrainParameter: {fileID: 11400000, guid: 78948becb034193418c3cb74b32c7968, type: 2}
+--- !u!114 &7340044744940120928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3074363210259240967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cdc5ab3b5ac6804893a00c2efd07be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeshDotRendererA
+  _instancedDotMaterial: {fileID: 0}
+  _computeShader: {fileID: 0}
+  _dotShapeMesh: {fileID: 0}

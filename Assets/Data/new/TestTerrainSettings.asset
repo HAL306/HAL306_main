@@ -18,6 +18,8 @@ MonoBehaviour:
     m_Bits: 64
   _minArea: 0.5
   _simplificationLevel: 0.2
+  _dotSize: 0.07
+  _edgeWidthMultiplier: 2.04
   _circleVertex: 6
   _crackDistance: 5
   _crackWidth: 0.1

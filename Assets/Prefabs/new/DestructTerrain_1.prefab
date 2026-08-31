@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: -6074524737433704285}
   - component: {fileID: -3148253014877312125}
   - component: {fileID: -4202582590621999594}
+  - component: {fileID: 7340044744940120928}
   m_Layer: 3
   m_Name: DestructTerrain_1
   m_TagString: Untagged
@@ -56,7 +57,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3074363210259240967}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -253,3 +254,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37616e86f4e6e7a4291384aebd2e8044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainCollisionA
+--- !u!114 &7340044744940120928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3074363210259240967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cdc5ab3b5ac6804893a00c2efd07be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeshDotRendererA
+  _instancedDotMaterial: {fileID: 2100000, guid: ec24e5e1d5735ab4f8303d558856abbb, type: 2}
+  _computeShader: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
+  _dotShapeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}

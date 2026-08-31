@@ -550,6 +550,14 @@ PrefabInstance:
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[0].y
       value: -3.8630996
       objectReference: {fileID: 0}
+    - target: {fileID: 7340044744940120928, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
+      propertyPath: _dotShapeMesh
+      value: 
+      objectReference: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 7340044744940120928, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
+      propertyPath: _computeShader
+      value: 
+      objectReference: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
     - target: {fileID: 7773961823618065620, guid: 5fcce2e4c5ea31a4e8dd4f34e28c0d8a, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
