@@ -81,7 +81,7 @@ public class BossController : MonoBehaviour
     private void Move()
     {
         if (!isMove) return;
-
+        
 
         moveX += speed * Time.fixedDeltaTime;
 
