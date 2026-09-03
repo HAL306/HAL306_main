@@ -13,6 +13,16 @@ MonoBehaviour:
   m_Name: HardParameter
   m_EditorClassIdentifier: Assembly-CSharp::TerrainParameterA
   _material: {fileID: 2100000, guid: ff41c2a1bb328ab4d92e7c411b7383ae, type: 2}
+  _dynamicUpdate: 0
+  _renderTextureSize: {x: 512, y: 512}
+  _normalStrength: 1
+  _uvScale: {x: 1, y: 1}
+  _metallic: 0
+  _smoothness: 0.5
+  _baseColor: {r: 1, g: 1, b: 1, a: 1}
+  _envLightStrength: 0.1
+  _shadowColorRetain: 0.2
+  _cutoff: 0.01
   _destructibility: 0.56
   _fractureMultiplier: 1
   _density: 5
