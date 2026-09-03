@@ -378,6 +378,14 @@ PrefabInstance:
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[2].y
       value: 2.657362
       objectReference: {fileID: 0}
+    - target: {fileID: 7340044744940120928, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
+      propertyPath: _dotShapeMesh
+      value: 
+      objectReference: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 7340044744940120928, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
+      propertyPath: _computeShader
+      value: 
+      objectReference: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
     - target: {fileID: 7953864384755476591, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -790,7 +798,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &252435139
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -186,7 +186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainContextA
   _terrainSettings: {fileID: 11400000, guid: 7c020cd3c81aa474c84db119a2d047fa, type: 2}
-  _terrainParameter: {fileID: 11400000, guid: 78948becb034193418c3cb74b32c7968, type: 2}
+  _terrainParameter: {fileID: 11400000, guid: a3f696d1629d5d94cb5f13eb277d4c87, type: 2}
 --- !u!114 &7340044744940120928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +199,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cdc5ab3b5ac6804893a00c2efd07be0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeshDotRendererA
-  _instancedDotMaterial: {fileID: 0}
-  _computeShader: {fileID: 0}
-  _dotShapeMesh: {fileID: 0}
+  _instancedDotMaterial: {fileID: 2100000, guid: ec24e5e1d5735ab4f8303d558856abbb, type: 2}
+  _computeShader: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
+  _dotShapeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  _shadowCastingMode: 1
+  _receiveShadows: 1
