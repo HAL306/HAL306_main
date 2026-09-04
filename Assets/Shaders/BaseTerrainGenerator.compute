@@ -17,7 +17,7 @@ AppendStructuredBuffer<BaseDotInstance> _ResultDots;
 
 float2 _GridOffset;
 float2 _GridSpacing;
-float _EdgeNormalWidth; // 0より大きい場合にエッジ法線を計算
+float _EdgeNormalWidth;
 int _TriangleCount;
 int _EdgeCount;
 uint2 _GridDimensions;
@@ -37,6 +37,7 @@ float DistanceToSegment(float2 p, float2 a, float2 b, out float2 outNormal)
     float t = saturate(dot(ap, ab) / (dot(ab, ab) + 1e-6));
     float2 closest = a + t * ab;
     
+    // 線分に対して垂直なベクトル
     float2 n = float2(-ab.y, ab.x);
     float len = length(n);
     outNormal = len > 1e-6 ? n / len : float2(0, 0);
@@ -50,7 +51,15 @@ void CSGenerateBaseTerrainDots(uint3 id : SV_DispatchThreadID)
 
     float2 worldPos2D = _GridOffset + float2(id.x, id.y) * _GridSpacing;
 
-    bool inside = false;
+    // MeshDotRenderer と同様、4近傍の位置をサンプリング
+    float2 posC = worldPos2D;
+    float2 posL = worldPos2D + float2(-_GridSpacing.x, 0);
+    float2 posR = worldPos2D + float2( _GridSpacing.x, 0);
+    float2 posD = worldPos2D + float2(0, -_GridSpacing.y);
+    float2 posU = worldPos2D + float2(0,  _GridSpacing.y);
+
+    bool insideC = false, insideL = false, insideR = false, insideD = false, insideU = false;
+    float padding = max(_GridSpacing.x, _GridSpacing.y);
     int matchTriangle = -1;
 
     for (int t = 0; t < _TriangleCount; t++)
@@ -60,32 +69,48 @@ void CSGenerateBaseTerrainDots(uint3 id : SV_DispatchThreadID)
         float2 vB = _Vertices[_Triangles[tBase + 1]];
         float2 vC = _Vertices[_Triangles[tBase + 2]];
 
-        float minX = min(vA.x, min(vB.x, vC.x));
-        float maxX = max(vA.x, max(vB.x, vC.x));
-        float minY = min(vA.y, min(vB.y, vC.y));
-        float maxY = max(vA.y, max(vB.y, vC.y));
+        float minX = min(vA.x, min(vB.x, vC.x)) - padding;
+        float maxX = max(vA.x, max(vB.x, vC.x)) + padding;
+        float minY = min(vA.y, min(vB.y, vC.y)) - padding;
+        float maxY = max(vA.y, max(vB.y, vC.y)) + padding;
 
-        if (worldPos2D.x < minX || worldPos2D.x > maxX || worldPos2D.y < minY || worldPos2D.y > maxY)
+        if (posC.x < minX || posC.x > maxX || posC.y < minY || posC.y > maxY)
             continue;
 
-        if (PointInTriangle(worldPos2D, vA, vB, vC))
+        if (!insideC)
         {
-            inside = true;
-            matchTriangle = t;
-            break;
+            if (PointInTriangle(posC, vA, vB, vC))
+            {
+                insideC = true;
+                matchTriangle = t;
+            }
         }
+        if (!insideL) insideL = PointInTriangle(posL, vA, vB, vC);
+        if (!insideR) insideR = PointInTriangle(posR, vA, vB, vC);
+        if (!insideD) insideD = PointInTriangle(posD, vA, vB, vC);
+        if (!insideU) insideU = PointInTriangle(posU, vA, vB, vC);
     }
 
-    if (inside && matchTriangle >= 0)
+    if (insideC && matchTriangle >= 0)
     {
+        // 全エッジから最短距離と線分法線を探索
         float minEdgeDist = 999999.0;
         float2 bestEdgeNormal2D = float2(0, 0);
 
         for (int e = 0; e < _EdgeCount; e++)
         {
             float4 edge = _BoundaryEdges[e];
+
+            float minX = min(edge.x, edge.z) - minEdgeDist;
+            float maxX = max(edge.x, edge.z) + minEdgeDist;
+            float minY = min(edge.y, edge.w) - minEdgeDist;
+            float maxY = max(edge.y, edge.w) + minEdgeDist;
+
+            if (posC.x < minX || posC.x > maxX || posC.y < minY || posC.y > maxY)
+                continue;
+
             float2 n;
-            float d = DistanceToSegment(worldPos2D, edge.xy, edge.zw, n);
+            float d = DistanceToSegment(posC, edge.xy, edge.zw, n);
             if (d < minEdgeDist)
             {
                 minEdgeDist = d;
@@ -93,14 +118,48 @@ void CSGenerateBaseTerrainDots(uint3 id : SV_DispatchThreadID)
             }
         }
 
-        // 基本は正面向き法線
+        // デフォルトは正面向き法線 (Z = -1)
         float3 worldNormal = float3(0, 0, -1);
 
-        // _EdgeNormalWidth が 0 より大きく、かつ指定幅以内の場合のみ丸み法線を算出
-        if (_EdgeNormalWidth > 0.0001 && minEdgeDist < _EdgeNormalWidth)
+        // _EdgeNormalWidth が 0 より大きい場合、エッジ法線を計算
+        if (_EdgeNormalWidth > 0.0001 && minEdgeDist <= _EdgeNormalWidth)
         {
+            // 【MeshDotRendererと完全同一の外向きベクトル算出】
+            float2 roughEdgeVec = float2(0, 0);
+            if (!insideL) roughEdgeVec.x -= 1.0;
+            if (!insideR) roughEdgeVec.x += 1.0;
+            if (!insideD) roughEdgeVec.y -= 1.0;
+            if (!insideU) roughEdgeVec.y += 1.0;
+
+            // 輪郭直近でなくても、エッジまでの方向ベクトルから外向きを安全に補完
+            if (length(roughEdgeVec) < 0.1)
+            {
+                // (closestPoint - ドット位置) ＝ エッジ（外側）へ向かう真の外向きベクトル
+                for (int e2 = 0; e2 < _EdgeCount; e2++)
+                {
+                    float4 edge2 = _BoundaryEdges[e2];
+                    float2 ab = edge2.zw - edge2.xy;
+                    float2 ap = posC - edge2.xy;
+                    float t = saturate(dot(ap, ab) / (dot(ab, ab) + 1e-6));
+                    float2 closest = edge2.xy + t * ab;
+                    if (distance(posC, closest) <= minEdgeDist + 1e-4)
+                    {
+                        roughEdgeVec = closest - posC; // ★内側から外側境界への向き
+                        break;
+                    }
+                }
+            }
+
+            // 内積判定：外向きベクトル(roughEdgeVec)と法線が逆を向いていたら必ず反転
+            if (dot(bestEdgeNormal2D, roughEdgeVec) < 0.0)
+            {
+                bestEdgeNormal2D = -bestEdgeNormal2D;
+            }
+
+            // エッジからの距離に応じた減衰（指定幅の境界で0、外周端で1）
             float edgeFactor = 1.0 - saturate(minEdgeDist / _EdgeNormalWidth);
-            // 境界線に対する外向き法線と Z 軸方向を合成
+
+            // MeshDotRenderer と全く同じ係数 (0.75, -0.66) で傾ける
             worldNormal = normalize(float3(bestEdgeNormal2D * edgeFactor * 0.75, -0.66));
         }
 

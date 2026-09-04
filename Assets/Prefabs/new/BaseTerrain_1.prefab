@@ -204,7 +204,7 @@ MonoBehaviour:
   _dotShapeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   _shadowCastingMode: 0
   _receiveShadows: 0
-  _edgeNormalWidth: 0
+  _edgeNormalWidth: 0.1
   _layers:
   - enabled: 1
     startDistance: 0
