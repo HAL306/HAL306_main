@@ -19,50 +19,88 @@ public class MeshDotRendererA : MonoBehaviour
     }
 
     [Header("Base Assets")]
-    [SerializeField] private Material _instancedDotMaterial;
-    [SerializeField] private ComputeShader _computeShader;
-    [SerializeField] private Mesh _dotShapeMesh;
+    [SerializeField] protected Material _instancedDotMaterial;
+    [SerializeField] protected ComputeShader _computeShader;
+    [SerializeField] protected Mesh _dotShapeMesh;
 
     [Header("Shadow Settings")]
-    [SerializeField] private ShadowCastingMode _shadowCastingMode = ShadowCastingMode.On;
-    [SerializeField] private bool _receiveShadows = true;
+    [SerializeField] protected ShadowCastingMode _shadowCastingMode = ShadowCastingMode.On;
+    [SerializeField] protected bool _receiveShadows = true;
 
-    // TerrainParameterA から渡される設定
-    private TerrainParameterA _parameter;
-    private float _dotSize = 0.125f;
-    private float _edgeWidthMultiplier = 1.0f;
+    protected TerrainParameterA _parameter;
+    protected float _dotSize = 0.125f;
+    protected float _edgeWidthMultiplier = 1.0f;
 
-    private MeshFilter _meshFilter;
-    private MaterialPropertyBlock _propBlock;
-    private ComputeBuffer _dotBuffer;
-    private ComputeBuffer _argsBuffer;
-    private readonly uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
-    private int _dotCount = 0;
+    protected MeshFilter _meshFilter;
+    protected MaterialPropertyBlock _propBlock;
+    protected ComputeBuffer _dotBuffer;
+    protected ComputeBuffer _argsBuffer;
+    protected readonly uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
+    protected int _dotCount = 0;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         _meshFilter = GetComponent<MeshFilter>();
         _propBlock = new MaterialPropertyBlock();
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         if (_meshFilter == null) _meshFilter = GetComponent<MeshFilter>();
         if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
+
+#if UNITY_EDITOR
+        // 非再生時、シーンビューのカメラ描画直前にも描画フックをかける
+        RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
+#endif
+
         RebuildDots();
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
+    {
+#if UNITY_EDITOR
+        RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
+#endif
+        ReleaseBuffers();
+    }
+
+    protected virtual void OnValidate()
+    {
+        // エディタ非再生時にパラメータが変更されたら即座に再反映
+        if (!Application.isPlaying)
+        {
+            RebuildDots();
+            UpdateProperties();
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnBeginCameraRendering(ScriptableRenderContext context, Camera cam)
+    {
+        // 非再生中かつシーンビューまたはプレビューカメラの場合に描画を実行
+        if (!Application.isPlaying && (cam.cameraType == CameraType.SceneView || cam.cameraType == CameraType.Preview))
+        {
+            RenderIndirect(cam);
+        }
+    }
+#endif
+
+    protected virtual void OnDestroy()
     {
         ReleaseBuffers();
     }
 
-    private void OnDestroy()
+    protected virtual void LateUpdate()
     {
-        ReleaseBuffers();
+        // 再生中は通常のLateUpdateで描画
+        if (Application.isPlaying)
+        {
+            RenderIndirect(null);
+        }
     }
 
-    private void LateUpdate()
+    protected virtual void RenderIndirect(Camera targetCam)
     {
         if (_dotBuffer == null || _argsBuffer == null || _dotCount == 0 || _instancedDotMaterial == null || _dotShapeMesh == null)
         {
@@ -71,7 +109,8 @@ public class MeshDotRendererA : MonoBehaviour
 
         UpdateProperties();
 
-        Bounds localB = _meshFilter.sharedMesh != null ? _meshFilter.sharedMesh.bounds : new Bounds(Vector3.zero, Vector3.one * 10f);
+        MeshFilter mf = _meshFilter != null ? _meshFilter : GetComponent<MeshFilter>();
+        Bounds localB = mf != null && mf.sharedMesh != null ? mf.sharedMesh.bounds : new Bounds(Vector3.zero, Vector3.one * 10f);
         Vector3 worldCenter = transform.TransformPoint(localB.center);
         Vector3 worldSize = Vector3.Scale(localB.size, transform.lossyScale);
         float maxDim = Mathf.Max(Mathf.Abs(worldSize.x), Mathf.Max(Mathf.Abs(worldSize.y), Mathf.Abs(worldSize.z)));
@@ -87,14 +126,12 @@ public class MeshDotRendererA : MonoBehaviour
             _propBlock,
             _shadowCastingMode,
             _receiveShadows,
-            gameObject.layer
+            gameObject.layer,
+            targetCam // 指定カメラ（シーンビュー）に対して確実に描画
         );
     }
 
-    /// <summary>
-    /// TerrainSettingsA / TerrainParameterA からの設定を適用
-    /// </summary>
-    public void ApplyConfiguration(TerrainParameterA parameter, float dotSize, float edgeWidthMultiplier)
+    public virtual void ApplyConfiguration(TerrainParameterA parameter, float dotSize, float edgeWidthMultiplier)
     {
         _parameter = parameter;
         _dotSize = Mathf.Max(0.005f, dotSize);
@@ -104,7 +141,7 @@ public class MeshDotRendererA : MonoBehaviour
         UpdateProperties();
     }
 
-    private void UpdateProperties()
+    protected virtual void UpdateProperties()
     {
         if (_propBlock == null || _dotBuffer == null) return;
 
@@ -114,7 +151,6 @@ public class MeshDotRendererA : MonoBehaviour
 
         if (_parameter == null) return;
 
-        // TerrainParameterA が管理する共有テクスチャをバインド（ベイク処理は Parameter 側で1回のみ実行）
         Texture mainTex = _parameter.GetEffectiveTexture();
         _propBlock.SetTexture("_MainTex", mainTex != null ? mainTex : Texture2D.whiteTexture);
 
@@ -152,7 +188,7 @@ public class MeshDotRendererA : MonoBehaviour
         _propBlock.SetFloat("_HasBumpMap", hasNormal ? 1.0f : 0.0f);
     }
 
-    private Vector4[] ExtractBoundaryEdges(Vector3[] vertices, int[] triangles)
+    protected Vector4[] ExtractBoundaryEdges(Vector3[] vertices, int[] triangles)
     {
         Dictionary<ulong, int> edgeCountMap = new Dictionary<ulong, int>();
         int triCount = triangles.Length / 3;
@@ -182,7 +218,7 @@ public class MeshDotRendererA : MonoBehaviour
         return boundaryList.Count > 0 ? boundaryList.ToArray() : new Vector4[] { Vector4.zero };
     }
 
-    private void AddEdge(int a, int b, Dictionary<ulong, int> map)
+    protected void AddEdge(int a, int b, Dictionary<ulong, int> map)
     {
         int min = Math.Min(a, b);
         int max = Math.Max(a, b);
@@ -192,7 +228,7 @@ public class MeshDotRendererA : MonoBehaviour
         else map[key] = 1;
     }
 
-    public void RebuildDots()
+    public virtual void RebuildDots()
     {
         ReleaseBuffers();
 
@@ -287,7 +323,7 @@ public class MeshDotRendererA : MonoBehaviour
         edgeBuffer.Release();
     }
 
-    private void ReleaseBuffers()
+    protected virtual void ReleaseBuffers()
     {
         if (_dotBuffer != null) { _dotBuffer.Release(); _dotBuffer = null; }
         if (_argsBuffer != null) { _argsBuffer.Release(); _argsBuffer = null; }

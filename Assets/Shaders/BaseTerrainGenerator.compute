@@ -1,0 +1,136 @@
+#pragma kernel CSGenerateBaseTerrainDots
+
+struct BaseDotInstance
+{
+    float3 worldPosition;
+    float4 color;
+    float2 uv;
+    float3 worldNormal;
+    float edgeDistance; // 外側エッジまでの最短距離
+};
+
+StructuredBuffer<float2> _Vertices;
+StructuredBuffer<int> _Triangles;
+StructuredBuffer<float2> _UVs;
+StructuredBuffer<float4> _BoundaryEdges;
+AppendStructuredBuffer<BaseDotInstance> _ResultDots;
+
+float2 _GridOffset;
+float2 _GridSpacing;
+float _EdgeNormalWidth; // 0より大きい場合にエッジ法線を計算
+int _TriangleCount;
+int _EdgeCount;
+uint2 _GridDimensions;
+
+bool PointInTriangle(float2 pt, float2 v1, float2 v2, float2 v3)
+{
+    float d1 = (pt.x - v2.x) * (v1.y - v2.y) - (v1.x - v2.x) * (pt.y - v2.y);
+    float d2 = (pt.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (pt.y - v3.y);
+    float d3 = (pt.x - v1.x) * (v3.y - v1.y) - (v3.x - v1.x) * (pt.y - v1.y);
+    return !(((d1 < 0) || (d2 < 0) || (d3 < 0)) && ((d1 > 0) || (d2 > 0) || (d3 > 0)));
+}
+
+float DistanceToSegment(float2 p, float2 a, float2 b, out float2 outNormal)
+{
+    float2 ab = b - a;
+    float2 ap = p - a;
+    float t = saturate(dot(ap, ab) / (dot(ab, ab) + 1e-6));
+    float2 closest = a + t * ab;
+    
+    float2 n = float2(-ab.y, ab.x);
+    float len = length(n);
+    outNormal = len > 1e-6 ? n / len : float2(0, 0);
+    return distance(p, closest);
+}
+
+[numthreads(8, 8, 1)]
+void CSGenerateBaseTerrainDots(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= _GridDimensions.x || id.y >= _GridDimensions.y) return;
+
+    float2 worldPos2D = _GridOffset + float2(id.x, id.y) * _GridSpacing;
+
+    bool inside = false;
+    int matchTriangle = -1;
+
+    for (int t = 0; t < _TriangleCount; t++)
+    {
+        int tBase = t * 3;
+        float2 vA = _Vertices[_Triangles[tBase + 0]];
+        float2 vB = _Vertices[_Triangles[tBase + 1]];
+        float2 vC = _Vertices[_Triangles[tBase + 2]];
+
+        float minX = min(vA.x, min(vB.x, vC.x));
+        float maxX = max(vA.x, max(vB.x, vC.x));
+        float minY = min(vA.y, min(vB.y, vC.y));
+        float maxY = max(vA.y, max(vB.y, vC.y));
+
+        if (worldPos2D.x < minX || worldPos2D.x > maxX || worldPos2D.y < minY || worldPos2D.y > maxY)
+            continue;
+
+        if (PointInTriangle(worldPos2D, vA, vB, vC))
+        {
+            inside = true;
+            matchTriangle = t;
+            break;
+        }
+    }
+
+    if (inside && matchTriangle >= 0)
+    {
+        float minEdgeDist = 999999.0;
+        float2 bestEdgeNormal2D = float2(0, 0);
+
+        for (int e = 0; e < _EdgeCount; e++)
+        {
+            float4 edge = _BoundaryEdges[e];
+            float2 n;
+            float d = DistanceToSegment(worldPos2D, edge.xy, edge.zw, n);
+            if (d < minEdgeDist)
+            {
+                minEdgeDist = d;
+                bestEdgeNormal2D = n;
+            }
+        }
+
+        // 基本は正面向き法線
+        float3 worldNormal = float3(0, 0, -1);
+
+        // _EdgeNormalWidth が 0 より大きく、かつ指定幅以内の場合のみ丸み法線を算出
+        if (_EdgeNormalWidth > 0.0001 && minEdgeDist < _EdgeNormalWidth)
+        {
+            float edgeFactor = 1.0 - saturate(minEdgeDist / _EdgeNormalWidth);
+            // 境界線に対する外向き法線と Z 軸方向を合成
+            worldNormal = normalize(float3(bestEdgeNormal2D * edgeFactor * 0.75, -0.66));
+        }
+
+        int tBase = matchTriangle * 3;
+        int i0 = _Triangles[tBase + 0];
+        int i1 = _Triangles[tBase + 1];
+        int i2 = _Triangles[tBase + 2];
+
+        float2 a = _Vertices[i0];
+        float2 b = _Vertices[i1];
+        float2 c = _Vertices[i2];
+
+        float den = (b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y);
+        float2 uv = worldPos2D;
+
+        if (abs(den) > 0.00001)
+        {
+            float w1 = ((b.y - c.y) * (worldPos2D.x - c.x) + (c.x - b.x) * (worldPos2D.y - c.y)) / den;
+            float w2 = ((c.y - a.y) * (worldPos2D.x - c.x) + (a.x - c.x) * (worldPos2D.y - c.y)) / den;
+            float w3 = 1.0 - w1 - w2;
+            uv = w1 * _UVs[i0] + w2 * _UVs[i1] + w3 * _UVs[i2];
+        }
+
+        BaseDotInstance dotInst;
+        dotInst.worldPosition = float3(worldPos2D.x, worldPos2D.y, 0.0);
+        dotInst.color = float4(1, 1, 1, 1);
+        dotInst.uv = uv;
+        dotInst.worldNormal = worldNormal;
+        dotInst.edgeDistance = minEdgeDist;
+
+        _ResultDots.Append(dotInst);
+    }
+}

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -8792748437829766378}
   - component: {fileID: 6238761395986042282}
   - component: {fileID: 7173341239045837919}
-  - component: {fileID: 7340044744940120928}
+  - component: {fileID: 5171041910932391411}
   m_Layer: 6
   m_Name: BaseTerrain_1
   m_TagString: Untagged
@@ -53,7 +53,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3074363210259240967}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -187,7 +187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TerrainContextA
   _terrainSettings: {fileID: 11400000, guid: 7c020cd3c81aa474c84db119a2d047fa, type: 2}
   _terrainParameter: {fileID: 11400000, guid: a3f696d1629d5d94cb5f13eb277d4c87, type: 2}
---- !u!114 &7340044744940120928
+--- !u!114 &5171041910932391411
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,11 +196,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 3074363210259240967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cdc5ab3b5ac6804893a00c2efd07be0, type: 3}
+  m_Script: {fileID: 11500000, guid: 379ddd76933ce8844847e16483b2fdf5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MeshDotRendererA
-  _instancedDotMaterial: {fileID: 2100000, guid: ec24e5e1d5735ab4f8303d558856abbb, type: 2}
-  _computeShader: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::BaseTerrainRenderer
+  _instancedDotMaterial: {fileID: 2100000, guid: d214cbf4d79c486448d137aa8d1cdbf7, type: 2}
+  _computeShader: {fileID: 7200000, guid: 543f173fda49a3d48b42541af68e9873, type: 3}
   _dotShapeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  _shadowCastingMode: 1
-  _receiveShadows: 1
+  _shadowCastingMode: 0
+  _receiveShadows: 0
+  _edgeNormalWidth: 0
+  _layers:
+  - enabled: 1
+    startDistance: 0
+    endDistance: -1
+    thresholdTexture: {fileID: 0}
+    thresholdTilingMultiplier: 1
+    rampTexture: {fileID: 0}
+    _material: {fileID: 2100000, guid: ff41c2a1bb328ab4d92e7c411b7383ae, type: 2}
+    _dynamicUpdate: 0
+    _renderTextureSize: {x: 512, y: 512}
+    _normalStrength: 1
+    _uvScale: {x: 1, y: 1}
+    _metallic: 1
+    _smoothness: 1
+    _baseColor: {r: 1, g: 1, b: 1, a: 1}
+    _envLightStrength: 0.1
+    _shadowColorRetain: 0.2
+    _cutoff: 0.01
+  - enabled: 1
+    startDistance: 0
+    endDistance: 0.2
+    thresholdTexture: {fileID: 0}
+    thresholdTilingMultiplier: 1
+    rampTexture: {fileID: 0}
+    _material: {fileID: 2100000, guid: 1257d4cb2fb739e4381ef2c1f71e127b, type: 2}
+    _dynamicUpdate: 0
+    _renderTextureSize: {x: 512, y: 512}
+    _normalStrength: 1
+    _uvScale: {x: 0.1, y: 0.1}
+    _metallic: 0
+    _smoothness: 0.5
+    _baseColor: {r: 1, g: 1, b: 1, a: 1}
+    _envLightStrength: 0.1
+    _shadowColorRetain: 0.2
+    _cutoff: 0.01

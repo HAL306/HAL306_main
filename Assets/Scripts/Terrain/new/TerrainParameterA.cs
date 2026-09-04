@@ -1,12 +1,18 @@
+using System;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// 地形のパラメータ（地形の種類ごとに設定）
-/// マテリアルのベイクテクスチャを全オブジェクト間で共有管理します
 /// </summary>
 [CreateAssetMenu(fileName = "TerrainParameterA", menuName = "Scriptable Objects/TerrainParameterA")]
 public class TerrainParameterA : ScriptableObject
 {
+    // 値変更通知用イベント
+    public event Action onValuesChanged;
+
     [Header("マテリアルサンプリング設定")]
     [SerializeField, Tooltip("地形のサンプリング元マテリアル (Shader Graph等)")]
     private Material _material;
@@ -46,33 +52,19 @@ public class TerrainParameterA : ScriptableObject
     private float _cutoff = 0.01f;
 
     [Header("破壊用ステータス")]
-    [SerializeField, Range(0.0f, 2.0f), Tooltip("地形の削れやすさ倍率")]
-    private float _destructibility = 1.0f;
-
-    [SerializeField, Range(0.0f, 2.0f), Tooltip("地形の割れやすさ倍率")]
-    private float _fractureMultiplier = 1.0f;
-
-    [SerializeField, Range(0.0f, 20.0f), Tooltip("地形の密度")]
-    private float _density = 5.0f;
+    [SerializeField, Range(0.0f, 2.0f)] private float _destructibility = 1.0f;
+    [SerializeField, Range(0.0f, 2.0f)] private float _fractureMultiplier = 1.0f;
+    [SerializeField, Range(0.0f, 20.0f)] private float _density = 5.0f;
 
     [Header("エフェクト設定")]
-    [SerializeField, Tooltip("エフェクトのプレハブ")]
-    private ParticleSystem _destructEffect;
-
-    [SerializeField, Tooltip("エフェクト生成量")]
-    private float _effectAmount = 30.0f;
-
-    [SerializeField, Tooltip("破壊時に発生するオブジェクト")]
-    private GameObject _destructObject;
-
-    [SerializeField, Tooltip("破壊時に発生するオブジェクトの生成量")]
-    private float _destructObjectAmount = 5.0f;
+    [SerializeField] private ParticleSystem _destructEffect;
+    [SerializeField] private float _effectAmount = 30.0f;
+    [SerializeField] private GameObject _destructObject;
+    [SerializeField] private float _destructObjectAmount = 5.0f;
 
     [Header("サウンド設定")]
-    [SerializeField, Tooltip("結晶の破壊音を再生するか")]
-    private bool _isSoundEnabled = true;
+    [SerializeField] private bool _isSoundEnabled = true;
 
-    // パラメータ単位で共有する RenderTexture とフレーム制御
     private RenderTexture _sharedBakedTexture;
     private int _lastBakedFrame = -1;
 
@@ -107,9 +99,20 @@ public class TerrainParameterA : ScriptableObject
         ReleaseBakedTexture();
     }
 
-    /// <summary>
-    /// このパラメータが管理する共有テクスチャを取得（必要な場合のみベイクを実行）
-    /// </summary>
+    private void OnValidate()
+    {
+        // インスペクターで値が変更されたらキャッシュを破棄し、購読者に即時通知
+        ReleaseBakedTexture();
+        onValuesChanged?.Invoke();
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            SceneView.RepaintAll();
+        }
+#endif
+    }
+
     public Texture GetEffectiveTexture()
     {
         if (_material == null) return Texture2D.whiteTexture;
@@ -119,7 +122,6 @@ public class TerrainParameterA : ScriptableObject
 
         if (!needsBake)
         {
-            // 通常のテクスチャマテリアルは直参照
             if (_material.HasProperty("_BaseMap") && _material.GetTexture("_BaseMap") != null)
                 return _material.GetTexture("_BaseMap");
             if (_material.HasProperty("_MainTex") && _material.GetTexture("_MainTex") != null)
@@ -128,7 +130,6 @@ public class TerrainParameterA : ScriptableObject
             return Texture2D.whiteTexture;
         }
 
-        // ベイクが必要な場合、同一フレーム内では1度だけ実行
         if (_sharedBakedTexture == null || _sharedBakedTexture.width != _renderTextureSize.x || _sharedBakedTexture.height != _renderTextureSize.y)
         {
             ReleaseBakedTexture();
@@ -143,7 +144,22 @@ public class TerrainParameterA : ScriptableObject
 
         if (_dynamicUpdate || _lastBakedFrame != Time.frameCount)
         {
-            Graphics.Blit(null, _sharedBakedTexture, _material);
+            RenderTexture prev = RenderTexture.active;
+            RenderTexture.active = _sharedBakedTexture;
+            GL.Clear(true, true, Color.white);
+            _material.SetPass(0);
+
+            GL.PushMatrix();
+            GL.LoadOrtho();
+            GL.Begin(GL.QUADS);
+            GL.TexCoord2(0, 0); GL.Vertex3(0, 0, 0.1f);
+            GL.TexCoord2(1, 0); GL.Vertex3(1, 0, 0.1f);
+            GL.TexCoord2(1, 1); GL.Vertex3(1, 1, 0.1f);
+            GL.TexCoord2(0, 1); GL.Vertex3(0, 1, 0.1f);
+            GL.End();
+            GL.PopMatrix();
+
+            RenderTexture.active = prev;
             _lastBakedFrame = Time.frameCount;
         }
 
