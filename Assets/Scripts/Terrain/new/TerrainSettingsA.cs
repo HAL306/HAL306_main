@@ -1,4 +1,8 @@
+using System;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// 地形の詳細設定
@@ -7,6 +11,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TerrainSettingsA", menuName = "Scriptable Objects/TerrainSettingsA")]
 public class TerrainSettingsA : ScriptableObject
 {
+    /// <summary>
+    /// インスペクターで値が変更された際に発火するイベント
+    /// </summary>
+    public event Action onValuesChanged;
+
     [Header("基本設定")]
     [SerializeField, Tooltip("空の地形のプレハブ")]
     private TerrainContextA _terrainPrefab;
@@ -87,6 +96,7 @@ public class TerrainSettingsA : ScriptableObject
     [Range(0.0f, 1.0f)]
     private float _soundInterval = 0.03f;
 
+    // プロパティ
     public TerrainContextA TerrainPrefab => _terrainPrefab;
     public LayerMask BaseTerrainLayer => _baseTerrainLayer;
     public float MinArea => _minArea;
@@ -107,4 +117,18 @@ public class TerrainSettingsA : ScriptableObject
     public float VolumeMin => _volumeMin;
     public float VolumeMax => _volumeMax;
     public float SoundInterval => _soundInterval;
+
+    private void OnValidate()
+    {
+        // 外部（TerrainContextA 等）へ変更を通知
+        onValuesChanged?.Invoke();
+
+#if UNITY_EDITOR
+        // 非再生時、シーンビューを即座に再描画
+        if (!Application.isPlaying)
+        {
+            SceneView.RepaintAll();
+        }
+#endif
+    }
 }
