@@ -3311,6 +3311,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &898253019 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 866598021036169214, guid: c2df61b7bca1b754e8c1c60946b7f8e7, type: 3}
+  m_PrefabInstance: {fileID: 1447597481}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &958572093
 GameObject:
   m_ObjectHideFlags: 0
@@ -7925,6 +7930,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5754467497289857103, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: playerPos
+      value: 
+      objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: punchMarker
+      value: 
+      objectReference: {fileID: 898253019}
     - target: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: m_Name
       value: Boss

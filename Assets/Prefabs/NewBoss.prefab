@@ -472,6 +472,8 @@ GameObject:
   - component: {fileID: 631788797360010003}
   - component: {fileID: -3627413203010702462}
   - component: {fileID: -3826442929849190395}
+  - component: {fileID: 5754467497289857103}
+  - component: {fileID: 6923334146087895574}
   m_Layer: 0
   m_Name: NewBoss
   m_TagString: Boss
@@ -703,7 +705,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8896673290602856705}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b17089ae8c08c574e9f173b227d25bf7, type: 3}
   m_Name: 
@@ -723,12 +725,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossController
   player: {fileID: 0}
-  speed: 0
+  speed: 0.1
   moveHeight: 1
   moveSpeed: 1
   attacks:
-  - {fileID: -3826442929849190395}
-  attackCheckInterval: 5
+  - {fileID: 6923334146087895574}
+  - {fileID: 5754467497289857103}
+  attackCheckInterval: 0.001
 --- !u!114 &-3826442929849190395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -744,3 +747,47 @@ MonoBehaviour:
   coolTime: 10
   sRenderer: {fileID: 6980389839174768601}
   attackTime: 3
+--- !u!114 &5754467497289857103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8896673290602856705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da40f173aba2cf14883ea42f0cfd7643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossBodyAttack
+  player: {fileID: 0}
+  chargeMarker: {fileID: 0}
+  warningTime: 0.7
+  markerThickness: 1
+  distancePosX: 10
+  distancePosY: 10
+  coolTime: 2
+  distanceCountTimer: 1
+  attackRange: 5
+  attackSpeed: 0.1
+--- !u!114 &6923334146087895574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8896673290602856705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f1dc98900efa8842ab29d2e599f6ce3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossStraightPunch
+  playerPos: {fileID: 0}
+  bossRenderer: {fileID: 7105139362233535745}
+  fist: {fileID: 2080116281560742078}
+  punchMarker: {fileID: 0}
+  punchSpeed: 20
+  returnSpeed: 10
+  punchRange: 15
+  coolTime: 3
+  warningTime: 0.7
+  markerThickness: 1

@@ -6511,11 +6511,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!4 &1754897937 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2080116281560742078, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-  m_PrefabInstance: {fileID: 895184333916695023}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1761627356
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7953,37 +7948,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      propertyPath: speed
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 2080541436}
-    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      propertyPath: attacks.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      propertyPath: attackCheckInterval
-      value: 0.001
-      objectReference: {fileID: 0}
-    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      propertyPath: 'attacks.Array.data[0]'
-      value: 
-      objectReference: {fileID: 6039698408969771631}
-    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      propertyPath: 'attacks.Array.data[1]'
-      value: 
-      objectReference: {fileID: 6039698408969771630}
     - target: {fileID: 631788797360010003, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: fade
       value: 
       objectReference: {fileID: 1271509641}
-    - target: {fileID: 631788797360010003, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5710290953433368903, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: m_LocalPosition.x
       value: -10.2
@@ -8024,6 +7995,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5754467497289857103, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: playerPos
+      value: 
+      objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: punchMarker
+      value: 
+      objectReference: {fileID: 844389502}
     - target: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: m_Name
       value: Boss
@@ -8031,63 +8014,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6039698408969771630}
-    - targetCorrespondingSourceObject: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6039698408969771631}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
 --- !u!1 &6039698408969771629 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
-  m_PrefabInstance: {fileID: 895184333916695023}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &6039698408969771630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6039698408969771629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da40f173aba2cf14883ea42f0cfd7643, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BossBodyAttack
-  player: {fileID: 2080541436}
-  distancePosX: 10
-  distancePosY: 10
-  coolTime: 2
-  distanceCountTimer: 1
-  attackRange: 50
-  attackSpeed: 0.1
---- !u!114 &6039698408969771631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6039698408969771629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f1dc98900efa8842ab29d2e599f6ce3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BossStraightPunch
-  playerPos: {fileID: 2080541436}
-  bossRenderer: {fileID: 6039698408969771639}
-  fist: {fileID: 1754897937}
-  punchMarker: {fileID: 844389502}
-  punchSpeed: 20
-  returnSpeed: 10
-  punchRange: 15
-  coolTime: 3
-  warningTime: 0.7
-  markerThickness: 1
---- !u!212 &6039698408969771639 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 7105139362233535745, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
   m_PrefabInstance: {fileID: 895184333916695023}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7884463964820606865
