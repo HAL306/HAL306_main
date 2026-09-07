@@ -31,7 +31,10 @@ public class BossController : MonoBehaviour
 
     // BOSSのX座標を管理する変数
     private float moveX;
-
+    public void SetIsMove(bool move)
+    {
+        isMove = move;
+    }
 
     private void Start()
     {

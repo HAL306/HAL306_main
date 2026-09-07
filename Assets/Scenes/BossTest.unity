@@ -236,6 +236,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7672278905634511679, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7672278905634511679, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
       propertyPath: boostSpeed
       value: 3
       objectReference: {fileID: 0}
@@ -254,13 +258,43 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6039698409937138395, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 266276030}
   m_SourcePrefab: {fileID: 100100000, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
 --- !u!4 &266276027 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7341256430231842582, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
   m_PrefabInstance: {fileID: 266276026}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &266276028 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6039698409937138395, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+  m_PrefabInstance: {fileID: 266276026}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &266276029 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 5192236991857190520, guid: 165df657d4f0d4e4dabeb02c68d6940e, type: 3}
+  m_PrefabInstance: {fileID: 266276026}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &266276030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266276028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f1dc98900efa8842ab29d2e599f6ce3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossStraightPunch
+  playerPos: {fileID: 871621715}
+  bossRenderer: {fileID: 266276029}
+  punchSpeed: 20
+  punchRange: 15
+  coolTime: 1
 --- !u!1 &336244653 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 866598021036169214, guid: c2df61b7bca1b754e8c1c60946b7f8e7, type: 3}
@@ -1014,8 +1048,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 648928581}
   - {fileID: 266276026}
-  - {fileID: 1730052212}
   - {fileID: 1184579433}
   - {fileID: 1687538984}
   - {fileID: 1191601873}
   - {fileID: 1014028128}
+  - {fileID: 1730052212}
