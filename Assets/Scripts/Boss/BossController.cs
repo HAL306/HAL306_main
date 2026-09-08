@@ -43,7 +43,7 @@ public class BossController : MonoBehaviour
 
     void Update()
     {
-        Move();
+       // Move();
 
         // 攻撃中は関数を抜ける
         if (currentAttack != null) return;
