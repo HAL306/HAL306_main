@@ -9,11 +9,10 @@ public sealed class TitleClickEffect : MonoBehaviour
     [SerializeField] private RectTransform titleLogo;
     [SerializeField] private RectTransform logoRunner;
     [SerializeField, Min(0f)] private float transitionDelay = 0.4f;
-    [SerializeField, Min(1f)] private float runnerSpeed = 170f;
-
     private bool clicked;
     private float runnerTime;
     private float shotTimer;
+    private float runnerBaseY;
     private static Sprite dustSprite;
 
     private void Awake()
@@ -27,6 +26,9 @@ public sealed class TitleClickEffect : MonoBehaviour
             if (logo != null)
                 titleLogo = logo.GetComponent<RectTransform>();
         }
+
+        if (logoRunner != null)
+            runnerBaseY = logoRunner.anchoredPosition.y;
     }
 
     private void Update()
@@ -45,14 +47,14 @@ public sealed class TitleClickEffect : MonoBehaviour
             return;
 
         runnerTime += Time.unscaledDeltaTime;
-        if (runnerTime < 1.8f)
-            return;
-
         Vector2 position = logoRunner.anchoredPosition;
-        position.x += runnerSpeed * Time.unscaledDeltaTime;
-        position.y = -122f + Mathf.Abs(Mathf.Sin(runnerTime * 12f)) * 12f;
-        if (position.x > 500f)
-            position.x = -500f;
+        // A compact run cycle for the logo character: lift, lean and squash are
+        // kept independent from frame rate and remain active while the player
+        // stays fixed beside the logo.
+        float stride = Mathf.Sin(runnerTime * 13f);
+        position.y = runnerBaseY + Mathf.Abs(stride) * 12f;
+        logoRunner.localRotation = Quaternion.Euler(0f, 0f, stride * -5f);
+        logoRunner.localScale = new Vector3(1f + Mathf.Abs(stride) * 0.05f, 1f - Mathf.Abs(stride) * 0.08f, 1f);
         logoRunner.anchoredPosition = position;
 
         shotTimer -= Time.unscaledDeltaTime;
