@@ -205,6 +205,7 @@ MonoBehaviour:
   _groundSpeedRatio: 1.2
   _airSpeedRatio: 1.2
   _airAccelerationRatio: 1.2
+  jumpEffect: {fileID: 6549010220109752054, guid: 3bab60ad740bc0142883cce697041ad7, type: 3}
 --- !u!114 &3367973697461627094
 MonoBehaviour:
   m_ObjectHideFlags: 0

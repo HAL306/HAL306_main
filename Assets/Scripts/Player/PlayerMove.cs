@@ -103,9 +103,11 @@ public class PlayerMove : MonoBehaviour
     [Range(0.0f, 5.0f)]
     public float _airAccelerationRatio = 1.2f;
 
+    [Header("エフェクト")]
+    [SerializeField, Tooltip("空中ジャンプ")]
+    private ParticleSystem jumpEffect = null;
 
 
- 
     private Rigidbody2D _rigidbody;
 
     Animator animator;                          // アニメーター
@@ -396,6 +398,8 @@ public class PlayerMove : MonoBehaviour
         // ジャンプ処理
         if (_inputJump && _jumpBufferTimer > 0.0f)
         {
+            // エフェクト再生
+            Instantiate(jumpEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
             _currentVelicity.y = _jumpPower;
             _isJumping = true;
             _inputJump = false;
