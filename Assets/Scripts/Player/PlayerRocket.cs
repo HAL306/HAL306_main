@@ -145,7 +145,10 @@ public class PlayerRocket : MonoBehaviour
                 HitDestruct(hit.point);
 
                 // エフェクト再生
-                Instantiate(explosionEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+                var instance = Instantiate(explosionEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+                instance.Play();
+                Destroy(instance.gameObject, 2.0f); // 2.0秒後に削除
+
                 Instantiate(explosionLight, transform.position, Quaternion.Euler(0.0f, 0.0f, -1.0f));
 
                 // 地形破壊のバージョン変える いずれ消す

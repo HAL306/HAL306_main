@@ -53,6 +53,10 @@ public class PlayerShooter : MonoBehaviour
 
     [SerializeField] private AudioClip _shootSound; // ショット音
 
+    [Header("エフェクト")]
+    [SerializeField, Tooltip("エフェクト管理スクリプト")]
+    private MuzzleFlashPlayer effectPlayer = null;
+
     // 入力
     private bool _inputShoot;           // ショット入力
     private Vector2 _inputAim;          // エイム方向入力 (スティック限定)
@@ -246,6 +250,9 @@ public class PlayerShooter : MonoBehaviour
             _lineRenderer.SetPosition(1, end);
             _lineTimer = _lineDisplayDuration;
         }
+
+        // エフェクト
+        effectPlayer.Play();
     }
 
     // デバイスの種類に応じてエイムモードを切り替える

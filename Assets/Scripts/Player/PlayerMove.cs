@@ -107,6 +107,11 @@ public class PlayerMove : MonoBehaviour
     [SerializeField, Tooltip("空中ジャンプ")]
     private ParticleSystem jumpEffect = null;
 
+    [SerializeField, Tooltip("ダッシュ")]
+    private ParticleSystem dashEffect = null;
+
+    public ParticleSystem DashEffect => dashEffect;
+
 
     private Rigidbody2D _rigidbody;
 
@@ -399,7 +404,9 @@ public class PlayerMove : MonoBehaviour
         if (_inputJump && _jumpBufferTimer > 0.0f)
         {
             // エフェクト再生
-            Instantiate(jumpEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+            var instance = Instantiate(jumpEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+            instance.Play();
+            Destroy(instance.gameObject, 2.0f); // 2.0秒後に削除
             _currentVelicity.y = _jumpPower;
             _isJumping = true;
             _inputJump = false;
