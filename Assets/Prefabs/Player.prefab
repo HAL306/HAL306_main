@@ -44,6 +44,7 @@ Transform:
   - {fileID: 262542336009766662}
   - {fileID: 6452853217681736520}
   - {fileID: 635634934427688300}
+  - {fileID: 7955021635988535341}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6428260287511614635
@@ -1146,6 +1147,53 @@ MonoBehaviour:
   canFeverCharge: 1
   _shootSound: {fileID: 8300000, guid: 4e6270424ec91d9459e2a13c4149aefb, type: 3}
   effectPlayer: {fileID: 1258151429676501327}
+--- !u!1 &9166607392462975096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7955021635988535341}
+  - component: {fileID: 651171689207065992}
+  m_Layer: 0
+  m_Name: GunhitEffectManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7955021635988535341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9166607392462975096}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.35293007, y: -0.021879911, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1252782279758346500}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &651171689207065992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9166607392462975096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ed969dd2b42d6e45b2ffce29ebfdf10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GunhitEffectManager
+  effectPrefab: {fileID: 1081144552824720621, guid: c228b94ae88834949971b0259b711007, type: 3}
+  defaultCapacity: 10
+  maxCapacity: 20
 --- !u!1001 &2999113359544520046
 PrefabInstance:
   m_ObjectHideFlags: 0

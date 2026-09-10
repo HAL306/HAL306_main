@@ -106,8 +106,12 @@ public class PlayerBullet : MonoBehaviour
             }
             else
             {
+                // エフェクト
+                GunhitEffectManager.Instance.Play(transform.position, transform.rotation);
+
                 // どの地形に当たっても弾は消滅する
                 Destroy(gameObject);
+
                 return;
             }
         }
