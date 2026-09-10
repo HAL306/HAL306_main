@@ -12,7 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f95aa57b6b5974f85d787c710bd342, type: 3}
   m_Name: TestTerrainParameter_1
   m_EditorClassIdentifier: Assembly-CSharp::TerrainParameterA
-  _material: {fileID: 2100000, guid: ca89cad2ccd87c7449cc86022273e679, type: 2}
+  _material: {fileID: 2100000, guid: 967b79adad5149242b54089ecc565af6, type: 2}
+  _dynamicUpdate: 0
+  _renderTextureSize: {x: 512, y: 512}
+  _normalStrength: 1
+  _uvScale: {x: 0.1, y: 0.1}
+  _metallic: 0
+  _smoothness: 0.5
+  _baseColor: {r: 1, g: 1, b: 1, a: 1}
+  _envLightStrength: 0.1
+  _shadowColorRetain: 0.2
+  _cutoff: 0.01
   _destructibility: 1
   _fractureMultiplier: 1
   _density: 5

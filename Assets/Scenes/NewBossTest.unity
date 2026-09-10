@@ -22156,6 +22156,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5754467497289857103, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: playerPos
+      value: 
+      objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: punchMarker
+      value: 
+      objectReference: {fileID: 898253019}
     - target: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: m_Name
       value: Boss

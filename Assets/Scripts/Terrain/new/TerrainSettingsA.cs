@@ -1,4 +1,8 @@
+using System;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// 地形の詳細設定
@@ -7,12 +11,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TerrainSettingsA", menuName = "Scriptable Objects/TerrainSettingsA")]
 public class TerrainSettingsA : ScriptableObject
 {
+    /// <summary>
+    /// インスペクターで値が変更された際に発火するイベント
+    /// </summary>
+    public event Action onValuesChanged;
+
     [Header("基本設定")]
     [SerializeField, Tooltip("空の地形のプレハブ")]
     private TerrainContextA _terrainPrefab;
 
     [SerializeField, Tooltip("ベース地形のレイヤー")]
-    LayerMask _baseTerrainLayer;
+    private LayerMask _baseTerrainLayer;
 
     [SerializeField, Tooltip("地形の最小サイズ")]
     [Range(0.0f, 1.0f)]
@@ -21,6 +30,15 @@ public class TerrainSettingsA : ScriptableObject
     [SerializeField, Tooltip("地形の当たり判定簡略化レベル")]
     [Range(0.0f, 1.0f)]
     private float _simplificationLevel = 0.5f;
+
+    [Header("ドット描画設定")]
+    [SerializeField, Tooltip("地形全体のドットサイズ（配置間隔・描画サイズ共通）")]
+    [Range(0.01f, 0.5f)]
+    private float _dotSize = 0.125f;
+
+    [SerializeField, Tooltip("エッジ（輪郭）の太さ倍率 (ドットサイズに対する倍率。例: 0.8〜1.5)")]
+    [Range(0.1f, 3.0f)]
+    private float _edgeWidthMultiplier = 0.8f;
 
     [Header("破壊用基本設定")]
     [SerializeField, Tooltip("破壊円の頂点数")]
@@ -78,10 +96,13 @@ public class TerrainSettingsA : ScriptableObject
     [Range(0.0f, 1.0f)]
     private float _soundInterval = 0.03f;
 
+    // プロパティ
     public TerrainContextA TerrainPrefab => _terrainPrefab;
     public LayerMask BaseTerrainLayer => _baseTerrainLayer;
     public float MinArea => _minArea;
     public float SimplificationLevel => _simplificationLevel;
+    public float DotSize => _dotSize;
+    public float EdgeWidthMultiplier => _edgeWidthMultiplier;
     public int CircleVertex => _circleVertex;
     public float CrackDistance => _crackDistance;
     public float CrackWidth => _crackWidth;
@@ -96,4 +117,18 @@ public class TerrainSettingsA : ScriptableObject
     public float VolumeMin => _volumeMin;
     public float VolumeMax => _volumeMax;
     public float SoundInterval => _soundInterval;
+
+    private void OnValidate()
+    {
+        // 外部（TerrainContextA 等）へ変更を通知
+        onValuesChanged?.Invoke();
+
+#if UNITY_EDITOR
+        // 非再生時、シーンビューを即座に再描画
+        if (!Application.isPlaying)
+        {
+            SceneView.RepaintAll();
+        }
+#endif
+    }
 }

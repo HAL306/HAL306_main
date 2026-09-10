@@ -610,7 +610,7 @@ public class PlayerMove : MonoBehaviour
 
         animator.SetBool("IsJump", _isJumping);
 
-        if (_inputMove.x >= 0.5f)
+        if (Mathf.Abs(_inputMove.x) >= 0.5f)
         {
             animator.SetBool("IsSprint", true);
             animator.SetBool("IsIdle", false);

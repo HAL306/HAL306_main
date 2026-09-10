@@ -1,218 +1,295 @@
+using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.Rendering;
 
+[ExecuteAlways]
 [RequireComponent(typeof(MeshFilter))]
 public class MeshDotRenderer : MonoBehaviour
 {
-    public ComputeShader computeShader;
-    public Material instancedMaterial;
-    public Mesh quadMesh;
-    public float edgeSize;
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DotInstance
+    {
+        public Vector3 localPosition;
+        public Vector4 color;
+        public Vector2 uv;
+        public Vector3 localNormal;
+        public float isEdge;
+    }
 
-    public float DotSize { get; set; }
-    
-    public Vector2 DotOffset { get; set; }
+    [Header("Assets")]
+    [SerializeField] private Material _dotMaterial;
+    [SerializeField] private ComputeShader _computeShader;
+    [SerializeField] private Mesh _dotShapeMesh;
+
+    [Header("Source Materials & Textures")]
+    [Tooltip("Shader Graph 等で作成したマテリアル")]
+    [SerializeField] private Material _sourceMaterial;
+    [SerializeField] private bool _dynamicUpdate = false;
+    [SerializeField] private Vector2Int _renderTextureSize = new Vector2Int(512, 512);
+
+    [Header("Direct Texture Overrides")]
+    [SerializeField] private Texture2D _mainTexture;
+    [SerializeField] private Texture2D _normalTexture;
+    [Range(0f, 2f)] [SerializeField] private float _normalStrength = 1.0f;
+
+    [Header("Dot Configuration")]
+    [SerializeField] private float _dotSize = 0.125f;
+    [SerializeField] private Color _baseColor = Color.white;
+    [SerializeField] private Color _edgeColor = new Color(0.85f, 0.85f, 0.85f, 1.0f);
 
     private MeshFilter _meshFilter;
-    private ComputeBuffer _vertexBuffer;
-    private ComputeBuffer _triangleBuffer;
-    private ComputeBuffer _resultBuffer;
+    private MaterialPropertyBlock _propBlock;
+    private ComputeBuffer _dotBuffer;
     private ComputeBuffer _argsBuffer;
-    private ComputeBuffer _edgeBuffer;
-    
-    private uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
-    private int _maxPixelCount = 0;
-    private MaterialPropertyBlock _mpb;
-    
-    private Dictionary<ulong, int> _edgeCounts = new Dictionary<ulong, int>();
-    private Dictionary<ulong, Vector2Int> _edgeOriginalDirs = new Dictionary<ulong, Vector2Int>();
-    private List<Vector4> _boundaryEdges = new List<Vector4>();
-    private Camera _mainCamera;
+    private RenderTexture _bakedColorTex;
+    private readonly uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
+    private int _dotCount = 0;
 
-    private static readonly int TriangleCount = Shader.PropertyToID("TriangleCount");
-    private static readonly int GridSpacing = Shader.PropertyToID("GridSpacing");
-    private static readonly int GridOffset = Shader.PropertyToID("GridOffset");
-    private static readonly int Vertices = Shader.PropertyToID("Vertices");
-    private static readonly int Triangles = Shader.PropertyToID("Triangles");
-    private static readonly int ResultBuffer = Shader.PropertyToID("ResultBuffer");
-    private static readonly int PixelSize = Shader.PropertyToID("_PixelSize");
-    private static readonly int PositionBuffer = Shader.PropertyToID("positionBuffer");
-    private static readonly int ObjectToWorldMatrix = Shader.PropertyToID("_ObjectToWorldMatrix");
-    private static readonly int BoundaryEdgeCount = Shader.PropertyToID("BoundaryEdgeCount");
-    private static readonly int BoundaryEdges = Shader.PropertyToID("BoundaryEdges");
-    private static readonly int EdgeSize = Shader.PropertyToID("EdgeSize");
+    public Material Material
+    {
+        get => _dotMaterial;
+        set => _dotMaterial = value;
+    }
 
-    void Start()
+    public Material SourceMaterial
+    {
+        get => _sourceMaterial;
+        set { _sourceMaterial = value; BakeSourceMaterial(); }
+    }
+
+    public Texture2D Texture
+    {
+        get => _mainTexture;
+        set { _mainTexture = value; UpdateProperties(); }
+    }
+
+    public Texture2D CustomNormalTexture
+    {
+        get => _normalTexture;
+        set { _normalTexture = value; UpdateProperties(); }
+    }
+
+    public Color Color
+    {
+        get => _baseColor;
+        set { _baseColor = value; UpdateProperties(); }
+    }
+
+    public float DotSize
+    {
+        get => _dotSize;
+        set { _dotSize = Mathf.Max(0.005f, value); RebuildDots(); }
+    }
+
+    private void Awake()
     {
         _meshFilter = GetComponent<MeshFilter>();
-        
-        _argsBuffer = new ComputeBuffer(1, _args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
-        _args[0] = (uint)quadMesh.GetIndexCount(0);
-        _argsBuffer.SetData(_args);
-        
-        _mpb = new MaterialPropertyBlock();
-        
-        _mainCamera = Camera.main;
+        _propBlock = new MaterialPropertyBlock();
     }
 
-    void LateUpdate()
+    private void OnEnable()
     {
-        if (!_meshFilter || !_meshFilter.sharedMesh) return;
-        Mesh mesh = _meshFilter.sharedMesh;
+        if (_meshFilter == null) _meshFilter = GetComponent<MeshFilter>();
+        if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
         
-        Bounds bounds = mesh.bounds;
-        bounds.center = transform.TransformPoint(bounds.center);
-        bounds.extents = Vector3.Scale(bounds.extents, transform.lossyScale);
+        BakeSourceMaterial();
+        RebuildDots();
+    }
 
-        // 画面外外なら描画しない
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(_mainCamera);
-        if (!GeometryUtility.TestPlanesAABB(planes, bounds))
+    private void OnDisable()
+    {
+        ReleaseBuffers();
+        ReleaseRenderTextures();
+    }
+
+    private void OnDestroy()
+    {
+        ReleaseBuffers();
+        ReleaseRenderTextures();
+    }
+
+    private void OnValidate()
+    {
+        if (isActiveAndEnabled)
         {
-            return; 
+            RebuildDots();
+        }
+    }
+
+    private void Update()
+    {
+        if (_dynamicUpdate && _sourceMaterial != null)
+        {
+            BakeSourceMaterial();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (_dotBuffer == null || _argsBuffer == null || _dotCount == 0 || _dotMaterial == null || _dotShapeMesh == null)
+        {
+            return;
         }
 
-        // 動的メッシュの頂点とインデックスを取得
-        Vector3[] vertices3D = mesh.vertices;
-        int[] triangles = mesh.triangles;
-        
-        int vertexCount = vertices3D.Length;
-        int triangleCount = triangles.Length / 3;
+        UpdateProperties();
 
-        if (vertexCount < 3 || triangleCount < 1) return;
+        Bounds localB = _meshFilter.sharedMesh != null ? _meshFilter.sharedMesh.bounds : new Bounds(Vector3.zero, Vector3.one * 10f);
+        Vector3 worldCenter = transform.TransformPoint(localB.center);
+        Vector3 worldSize = Vector3.Scale(localB.size, transform.lossyScale);
+        float maxDim = Mathf.Max(Mathf.Abs(worldSize.x), Mathf.Max(Mathf.Abs(worldSize.y), Mathf.Abs(worldSize.z)));
+        Bounds worldBounds = new Bounds(worldCenter, Vector3.one * (maxDim + 2f));
 
-        // AABBの計算と2D配列への変換
-        Vector2 minBound = new Vector2(vertices3D[0].x, vertices3D[0].y);
-        Vector2 maxBound = minBound;
-        Vector2[] vertices2D = new Vector2[vertexCount];
-
-        for (int i = 0; i < vertexCount; i++)
-        {
-            Vector2 v = new Vector2(vertices3D[i].x, vertices3D[i].y);
-            vertices2D[i] = v;
-            minBound = Vector2.Min(minBound, v);
-            maxBound = Vector2.Max(maxBound, v);
-        }
-        
-        _edgeCounts.Clear();
-        _edgeOriginalDirs.Clear();
-        _boundaryEdges.Clear();
-
-        for (int i = 0; i < triangles.Length; i += 3)
-        {
-            AddEdge(triangles[i], triangles[i + 1]);
-            AddEdge(triangles[i + 1], triangles[i + 2]);
-            AddEdge(triangles[i + 2], triangles[i]);
-        }
-
-        foreach (var kvp in _edgeCounts)
-        {
-            if (kvp.Value == 1)
-            {
-                Vector2Int orig = _edgeOriginalDirs[kvp.Key];
-                Vector2 vA = vertices2D[orig.x];
-                Vector2 vB = vertices2D[orig.y];
-                _boundaryEdges.Add(new Vector4(vA.x, vA.y, vB.x, vB.y));
-            }
-        }
-
-        minBound.x = Mathf.Floor(minBound.x / DotSize) * DotSize - DotSize;
-        minBound.y = Mathf.Floor(minBound.y / DotSize) * DotSize - DotSize;
-        maxBound.x = Mathf.Ceil(maxBound.x / DotSize) * DotSize + DotSize;
-        maxBound.y = Mathf.Ceil(maxBound.y / DotSize) * DotSize + DotSize;
-
-        int gridWidth = Mathf.CeilToInt((maxBound.x - minBound.x) / DotSize);
-        int gridHeight = Mathf.CeilToInt((maxBound.y - minBound.y) / DotSize);
-
-        // GPUバッファの動的確保
-        int requiredPixels = gridWidth * gridHeight;
-        if (_resultBuffer == null || requiredPixels > _maxPixelCount)
-        {
-            if (_resultBuffer != null) _resultBuffer.Release();
-            _maxPixelCount = Mathf.NextPowerOfTwo(requiredPixels);
-            _resultBuffer = new ComputeBuffer(_maxPixelCount, 20, ComputeBufferType.Append);
-        }
-
-        if (_vertexBuffer == null || _vertexBuffer.count != vertexCount)
-        {
-            if (_vertexBuffer != null) _vertexBuffer.Release();
-            _vertexBuffer = new ComputeBuffer(vertexCount, sizeof(float) * 2);
-        }
-        _vertexBuffer.SetData(vertices2D);
-
-        if (_triangleBuffer == null || _triangleBuffer.count != triangles.Length)
-        {
-            if (_triangleBuffer != null) _triangleBuffer.Release();
-            _triangleBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
-        }
-        _triangleBuffer.SetData(triangles);
-        
-        if (_edgeBuffer == null || _edgeBuffer.count != _boundaryEdges.Count)
-        {
-            if (_edgeBuffer != null) _edgeBuffer.Release();
-            _edgeBuffer = new ComputeBuffer(Mathf.Max(_boundaryEdges.Count, 1), sizeof(float) * 4);
-        }
-        if (_boundaryEdges.Count > 0)
-        {
-            _edgeBuffer.SetData(_boundaryEdges);
-        }
-
-        // ComputeShaderの実行
-        _resultBuffer.SetCounterValue(0);
-        int kernel = computeShader.FindKernel("CSMain");
-
-        computeShader.SetInt(TriangleCount, triangleCount);
-        computeShader.SetInt(BoundaryEdgeCount, _boundaryEdges.Count);
-        computeShader.SetVector(GridSpacing, new Vector2(DotSize, DotSize));
-        computeShader.SetVector(GridOffset, minBound);
-        computeShader.SetFloat(EdgeSize, edgeSize);
-        
-        computeShader.SetBuffer(kernel, Vertices, _vertexBuffer);
-        computeShader.SetBuffer(kernel, Triangles, _triangleBuffer);
-        computeShader.SetBuffer(kernel, BoundaryEdges, _edgeBuffer);
-        computeShader.SetBuffer(kernel, ResultBuffer, _resultBuffer);
-
-        int threadGroupsX = Mathf.CeilToInt(gridWidth / 8.0f);
-        int threadGroupsY = Mathf.CeilToInt(gridHeight / 8.0f);
-        computeShader.Dispatch(kernel, threadGroupsX, threadGroupsY, 1);
-
-        // 描画
-        ComputeBuffer.CopyCount(_resultBuffer, _argsBuffer, sizeof(uint));
-        
-        _mpb.SetFloat(PixelSize, DotSize);
-        _mpb.SetBuffer(PositionBuffer, _resultBuffer);
-        _mpb.SetMatrix(ObjectToWorldMatrix, transform.localToWorldMatrix);
-        
         Graphics.DrawMeshInstancedIndirect(
-            quadMesh, 0, instancedMaterial,
-            bounds,
-            _argsBuffer, 0, _mpb, UnityEngine.Rendering.ShadowCastingMode.Off,
-            true, gameObject.layer, null, UnityEngine.Rendering.LightProbeUsage.Off
+            _dotShapeMesh,
+            0,
+            _dotMaterial,
+            worldBounds,
+            _argsBuffer,
+            0,
+            _propBlock,
+            ShadowCastingMode.Off,
+            false,
+            gameObject.layer
         );
     }
-    
-    private void AddEdge(int v1, int v2)
-    {
-        int min = Mathf.Min(v1, v2);
-        int max = Mathf.Max(v1, v2);
-        ulong key = ((ulong)min << 32) | (uint)max;
 
-        if (_edgeCounts.ContainsKey(key))
+    public void BakeSourceMaterial()
+    {
+        if (_sourceMaterial == null) return;
+
+        if (_bakedColorTex == null || _bakedColorTex.width != _renderTextureSize.x)
         {
-            _edgeCounts[key]++;
+            ReleaseRenderTextures();
+            _bakedColorTex = new RenderTexture(_renderTextureSize.x, _renderTextureSize.y, 0, RenderTextureFormat.ARGB32)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp
+            };
+            _bakedColorTex.Create();
         }
-        else
+
+        Graphics.Blit(null, _bakedColorTex, _sourceMaterial, 0);
+    }
+
+    private void UpdateProperties()
+    {
+        if (_propBlock == null || _dotBuffer == null) return;
+
+        _propBlock.SetMatrix("_CustomLocalToWorld", transform.localToWorldMatrix);
+        _propBlock.SetBuffer("_DotDataBuffer", _dotBuffer);
+        _propBlock.SetFloat("_DotSize", _dotSize); // 描画サイズを配置間隔と完全に一致
+        _propBlock.SetColor("_BaseColor", _baseColor);
+        _propBlock.SetColor("_EdgeColor", _edgeColor);
+        _propBlock.SetFloat("_BumpScale", _normalStrength);
+
+        if (_bakedColorTex != null)
         {
-            _edgeCounts[key] = 1;
-            _edgeOriginalDirs[key] = new Vector2Int(v1, v2);
+            _propBlock.SetTexture("_MainTex", _bakedColorTex);
+        }
+        else if (_mainTexture != null)
+        {
+            _propBlock.SetTexture("_MainTex", _mainTexture);
+        }
+
+        if (_normalTexture != null)
+        {
+            _propBlock.SetTexture("_BumpMap", _normalTexture);
+        }
+        else if (_sourceMaterial != null && _sourceMaterial.HasProperty("_BumpMap"))
+        {
+            _propBlock.SetTexture("_BumpMap", _sourceMaterial.GetTexture("_BumpMap"));
         }
     }
 
-    void OnDestroy()
+    public void RebuildDots()
     {
-        if (_vertexBuffer != null) _vertexBuffer.Release();
-        if (_triangleBuffer != null) _triangleBuffer.Release();
-        if (_resultBuffer != null) _resultBuffer.Release();
-        if (_argsBuffer != null) _argsBuffer.Release();
-        if(_edgeBuffer != null) _edgeBuffer.Release();
+        ReleaseBuffers();
+
+        if (_meshFilter == null || _meshFilter.sharedMesh == null || _computeShader == null)
+        {
+            return;
+        }
+
+        Mesh mesh = _meshFilter.sharedMesh;
+        Vector3[] vertices = mesh.vertices;
+        int[] triangles = mesh.triangles;
+        Vector2[] uvs = mesh.uv;
+
+        if (vertices.Length == 0 || triangles.Length == 0) return;
+
+        if (uvs == null || uvs.Length != vertices.Length)
+        {
+            uvs = new Vector2[vertices.Length];
+        }
+
+        ComputeBuffer vertexBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+        ComputeBuffer triangleBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
+        ComputeBuffer uvBuffer = new ComputeBuffer(uvs.Length, sizeof(float) * 2);
+
+        vertexBuffer.SetData(vertices);
+        triangleBuffer.SetData(triangles);
+        uvBuffer.SetData(uvs);
+
+        Bounds b = mesh.bounds;
+        float size = Mathf.Max(0.005f, _dotSize);
+        int gridX = Mathf.CeilToInt(b.size.x / size) + 2;
+        int gridY = Mathf.CeilToInt(b.size.y / size) + 2;
+        int maxCapacity = Mathf.Clamp(gridX * gridY, 64, 262144);
+
+        _dotBuffer = new ComputeBuffer(maxCapacity, Marshal.SizeOf(typeof(DotInstance)), ComputeBufferType.Append);
+        _dotBuffer.SetCounterValue(0);
+
+        int kernel = _computeShader.FindKernel("CSGenerateDotsFromMesh");
+        _computeShader.SetBuffer(kernel, "_Vertices", vertexBuffer);
+        _computeShader.SetBuffer(kernel, "_Triangles", triangleBuffer);
+        _computeShader.SetBuffer(kernel, "_UVs", uvBuffer);
+        _computeShader.SetBuffer(kernel, "_ResultDots", _dotBuffer);
+
+        _computeShader.SetVector("_BoundsMin", b.min);
+        _computeShader.SetVector("_BoundsMax", b.max);
+        _computeShader.SetFloat("_DotSize", size);
+        _computeShader.SetInt("_TriangleCount", triangles.Length / 3);
+        _computeShader.SetInts("_GridDimensions", new int[] { gridX, gridY, 1 });
+
+        int threadGroupsX = Mathf.CeilToInt(gridX / 8.0f);
+        int threadGroupsY = Mathf.CeilToInt(gridY / 8.0f);
+
+        if (threadGroupsX > 0 && threadGroupsY > 0)
+        {
+            _computeShader.Dispatch(kernel, threadGroupsX, threadGroupsY, 1);
+        }
+
+        _argsBuffer = new ComputeBuffer(1, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
+        ComputeBuffer.CopyCount(_dotBuffer, _argsBuffer, sizeof(uint));
+        _argsBuffer.GetData(_args);
+
+        _args[0] = _dotShapeMesh != null ? _dotShapeMesh.GetIndexCount(0) : 0;
+        _args[2] = _dotShapeMesh != null ? _dotShapeMesh.GetIndexStart(0) : 0;
+        _args[3] = _dotShapeMesh != null ? _dotShapeMesh.GetBaseVertex(0) : 0;
+        _argsBuffer.SetData(_args);
+
+        _dotCount = (int)_args[1];
+
+        vertexBuffer.Release();
+        triangleBuffer.Release();
+        uvBuffer.Release();
+    }
+
+    private void ReleaseBuffers()
+    {
+        if (_dotBuffer != null) { _dotBuffer.Release(); _dotBuffer = null; }
+        if (_argsBuffer != null) { _argsBuffer.Release(); _argsBuffer = null; }
+        _dotCount = 0;
+    }
+
+    private void ReleaseRenderTextures()
+    {
+        if (_bakedColorTex != null)
+        {
+            if (_bakedColorTex.IsCreated()) _bakedColorTex.Release();
+            DestroyImmediate(_bakedColorTex);
+            _bakedColorTex = null;
+        }
     }
 }
