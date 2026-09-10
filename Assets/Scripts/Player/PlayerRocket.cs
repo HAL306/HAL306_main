@@ -127,6 +127,21 @@ public class PlayerRocket : MonoBehaviour
         Move();
     }
 
+    /// <summary>
+    /// Plays the rocket's real impact presentation without applying gameplay damage.
+    /// Used by non-gameplay showcases such as the title scene.
+    /// </summary>
+    public void DetonateVisualOnly()
+    {
+        if (explosionEffect != null)
+            Instantiate(explosionEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+        if (explosionLight != null)
+            Instantiate(explosionLight, transform.position, Quaternion.Euler(0.0f, 0.0f, -1.0f));
+
+        PlaySoundEffect(SoundEffectType.EXPLODE);
+        Destroy(gameObject);
+    }
+
     // 移動処理 + CircleCastによる衝突判定
     private void Move()
     {
@@ -269,8 +284,10 @@ public class PlayerRocket : MonoBehaviour
 
             }
 
-        playerFever.Charge(area * rocketChrgeRatio);
-        playerRocketShooter.Charge(area);
+        if (playerFever != null)
+            playerFever.Charge(area * rocketChrgeRatio);
+        if (playerRocketShooter != null)
+            playerRocketShooter.Charge(area);
 
         // 爆風
         Collider2D[] colliders = Physics2D.OverlapCircleAll(
