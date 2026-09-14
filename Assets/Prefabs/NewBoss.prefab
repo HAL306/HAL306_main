@@ -474,6 +474,8 @@ GameObject:
   - component: {fileID: -3826442929849190395}
   - component: {fileID: 5754467497289857103}
   - component: {fileID: 6923334146087895574}
+  - component: {fileID: 5303912230563342454}
+  - component: {fileID: 5121514068332656401}
   m_Layer: 0
   m_Name: NewBoss
   m_TagString: Boss
@@ -791,3 +793,40 @@ MonoBehaviour:
   coolTime: 3
   warningTime: 0.7
   markerThickness: 1
+--- !u!114 &5303912230563342454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8896673290602856705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 397014ce8fbd63d44b5ce0d2a47ef3f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossCrystalObstacleAttack
+  spawnerPrefab: {fileID: 0}
+  playerTransform: {fileID: 0}
+  lineRenderer: {fileID: 0}
+  minPlayerDistance: 3
+  maxPlayerDistance: 15
+  spawnForwardDistance: 5
+  spawnerHeightOffset: 3
+  coolTime: 5
+  attackDuration: 1
+--- !u!114 &5121514068332656401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8896673290602856705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3192c7ce317f614f9300a4ef8ccf421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LineMove
+  lineRenderer: {fileID: 0}
+  speed: 5
+  useCatmullRom: 1
+  resolution: 20
