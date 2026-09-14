@@ -5170,6 +5170,10 @@ PrefabInstance:
       propertyPath: _jumpChrageAngle
       value: 83.1
       objectReference: {fileID: 0}
+    - target: {fileID: 409433031735128053, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 475784792494734951, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_Name
       value: Player
@@ -5226,6 +5230,10 @@ PrefabInstance:
       propertyPath: _shootInterval
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 1703550455064290603, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3009328418883844808, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: _bulletPrefab
       value: 
@@ -5233,6 +5241,10 @@ PrefabInstance:
     - target: {fileID: 3009328418883844808, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: _shootInterval
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074395886943090008, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4478182803762220938, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_IsActive
@@ -5245,6 +5257,18 @@ PrefabInstance:
     - target: {fileID: 7549953440220963374, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904760650376277386, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904760650376277386, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904760650376277386, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7930051854424470889, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_IsActive

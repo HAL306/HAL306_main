@@ -1210,6 +1210,10 @@ PrefabInstance:
       propertyPath: m_RenderAlignment
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2928530794031956888, guid: 6309734feb3ecfb47a339527c9cecb1a, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4373500700799993102, guid: 6309734feb3ecfb47a339527c9cecb1a, type: 3}
       propertyPath: m_RenderAlignment
       value: 2
@@ -1361,12 +1365,24 @@ PrefabInstance:
       propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5942621461689605133, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7137660152219902008, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
       propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7137660152219902008, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7933501506422967104, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
       propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933501506422967104, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
+      propertyPath: scalingMode
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
