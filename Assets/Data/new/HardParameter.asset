@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: HardParameter
   m_EditorClassIdentifier: Assembly-CSharp::TerrainParameterA
   _material: {fileID: 2100000, guid: ff41c2a1bb328ab4d92e7c411b7383ae, type: 2}
-  _destructibility: 0.56
-  _fractureMultiplier: 1
+  _destructibility: 0.34
+  _fractureMultiplier: 0.2
   _density: 5
   _destructEffect: {fileID: 7019593061133393526, guid: e54828396f03ce1468eb117b49675761, type: 3}
   _effectAmount: 30

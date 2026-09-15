@@ -8,18 +8,16 @@ using UnityEngine;
 public class TerrainShape : MonoBehaviour
 {
     private TerrainContextA _terrainContext;
-
     private PolygonCollider2D _polygonCollider;
     private MeshFilter _meshFilter;
+    private MeshDotRendererA _dotRenderer;
     private Mesh _mesh;
 
-    private List<Vector2> _points;                      // 頂点リスト
-    private List<Collider2D> _overlapColliderList;      // 重なっているコライダーのリスト
+    private List<Vector2> _points;
+    private List<Collider2D> _overlapColliderList;
 
     public IReadOnlyList<Vector2> Points => _points;
 
-
-    // 地形形状の初期化
     public void Initialize(IReadOnlyList<Vector2> points)
     {
         if (_terrainContext == null)
@@ -31,29 +29,27 @@ public class TerrainShape : MonoBehaviour
         if (_meshFilter == null)
             _meshFilter = GetComponent<MeshFilter>();
 
+        if (_dotRenderer == null)
+            _dotRenderer = GetComponent<MeshDotRendererA>();
+
         _points = new List<Vector2>(points);
 
-        // メッシュはコピー時の共有対策に再生成する
         DestroyMesh();
         GenerateMesh();
 
         Rebuild();
 
-        // 実行中のみの処理
         if (Application.isPlaying)
         {
-            // 重なっているベース地形のコライダーを取得
             GetOverlapCollider();
         }
     }
 
-    // 地形形状の頂点リストを更新
     public void UpdatePoints(IReadOnlyList<Vector2> points)
     {
         _points = new List<Vector2>(points);
         Rebuild();
 
-        // 実行中のみの処理
         if (Application.isPlaying)
         {
             if (!CheckOverlapCollider())
@@ -63,24 +59,28 @@ public class TerrainShape : MonoBehaviour
         }
     }
 
-
     private void Start()
     {
-        // 初期化順の関係で、ベース地形と重なっていない通知はStartで行う
-        if (_overlapColliderList.Count == 0)
+        if (_overlapColliderList != null && _overlapColliderList.Count == 0)
         {
             _terrainContext.OnOverlapEmpty();
         }
     }
 
-    // 地形形状の再構築
     private void Rebuild()
     {
         UpdateMesh();
         UpdateCollider();
+
+        if (_dotRenderer == null)
+            _dotRenderer = GetComponent<MeshDotRendererA>();
+
+        if (_dotRenderer != null)
+        {
+            _dotRenderer.RebuildDots();
+        }
     }
 
-    // メッシュを更新
     private void UpdateMesh()
     {
         if (_mesh == null || _meshFilter == null)
@@ -89,29 +89,34 @@ public class TerrainShape : MonoBehaviour
         if (_points == null || _points.Count == 0)
             return;
 
-        // 三角形分割
         var tess = new LibTessDotNet.Tess();
         tess.AddContour(ToContour(_points), LibTessDotNet.ContourOrientation.CounterClockwise);
-        tess.Tessellate(LibTessDotNet.WindingRule.EvenOdd, LibTessDotNet.TessElementType.Polygons, 3);
+        tess.Tessellate(LibTessDotNet.WindingRule.EvenOdd);
 
-        // メッシュ化
         Vector3[] vertices = new Vector3[tess.Vertices.Length];
+        Vector2[] uvs = new Vector2[tess.Vertices.Length];
+
         for (int i = 0; i < tess.Vertices.Length; ++i)
         {
-            vertices[i] = new Vector3(tess.Vertices[i].Position.X, tess.Vertices[i].Position.Y, 0);
+            float vx = tess.Vertices[i].Position.X;
+            float vy = tess.Vertices[i].Position.Y;
+            vertices[i] = new Vector3(vx, vy, 0);
+
+            // ローカル座標をそのまま UV 基準値として出力
+            uvs[i] = new Vector2(vx, vy);
         }
+
         int[] indices = tess.Elements;
 
-        // メッシュを更新
         _mesh.Clear();
         _mesh.vertices = vertices;
         _mesh.triangles = indices;
+        _mesh.uv = uvs;
         _mesh.RecalculateBounds();
         _mesh.RecalculateNormals();
         _meshFilter.sharedMesh = _mesh;
     }
 
-    // LibTessDotNetの頂点配列に変換
     private LibTessDotNet.ContourVertex[] ToContour(IReadOnlyList<Vector2> points)
     {
         var contour = new LibTessDotNet.ContourVertex[points.Count];
@@ -122,28 +127,21 @@ public class TerrainShape : MonoBehaviour
         return contour;
     }
 
-    // コライダーを更新
     private void UpdateCollider()
     {
         if (_polygonCollider == null || _points == null) 
             return;
 
         TerrainSettingsA settings = _terrainContext.TerrainSettings;
-        if(settings == null)
+        if (settings == null)
             return;
 
-        // コライダー用にパスを簡略化
-        List<Vector2> colliderPath;
-        colliderPath = RamerDouglasPeucker.RamerDouglasPeuckerAlgorithm(_points, settings.SimplificationLevel);
-
-        // コライダー形状を更新
+        List<Vector2> colliderPath = RamerDouglasPeucker.RamerDouglasPeuckerAlgorithm(_points, settings.SimplificationLevel);
         _polygonCollider.SetPath(0, colliderPath.ToArray());
     }
 
-    // メッシュを生成
     private void GenerateMesh()
     {
-        // メッシュを生成
         if (_mesh == null)
         {
             _mesh = new Mesh();
@@ -153,10 +151,8 @@ public class TerrainShape : MonoBehaviour
         }
     }
 
-    // メッシュを破棄
     private void DestroyMesh()
     {
-        // メッシュを破棄
         if (_mesh != null)
         {
             if (Application.isPlaying)
@@ -171,7 +167,6 @@ public class TerrainShape : MonoBehaviour
         }
     }
 
-    // 重なっているベース地形のコライダーを取得する (厳密な判定は行いません)
     private void GetOverlapCollider()
     {
         _overlapColliderList = new List<Collider2D>();
@@ -180,35 +175,28 @@ public class TerrainShape : MonoBehaviour
         filter.useLayerMask = true;
         filter.useTriggers = false;
 
-        // 重なっているベース地形のコライダー取得
         _polygonCollider.Overlap(filter, _overlapColliderList);
     }
 
-    // ベース地形との重なりを調べる
     private bool CheckOverlapCollider()
     {
         for (int i = 0; i < _overlapColliderList.Count; ++i)
         {
             if (_overlapColliderList[i] == null)
             {
-                // リストから削除して、インデックスを補正
                 _overlapColliderList.RemoveAt(i);
                 i--;
+                continue;
             }
 
-            // 重なりを調べる
-            ColliderDistance2D distance;
-            distance = _polygonCollider.Distance(_overlapColliderList[i]);
+            ColliderDistance2D distance = _polygonCollider.Distance(_overlapColliderList[i]);
 
-            // 重なっていなければ除外
             if (distance.isOverlapped)
             {
-                // 一つでも重なっていれば終了
                 break;
             }
             else
             {
-                // リストから削除して、インデックスを補正
                 _overlapColliderList.RemoveAt(i);
                 i--;
             }

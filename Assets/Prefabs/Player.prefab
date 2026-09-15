@@ -193,11 +193,13 @@ MonoBehaviour:
   _inputBufferDuration: 0.1
   _maxSlopeAngle: 50
   _minSlopeAngle: 10
+  _maxAirJump: 0
   _moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _isDestroyCrystalByWeight: 0
   _isOvercomeBaseTerrain: 1
   _climbUpSpeed: 7
+  _climbUpTime: 7
   _cutsceneState: {fileID: 11400000, guid: c91c848090a7c014b8a68e9ed5296213, type: 2}
   _playerMoveOverrideState: {fileID: 11400000, guid: 645849090ca76d54f820bbf3b28e927f, type: 2}
   _groundSpeedRatio: 1.2
@@ -527,7 +529,7 @@ MonoBehaviour:
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 6e0d559a1a65b184eb82b5a5c4dfe650, type: 3}
   penetrationPower: 0.1
-  _showAimLine: 1
+  _showAimLine: 0
   _lineDisplayDuration: 0.1
   _shootAction: {fileID: 2268548341916877799, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _aimAction: {fileID: -1905135895345338570, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
@@ -1119,7 +1121,7 @@ MonoBehaviour:
     m_Bits: 8
   _bulletPrefab: {fileID: 2590035284781143901, guid: 72b008e4055b0f648a2710df12b9559a, type: 3}
   penetrationPower: 0.5
-  _showAimLine: 1
+  _showAimLine: 0
   _lineDisplayDuration: 0.1
   feverCoolSpeed: 2.5
   canFeverCharge: 1
