@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BossBodyAttack : BossAttackBase
@@ -8,7 +7,12 @@ public class BossBodyAttack : BossAttackBase
     private Transform player;
 
     [Header("予告設定")]
-    [SerializeField] private GameObject chargeMarker;
+    [SerializeField, Tooltip("Projectウィンドウにある予告マーカーのプレハブ")]
+    private GameObject chargeMarker;
+
+    // 生成元とは別に、Scene内の実体を管理する
+    private GameObject chargeMarkerInstance;
+    private bool isAttacking;
     [SerializeField] private float warningTime = 0.7f;
     [SerializeField] private float markerThickness = 1.0f;
 
@@ -32,6 +36,15 @@ public class BossBodyAttack : BossAttackBase
     // 突撃の速度
     [SerializeField]
     private float attackSpeed = 0.0f;
+
+    // PlayerKiller
+    [SerializeField]
+    private PlayerKiller playerKiller;
+
+
+    [SerializeField, Tooltip("チャージの時間")]
+    private float chargeTime = 3.0f;
+
     //射程内に入ってからの時間計測
     private float currentDistanceCount = 0.0f;
 
@@ -53,17 +66,16 @@ public class BossBodyAttack : BossAttackBase
     protected override void Awake()
     {
         base.Awake();
-        if (chargeMarker != null)
-        {
-            chargeMarker.SetActive(false);
-        }
+        if (playerKiller != null) playerKiller.enabled = false;
     }
 
     public override bool CanExecute()
     {
-        Debug.Log("aa");
+        if (isAttacking || player == null) return false;
         // クールタイムの判定
         if (Time.time - endTime < coolTime)
+            return false;
+        if (Time.time - endTime < chargeTime)
             return false;
 
         //プレイヤーとの距離を計算
@@ -72,7 +84,7 @@ public class BossBodyAttack : BossAttackBase
 
         // 距離内にいる時間の計測
         if (distanceToPlayerX <= distancePosX &&
-            distanceToPlayerX <= distancePosY)
+            distanceToPlayerY <= distancePosY)
         {
             Debug.Log("範囲にいるぞ");
             // 距離内なら毎フレーム時間を加算する
@@ -98,7 +110,11 @@ public class BossBodyAttack : BossAttackBase
     protected override void OnBegin()
     {
         Debug.Log("テスト攻撃開始");
-
+        DestroyChargeMarker();
+        isAttacking = true;
+        currentDistanceCount = 0.0f;
+        // 予告中は攻撃判定を無効にする
+        if (playerKiller != null) playerKiller.enabled = false;
         bossPosition = transform.position;
         playerPosition = player.position;
         isWarning = true;
@@ -109,19 +125,23 @@ public class BossBodyAttack : BossAttackBase
 
         if (chargeMarker != null)
         {
+            // 親を指定せず生成し、ボスの突進に追従させない
+            chargeMarkerInstance = Instantiate(chargeMarker);
             Vector3 markerCenter = transform.position + directionToPlayer * (attackRange / 2.0f);
-            chargeMarker.transform.position = new Vector3(markerCenter.x, markerCenter.y, -1.0f);
+            chargeMarkerInstance.transform.position = new Vector3(markerCenter.x, markerCenter.y, -1.0f);
 
             float angle = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg;
-            chargeMarker.transform.rotation = Quaternion.Euler(0, 0, angle);
+            chargeMarkerInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
 
-            chargeMarker.transform.localScale = new Vector3(attackRange, markerThickness, 1.0f);
-            chargeMarker.SetActive(true);
+            chargeMarkerInstance.transform.localScale = new Vector3(attackRange, markerThickness, 1.0f);
+            chargeMarkerInstance.SetActive(true);
         }
     }
 
     private void FixedUpdate()
     {
+        if (!isAttacking) return;
+
         // 予告時間の待機処理
         if (isWarning)
         {
@@ -129,7 +149,7 @@ public class BossBodyAttack : BossAttackBase
             if (warningTimer >= warningTime)
             {
                 isWarning = false;
-                if (chargeMarker != null) chargeMarker.SetActive(false);
+                if (playerKiller != null) playerKiller.enabled = true;
             }
             return; // 待機中は元の移動処理を行わない
         }
@@ -146,9 +166,22 @@ public class BossBodyAttack : BossAttackBase
 
     protected override void OnEnd()
     {
-        if (chargeMarker != null) chargeMarker.SetActive(false);
-
+        DestroyChargeMarker();
+        isAttacking = false;
+        isWarning = false;
+        directionToPlayer = Vector3.zero;
+        // 攻撃終了後は攻撃判定を無効にする
+        if (playerKiller != null) playerKiller.enabled = false;
         // クールタイム判定用に終了時間を記録
         endTime = Time.time;
+    }
+    // OnEndから呼び、途中終了でも生成した実体を片付ける
+    private void DestroyChargeMarker()
+    {
+        if (chargeMarkerInstance == null) return;
+
+        chargeMarkerInstance.SetActive(false);
+        Destroy(chargeMarkerInstance);
+        chargeMarkerInstance = null;
     }
 }
