@@ -101,9 +101,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2080116281560742078}
   - component: {fileID: 880306378116899565}
+  - component: {fileID: 1635240853095167152}
+  - component: {fileID: 3987224891730675920}
   m_Layer: 0
   m_Name: BOSS_3_0
-  m_TagString: Untagged
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -182,6 +184,57 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!70 &1635240853095167152
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2743816189060717548}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: -0.00000011920929}
+  m_Size: {x: 0.76, y: 1.05}
+  m_Direction: 0
+--- !u!114 &3987224891730675920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2743816189060717548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b17089ae8c08c574e9f173b227d25bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerKiller
+  fade: {fileID: 0}
+  cutsceneEventCh: {fileID: 11400000, guid: 93b3603320a0ad341a1bbddf4b8728f7, type: 2}
 --- !u!1 &4567361237749515282
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,7 +758,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8896673290602856705}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b17089ae8c08c574e9f173b227d25bf7, type: 3}
   m_Name: 
@@ -762,13 +815,15 @@ MonoBehaviour:
   player: {fileID: 0}
   chargeMarker: {fileID: 0}
   warningTime: 0.7
-  markerThickness: 1
+  markerThickness: 10
   distancePosX: 10
   distancePosY: 10
-  coolTime: 2
+  coolTime: 1
   distanceCountTimer: 1
-  attackRange: 5
+  attackRange: 50
   attackSpeed: 0.1
+  playerKiller: {fileID: 631788797360010003}
+  chargeTime: 3
 --- !u!114 &6923334146087895574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -784,10 +839,11 @@ MonoBehaviour:
   playerPos: {fileID: 0}
   bossRenderer: {fileID: 7105139362233535745}
   fist: {fileID: 2080116281560742078}
-  punchMarker: {fileID: 0}
+  punchMarker: {fileID: 866598021036169214, guid: c2df61b7bca1b754e8c1c60946b7f8e7, type: 3}
   punchSpeed: 20
   returnSpeed: 10
   punchRange: 15
   coolTime: 3
   warningTime: 0.7
-  markerThickness: 1
+  markerThickness: 4
+  playerKiller: {fileID: 3987224891730675920}
