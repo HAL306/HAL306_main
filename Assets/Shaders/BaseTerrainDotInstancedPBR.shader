@@ -210,7 +210,11 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                 edgeDist = dotInst.edgeDistance;
             #endif
 
-                float3 finalWorldPos = worldCenter + (input.positionOS.xyz * _DotSize);
+                // 切れ目対策にドットサイズを少し拡大
+                float epsilon = 0.001f;
+                float3 dotSize = _DotSize * (1.0 + epsilon);
+
+                float3 finalWorldPos = worldCenter + (input.positionOS.xyz * dotSize);
 
                 output.positionWS = finalWorldPos;
                 output.positionCS = TransformWorldToHClip(finalWorldPos);

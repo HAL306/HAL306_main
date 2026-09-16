@@ -1,4 +1,4 @@
 root = true
 
-[*.cs]
+[*.{cs,shader,compute}]
 charset = utf-8
