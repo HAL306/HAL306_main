@@ -861,7 +861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 397014ce8fbd63d44b5ce0d2a47ef3f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossCrystalObstacleAttack
-  spawnerPrefab: {fileID: 0}
+  spawnerPrefab: {fileID: 8123270353613065553, guid: 92e9c67f15f2be441bc367b58b15fafd, type: 3}
   playerTransform: {fileID: 0}
   lineRenderer: {fileID: 0}
   minPlayerDistance: 3
