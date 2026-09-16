@@ -65,6 +65,12 @@ public class TerrainShape : MonoBehaviour
         {
             _terrainContext.OnOverlapEmpty();
         }
+
+        var meshRenderer = GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            meshRenderer.enabled = false;
+        }
     }
 
     private void Rebuild()
