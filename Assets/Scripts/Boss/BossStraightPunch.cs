@@ -12,8 +12,11 @@ public class BossStraightPunch : BossAttackBase
     [SerializeField, Tooltip("飛ばす拳のオブジェクト")]
     private Transform fist;
 
-    [SerializeField, Tooltip("赤い予告マーカー")]
+    [SerializeField, Tooltip("Projectウィンドウにある赤い予告マーカーのプレハブ")]
     private GameObject punchMarker;
+
+    // Scene内に生成した実体
+    private GameObject punchMarkerInstance;
 
     [Header("攻撃設定")]
     [SerializeField, Tooltip("パンチ（突進）の移動速度")]
@@ -35,7 +38,9 @@ public class BossStraightPunch : BossAttackBase
     [SerializeField, Tooltip("予告マーカーの太さ")]
     private float markerThickness = 3.0f;
 
-    // 攻撃終了時刻（クールタイム計算用）
+
+
+    // 攻撃終了時刻
     private float endTime = -10.0f;
 
     // パンチ開始時の位置と方向
@@ -55,15 +60,15 @@ public class BossStraightPunch : BossAttackBase
 
     private BossController bossController;
 
+    // playerkiller
+    [SerializeField]
+    private PlayerKiller playerKiller;
+
     protected override void Awake()
     {
         base.Awake();
         bossController = GetComponentInParent<BossController>();
 
-        if (punchMarker != null)
-        {
-            punchMarker.SetActive(false);
-        }
     }
 
     public override bool CanExecute()
@@ -75,17 +80,17 @@ public class BossStraightPunch : BossAttackBase
         {
             return true;
         }
-
         return false;
     }
 
     protected override void OnBegin()
     {
+
         isWarning = true;
         isPunching = false;
         isReturning = false;
         warningTimer = 0.0f;
-
+        playerKiller.enabled = true;
         if (bossController != null)
         {
             bossController.SetIsMove(false);
@@ -103,18 +108,21 @@ public class BossStraightPunch : BossAttackBase
 
             if (punchMarker != null)
             {
+                DestroyPunchMarker();
+                punchMarkerInstance = Instantiate(punchMarker);
+
                 // マーカーの中心位置を、ボスの拳とパンチ到達地点の中間に設定
                 Vector3 markerCenter = startPos + punchDir * (punchRange / 2.0f);
-                punchMarker.transform.position = new Vector3(markerCenter.x, markerCenter.y, -1.0f);
+                punchMarkerInstance.transform.position = new Vector3(markerCenter.x, markerCenter.y, -1.0f);
 
                 // パンチの方向に向けてマーカーを回転させる
                 float angle = Mathf.Atan2(punchDir.y, punchDir.x) * Mathf.Rad2Deg;
-                punchMarker.transform.rotation = Quaternion.Euler(0, 0, angle);
+                punchMarkerInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
 
                 // マーカーのスケールをパンチの距離に合わせる
-                punchMarker.transform.localScale = new Vector3(punchRange, markerThickness, 1.0f);
+                punchMarkerInstance.transform.localScale = new Vector3(punchRange, markerThickness, 1.0f);
 
-                punchMarker.SetActive(true);
+                punchMarkerInstance.SetActive(true);
             }
         }
         else
@@ -145,10 +153,7 @@ public class BossStraightPunch : BossAttackBase
                 isPunching = false;
                 isReturning = true;
 
-                if (punchMarker != null)
-                {
-                    punchMarker.SetActive(false);
-                }
+                DestroyPunchMarker();
             }
         }
         else if (isReturning)
@@ -172,10 +177,7 @@ public class BossStraightPunch : BossAttackBase
             fist.localRotation = localRotationOffset;
         }
 
-        if (punchMarker != null)
-        {
-            punchMarker.SetActive(false);
-        }
+        DestroyPunchMarker();
 
         isWarning = false;
         isPunching = false;
@@ -186,6 +188,17 @@ public class BossStraightPunch : BossAttackBase
         {
             bossController.SetIsMove(true);
         }
+        playerKiller.enabled = false;
+    }
+
+    // 生成した実体だけを削除する。
+    private void DestroyPunchMarker()
+    {
+        if (punchMarkerInstance == null) return;
+
+        punchMarkerInstance.SetActive(false);
+        Destroy(punchMarkerInstance);
+        punchMarkerInstance = null;
     }
 
     private bool IsVisible()

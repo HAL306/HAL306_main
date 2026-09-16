@@ -103,9 +103,16 @@ public class PlayerMove : MonoBehaviour
     [Range(0.0f, 5.0f)]
     public float _airAccelerationRatio = 1.2f;
 
+    [Header("エフェクト")]
+    [SerializeField, Tooltip("空中ジャンプ")]
+    private ParticleSystem jumpEffect = null;
+
+    [SerializeField, Tooltip("ダッシュ")]
+    private ParticleSystem dashEffect = null;
+
+    public ParticleSystem DashEffect => dashEffect;
 
 
- 
     private Rigidbody2D _rigidbody;
 
     Animator animator;                          // アニメーター
@@ -396,6 +403,10 @@ public class PlayerMove : MonoBehaviour
         // ジャンプ処理
         if (_inputJump && _jumpBufferTimer > 0.0f)
         {
+            // エフェクト再生
+            var instance = Instantiate(jumpEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+            instance.Play();
+            Destroy(instance.gameObject, 2.0f); // 2.0秒後に削除
             _currentVelicity.y = _jumpPower;
             _isJumping = true;
             _inputJump = false;
