@@ -84,8 +84,40 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
       objectReference: {fileID: 0}
+    - target: {fileID: 6603998332237358484, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603998332237358484, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603998332237358484, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477952662567563993, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477952662567563993, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477952662567563993, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696761520601930145, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7696761520601930145, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
       propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696761520601930145, guid: bd87c30e9154fe84dbfd93280811d378, type: 3}
+      propertyPath: moveWithTransform
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
