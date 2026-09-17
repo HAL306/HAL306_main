@@ -403,7 +403,8 @@ public class BaseTerrainRenderer : MeshDotRendererA
 
         int gridX = Mathf.CeilToInt((maxW.x - gridOffset.x) / size) + 2;
         int gridY = Mathf.CeilToInt((maxW.y - gridOffset.y) / size) + 2;
-        int maxCapacity = Mathf.Clamp(gridX * gridY, 64, 524288);
+        int maxCapacity = Mathf.Max(gridX * gridY, 64);
+        //int maxCapacity = Mathf.Clamp(gridX * gridY, 64, 524288);
 
         _dotBuffer = new ComputeBuffer(maxCapacity, 52, ComputeBufferType.Append);
         _dotBuffer.SetCounterValue(0);
