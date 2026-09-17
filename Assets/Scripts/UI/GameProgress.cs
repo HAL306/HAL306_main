@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 public static class GameProgress
@@ -14,13 +15,17 @@ public static class GameProgress
         }
     }
 
+    private static string _currentStageName;
+    public static string CurrentStageName => _currentStageName;
+
     public static bool HasProgress => NextStageIndex > 0;
 
     public static int CurrentPlayingStageIndex { get; private set; }
 
-    public static void SetCurrentPlayingStage(int stageIndex)
+    public static void SetCurrentPlayingStage(int stageIndex, string stageName)
     {
         CurrentPlayingStageIndex = stageIndex;
+        _currentStageName = stageName;
     }
 
     public static void CompleteCurrentStage()

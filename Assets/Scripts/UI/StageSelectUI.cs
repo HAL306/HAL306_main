@@ -55,6 +55,13 @@ public class StageSelectUI : MonoBehaviour
         int continueIndex = Mathf.Clamp(GameProgress.NextStageIndex, 0, _stagePoints.Count - 1);
         _currentSelect = _stagePoints.Find(sp => sp.StageIndex == continueIndex) ?? _stagePoints[0];
         _selectPin.transform.position = _currentSelect.transform.position;
+
+        for(int i = 0; i < _stagePoints.Count; i++)
+        {
+            if (_stagePoints[i].StageIndex > continueIndex)
+                _stagePoints[i].gameObject.SetActive(false);
+        }
+        _stagePoints.RemoveAll(sp => !sp.gameObject.activeSelf);
     }
 
     private void OnEnable()

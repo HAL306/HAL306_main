@@ -106,7 +106,6 @@ public class PlayerBullet : MonoBehaviour
             }
             else
             {
-                Debug.Log(this);
                 // エフェクト
                 GunhitEffectManager.Instance.Play(transform.position, transform.rotation);
 
