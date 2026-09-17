@@ -36,6 +36,7 @@ public class PlayerKiller : MonoBehaviour
 
         fade.SetFinishAction(ChangeScene);
         fade.SetPosition(collision.transform.position);
+        fade.StartFadeOut(ChangeScene);
         cutsceneEventCh.PlayCutscene(_cutsceneIdHash);
     }
 

@@ -4,15 +4,15 @@ using UnityEngine.Rendering.Universal;
 public class ClearZone : MonoBehaviour
 {
     [SerializeField]
-    BOSScharge _boss;
+    GameObject _boss;
 
     [SerializeField] private PlayCutsceneEventChannel cutsceneEventCh;
 
-    private void OnCollisionEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("Player"))
         {
-            _boss.gameObject.SetActive(false);
+            _boss.SetActive(false);
 
 
             // rendererを念のためデフォルトにする
