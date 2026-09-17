@@ -32498,6 +32498,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 2080541436}
+    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: 'attacks.Array.data[0]'
+      value: 
+      objectReference: {fileID: 895184333916695025}
+    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: 'attacks.Array.data[1]'
+      value: 
+      objectReference: {fileID: 895184333916695024}
     - target: {fileID: 631788797360010003, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: fade
       value: 
@@ -32587,6 +32595,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+--- !u!114 &895184333916695024 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+  m_PrefabInstance: {fileID: 895184333916695023}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6039698408969771629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f1dc98900efa8842ab29d2e599f6ce3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossStraightPunch
+--- !u!114 &895184333916695025 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5754467497289857103, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+  m_PrefabInstance: {fileID: 895184333916695023}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6039698408969771629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da40f173aba2cf14883ea42f0cfd7643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossBodyAttack
 --- !u!4 &1069902799176862991 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1937360100868533221, guid: 8315c91ac3810e545907290ec83a588b, type: 3}
