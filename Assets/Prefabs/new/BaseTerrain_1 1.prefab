@@ -214,7 +214,7 @@ MonoBehaviour:
     thresholdTexture: {fileID: 2800000, guid: 380e032cd03788d45b48cf918f6946f6, type: 3}
     thresholdTilingMultiplier: 1
     rampTexture: {fileID: 0}
-    _material: {fileID: 2100000, guid: ff41c2a1bb328ab4d92e7c411b7383ae, type: 2}
+    _material: {fileID: 2100000, guid: 8753a61290edcb946939f3f600ac4b0b, type: 2}
     _dynamicUpdate: 0
     _renderTextureSize: {x: 512, y: 512}
     _normalStrength: 1
@@ -229,13 +229,13 @@ MonoBehaviour:
     startDistance: 0
     endDistance: 2
     thresholdTexture: {fileID: 2800000, guid: 380e032cd03788d45b48cf918f6946f6, type: 3}
-    thresholdTilingMultiplier: 1
-    rampTexture: {fileID: 2800000, guid: 4c513152a53821b4eb6797c51069c991, type: 3}
-    _material: {fileID: 2100000, guid: 1257d4cb2fb739e4381ef2c1f71e127b, type: 2}
+    thresholdTilingMultiplier: 0.3
+    rampTexture: {fileID: 0}
+    _material: {fileID: 2100000, guid: e9363d25261f8be40804f632d1d056ae, type: 2}
     _dynamicUpdate: 0
     _renderTextureSize: {x: 512, y: 512}
     _normalStrength: 1
-    _uvScale: {x: 0.1, y: 0.1}
+    _uvScale: {x: 0.5, y: 0.5}
     _metallic: 0
     _smoothness: 0.5
     _baseColor: {r: 1, g: 1, b: 1, a: 1}
