@@ -4,7 +4,7 @@ using UnityEngine.Rendering.Universal;
 public class ClearZone : MonoBehaviour
 {
     [SerializeField]
-    BOSScharge _boss;
+    GameObject _boss;
 
     [SerializeField] private PlayCutsceneEventChannel cutsceneEventCh;
 
@@ -12,7 +12,7 @@ public class ClearZone : MonoBehaviour
     {
         if(collision.CompareTag("Player"))
         {
-            _boss.gameObject.SetActive(false);
+            _boss.SetActive(false);
 
 
             // rendererを念のためデフォルトにする
