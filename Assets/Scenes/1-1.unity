@@ -1004,15 +1004,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8792748437829766378, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: _points.Array.data[48].y
-      value: -11.867245
+      value: -12.829029
       objectReference: {fileID: 0}
     - target: {fileID: -8792748437829766378, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: _points.Array.data[49].x
-      value: 59.102722
+      value: 59.034058
       objectReference: {fileID: 0}
     - target: {fileID: -8792748437829766378, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: _points.Array.data[49].y
-      value: -11.744198
+      value: -12.396839
       objectReference: {fileID: 0}
     - target: {fileID: -8792748437829766378, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: _points.Array.data[50].x
@@ -1668,15 +1668,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4782260935152885903, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[48].y
-      value: -11.867245
+      value: -12.829029
       objectReference: {fileID: 0}
     - target: {fileID: 4782260935152885903, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[49].x
-      value: 59.102722
+      value: 59.034058
       objectReference: {fileID: 0}
     - target: {fileID: 4782260935152885903, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[49].y
-      value: -11.744198
+      value: -12.396839
       objectReference: {fileID: 0}
     - target: {fileID: 4782260935152885903, guid: 2271590bb2aedbc45afa7065b65ee0c8, type: 3}
       propertyPath: m_Points.m_Paths.Array.data[0].Array.data[50].x
@@ -3528,7 +3528,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &252435139
 MonoBehaviour:
   m_ObjectHideFlags: 0
