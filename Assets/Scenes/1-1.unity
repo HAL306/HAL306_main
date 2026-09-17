@@ -170,7 +170,7 @@ Transform:
   m_GameObject: {fileID: 77303005}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -45.960022, y: -3.429985, z: 0}
+  m_LocalPosition: {x: -44.89, y: -3.429985, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -3579,6 +3579,8 @@ PlayableDirector:
     value: {fileID: 1781976225}
   - key: {fileID: 3962175716019475066, guid: 90b596e8cf75ee745bbd8981422457a8, type: 2}
     value: {fileID: 1769264145}
+  - key: {fileID: 4846635585236423146, guid: 90b596e8cf75ee745bbd8981422457a8, type: 2}
+    value: {fileID: 31134102}
   m_ExposedReferences:
     m_References:
     - b7165f29e368cde47b468fd0ea1981ca: {fileID: 0}
@@ -13654,7 +13656,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &958572094
 SpriteRenderer:
   serializedVersion: 2
@@ -13723,7 +13725,7 @@ Transform:
   m_GameObject: {fileID: 958572093}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.4, y: -10.5, z: 0}
+  m_LocalPosition: {x: -0.228, y: -10.118, z: 0}
   m_LocalScale: {x: 1.2739091, y: 1.2739091, z: 1.2739091}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -27831,7 +27833,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec2a336c61d92d049b7a4d24411b64fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClearZone
-  _boss: {fileID: 0}
+  _boss: {fileID: 6039698408969771629}
   cutsceneEventCh: {fileID: 11400000, guid: 93b3603320a0ad341a1bbddf4b8728f7, type: 2}
 --- !u!4 &1821925999
 Transform:
