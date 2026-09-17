@@ -49,7 +49,8 @@ public class StageSelectUI : MonoBehaviour
 
     private void Awake()
     {
-        _currentSelect = _stagePoints[0];
+        int continueIndex = Mathf.Clamp(GameProgress.NextStageIndex, 0, _stagePoints.Count - 1);
+        _currentSelect = _stagePoints.Find(sp => sp.StageIndex == continueIndex) ?? _stagePoints[0];
         _selectPin.transform.position = _currentSelect.transform.position;
     }
 

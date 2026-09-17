@@ -11,6 +11,11 @@ public class StagePoint : MonoBehaviour
     [SerializeField, Tooltip("ステージ紹介画像")]
     private Sprite _stageImage;
 
+    [SerializeField, Tooltip("ステージ番号（進行順）")]
+    private int _stageIndex;
+
+    public int StageIndex => _stageIndex;
+
     private Animator _animator;
     private Collider2D _collider;
 

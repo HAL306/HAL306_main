@@ -43,6 +43,8 @@ public class StageInfoUI : MonoBehaviour
 
     public void StageStart()
     {
+        GameProgress.SetCurrentPlayingStage(_stageSelectUI.CurrentSelect.StageIndex);
+
         _fadeUI.StartFadeOut(() =>
         {
             SceneManager.LoadScene(_stageSelectUI.CurrentSelect.NextSceneName);

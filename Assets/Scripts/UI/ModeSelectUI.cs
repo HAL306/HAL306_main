@@ -51,7 +51,13 @@ public class ModeSelectUI : MonoBehaviour
 
     public void NewGame()
     {
+        GameProgress.ResetProgress();
         _fadeUI.StartFadeOut(() => { SceneManager.LoadScene("AlphaGameScene"); });
+    }
+
+    public void ContinueGame()
+    {
+        _fadeUI.StartFadeOut(() => { SceneManager.LoadScene("StageSelectScene"); });
     }
 
     public void ToTitle()

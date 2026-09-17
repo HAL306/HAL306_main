@@ -335,6 +335,7 @@ MonoBehaviour:
   _nextSceneName: AlphaGameScene
   _stageInfoText: "\u30B9\u30C6\u30FC\u30B8\u8AAC\u660E\u6587_2"
   _stageImage: {fileID: -7687702389306135508, guid: 90f9dec53d8088e418867312af0baad0, type: 3}
+  _stageIndex: 1
 --- !u!58 &419447985
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -768,6 +769,7 @@ MonoBehaviour:
   _nextSceneName: AlphaGameScene
   _stageInfoText: "\u30B9\u30C6\u30FC\u30B8\u8AAC\u660E\u6587_3"
   _stageImage: {fileID: -7687702389306135508, guid: 90f9dec53d8088e418867312af0baad0, type: 3}
+  _stageIndex: 2
 --- !u!58 &661231457
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1633,6 +1635,7 @@ MonoBehaviour:
   _nextSceneName: AlphaGameScene
   _stageInfoText: "\u30B9\u30C6\u30FC\u30B8\u8AAC\u660E\u6587_1"
   _stageImage: {fileID: -7687702389306135508, guid: 90f9dec53d8088e418867312af0baad0, type: 3}
+  _stageIndex: 0
 --- !u!212 &1690994861
 SpriteRenderer:
   serializedVersion: 2
