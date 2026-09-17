@@ -41,6 +41,9 @@ public class StageSelectUI : MonoBehaviour
     [SerializeField, Tooltip("移動の速度カーブ")]
     private AnimationCurve _pinAnimCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
+    [SerializeField, Tooltip("戻る先のシーン名")]
+    private string _backSceneName;
+
     private Coroutine _pinAnimCoroutine;
 
     private StagePoint _currentSelect;
@@ -120,7 +123,7 @@ public class StageSelectUI : MonoBehaviour
         if (_confirmPanel != null && _confirmPanel.activeSelf)
             _confirmPanel.SetActive(false);
         else
-            SceneManager.LoadScene("ModeSelectScene");
+            SceneManager.LoadScene(_backSceneName);
     }
 
     private void Decide()
