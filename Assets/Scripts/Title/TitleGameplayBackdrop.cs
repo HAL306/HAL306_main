@@ -18,14 +18,14 @@ public sealed class TitleGameplayBackdrop : MonoBehaviour
     private AudioClip launchSound;
     private float rocketTimer;
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void Install()
-    {
-        if (SceneManager.GetActiveScene().name != "NewTitleScene" || FindFirstObjectByType<TitleGameplayBackdrop>() != null)
-            return;
+    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    //private static void Install()
+    //{
+    //    if (SceneManager.GetActiveScene().name != "NewTitleScene" || FindFirstObjectByType<TitleGameplayBackdrop>() != null)
+    //        return;
 
-        new GameObject("TitleGameplayBackdrop").AddComponent<TitleGameplayBackdrop>();
-    }
+    //    new GameObject("TitleGameplayBackdrop").AddComponent<TitleGameplayBackdrop>();
+    //}
 
     private void Awake()
     {
