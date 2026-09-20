@@ -341,6 +341,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: c993ae5b-a333-428b-b2b2-ecfd9129b3fa
     m_ActionName: 'Player/Interact[/Keyboard/f]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c89e734a-05c6-4029-a5c4-cb1c454c3bbd
+    m_ActionName: 'Player/Pause[/Keyboard/p]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 60ab4bf5-36c6-45bd-8a20-abaade146026
+    m_ActionName: 'UI/Back[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
@@ -1305,18 +1313,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1252782279758346500}
     m_Modifications:
-    - target: {fileID: 662650601881274980, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2528870923033964835, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2528870923033964835, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2528870923033964835, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.026
@@ -1360,30 +1356,6 @@ PrefabInstance:
     - target: {fileID: 2923797473400024835, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
       propertyPath: m_Name
       value: VFX_Dash
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942621461689605133, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942621461689605133, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: scalingMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7137660152219902008, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7137660152219902008, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: scalingMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7933501506422967104, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7933501506422967104, guid: 03ac3a128b715f94eb1566ee8ef0364d, type: 3}
-      propertyPath: scalingMode
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

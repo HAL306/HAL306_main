@@ -43,6 +43,7 @@ public class StageClearObserver : MonoBehaviour
 
     public void ChangeScene()
     {
-        SceneManager.LoadScene("ModeSelectScene");
+        GameProgress.CompleteCurrentStage();
+        SceneManager.LoadScene("StageSelectScene");
     }
 }

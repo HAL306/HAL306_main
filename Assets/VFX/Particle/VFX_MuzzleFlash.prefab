@@ -80,6 +80,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5152565460958601170, guid: c1c6e5f287b4cca419e20df274b8ef15, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5845507836623942671, guid: c1c6e5f287b4cca419e20df274b8ef15, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6164079665319220492, guid: c1c6e5f287b4cca419e20df274b8ef15, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543113316305178529, guid: c1c6e5f287b4cca419e20df274b8ef15, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8733508432401273834, guid: c1c6e5f287b4cca419e20df274b8ef15, type: 3}
       propertyPath: m_Name
       value: MuzzleFlash_Main
