@@ -7808,6 +7808,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 2080541436}
+    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: attacks.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 631788797360010003, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: fade
       value: 
@@ -7860,6 +7864,10 @@ PrefabInstance:
       propertyPath: playerPos
       value: 
       objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: warningTime
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: m_Name
       value: Boss

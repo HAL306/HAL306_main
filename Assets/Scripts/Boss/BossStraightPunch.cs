@@ -148,10 +148,13 @@ public class BossStraightPunch : BossAttackBase
         {
             fist.position += punchDir * punchSpeed * Time.fixedDeltaTime;
 
+            // 最大距離になったら
             if (Vector3.Distance(startPos, fist.position) >= punchRange)
             {
                 isPunching = false;
                 isReturning = true;
+
+                playerKiller.enabled = false;
 
                 DestroyPunchMarker();
             }
