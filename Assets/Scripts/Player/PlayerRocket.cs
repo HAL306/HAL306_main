@@ -157,7 +157,7 @@ public class PlayerRocket : MonoBehaviour
                 Instantiate(explosionLight, transform.position, Quaternion.Euler(0.0f, 0.0f, -1.0f));
 
                 // 地形破壊のバージョン変える いずれ消す
-                if (hit.collider.TryGetComponent(out TerrainContextA terrain))
+                if (hit.collider.TryGetComponent(out TerrainContext terrain))
                 {
                     if (penetrationPower < terrain.Area)
                     {
@@ -191,7 +191,7 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider2D collider in hitColliders)
         {
-            if (collider.TryGetComponent(out TerrainContextA terrain))
+            if (collider.TryGetComponent(out TerrainContext terrain))
             {
                 CrackParameter crack;
                 crack.direction = _direction;
@@ -215,7 +215,7 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider2D collider in crackColliders)
         {
-            if (collider.TryGetComponent(out TerrainContextA terrain))
+            if (collider.TryGetComponent(out TerrainContext terrain))
             {
                 CrackParameter crack;
                 crack.direction = _direction;
@@ -239,7 +239,7 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider2D collider in colliders)
         {
-            if (collider.TryGetComponent(out TerrainContextA terrain))
+            if (collider.TryGetComponent(out TerrainContext terrain))
             {
                 // 向き計算
                 Vector2 dir = Vector2.zero;

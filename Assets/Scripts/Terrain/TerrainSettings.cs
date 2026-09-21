@@ -21,7 +21,7 @@ public class TerrainSettings : ScriptableObject
 
     [Header("基本設定")]
     [SerializeField, Tooltip("空の地形のプレハブ")]
-    private TerrainContextA _terrainPrefab;
+    private TerrainContext _terrainPrefab;
 
     [SerializeField, Tooltip("ベース地形のレイヤー")]
     private LayerMask _baseTerrainLayer;
@@ -100,7 +100,7 @@ public class TerrainSettings : ScriptableObject
     private float _soundInterval = 0.03f;
 
     // プロパティ
-    public TerrainContextA TerrainPrefab => _terrainPrefab;
+    public TerrainContext TerrainPrefab => _terrainPrefab;
     public LayerMask BaseTerrainLayer => _baseTerrainLayer;
     public float MinArea => _minArea;
     public float SimplificationLevel => _simplificationLevel;
@@ -123,7 +123,7 @@ public class TerrainSettings : ScriptableObject
 
     private void OnValidate()
     {
-        // 外部（TerrainContextA 等）へ変更を通知
+        // 外部（TerrainContext 等）へ変更を通知
         onValuesChanged?.Invoke();
 
 #if UNITY_EDITOR

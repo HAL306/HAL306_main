@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 /// ワールド空間グリッド配置とエッジ距離に応じた多層合成を行います。
 /// </summary>
 [ExecuteAlways]
-public class BaseTerrainRenderer : MeshDotRendererA
+public class BaseTerrainRenderer : MeshDotRenderer
 {
     public const int MaxLayerCount = 4;
 

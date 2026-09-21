@@ -71,7 +71,7 @@ public class PlayerBullet : MonoBehaviour
             {
                 HitDestruct(hit.point);
 
-                if (hit.collider.TryGetComponent(out TerrainContextA terrain))
+                if (hit.collider.TryGetComponent(out TerrainContext terrain))
                 {
                     if (penetrationPower < terrain.Area)
                     {
@@ -107,7 +107,7 @@ public class PlayerBullet : MonoBehaviour
 
         foreach (Collider2D collider in hitColliders)
         {
-            if (collider.TryGetComponent(out TerrainContextA terrain))
+            if (collider.TryGetComponent(out TerrainContext terrain))
             {
                 CrackParameter crack;
                 crack.direction = _direction;

@@ -4,13 +4,13 @@ using UnityEngine;
 /// <summary>
 /// 地形の形状を管理するコンポーネント
 /// </summary>
-[RequireComponent(typeof(TerrainContextA))]
+[RequireComponent(typeof(TerrainContext))]
 public class TerrainShape : MonoBehaviour
 {
-    private TerrainContextA _terrainContext;
+    private TerrainContext _terrainContext;
     private PolygonCollider2D _polygonCollider;
     private MeshFilter _meshFilter;
-    private MeshDotRendererA _dotRenderer;
+    private MeshDotRenderer _dotRenderer;
     private Mesh _mesh;
 
     private List<Vector2> _points;
@@ -21,7 +21,7 @@ public class TerrainShape : MonoBehaviour
     public void Initialize(IReadOnlyList<Vector2> points)
     {
         if (_terrainContext == null)
-            _terrainContext = GetComponent<TerrainContextA>();
+            _terrainContext = GetComponent<TerrainContext>();
 
         if (_polygonCollider == null)
             _polygonCollider = GetComponent<PolygonCollider2D>();
@@ -30,7 +30,7 @@ public class TerrainShape : MonoBehaviour
             _meshFilter = GetComponent<MeshFilter>();
 
         if (_dotRenderer == null)
-            _dotRenderer = GetComponent<MeshDotRendererA>();
+            _dotRenderer = GetComponent<MeshDotRenderer>();
 
         _points = new List<Vector2>(points);
 
@@ -79,7 +79,7 @@ public class TerrainShape : MonoBehaviour
         UpdateCollider();
 
         if (_dotRenderer == null)
-            _dotRenderer = GetComponent<MeshDotRendererA>();
+            _dotRenderer = GetComponent<MeshDotRenderer>();
 
         if (_dotRenderer != null)
         {

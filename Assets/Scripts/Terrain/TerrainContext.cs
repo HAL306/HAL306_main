@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -10,7 +12,8 @@ using UnityEditor;
 /// </summary>
 [ExecuteAlways]
 [RequireComponent(typeof(TerrainShape), typeof(MeshFilter))]
-public class TerrainContextA : MonoBehaviour
+[MovedFrom(true, "", null, "TerrainContextA")]
+public class TerrainContext : MonoBehaviour
 {
     [SerializeField, Tooltip("地形の詳細設定")]
     private TerrainSettings _terrainSettings;
@@ -20,8 +23,8 @@ public class TerrainContextA : MonoBehaviour
 
     private TerrainShape _terrainShape;
     private TerrainDestruct _terrainDestruct;
-    private TerrainDestructEffectA _terrainDestructEffect;
-    private MeshDotRendererA _dotRenderer;
+    private TerrainDestructEffect _terrainDestructEffect;
+    private MeshDotRenderer _dotRenderer;
     private Rigidbody2D _rigidbody;
 
     private bool _isOverlap = true;
@@ -35,7 +38,7 @@ public class TerrainContextA : MonoBehaviour
     public TerrainParameter TerrainParameter => _terrainParameter;
     public TerrainShape TerrainShape => _terrainShape;
     public TerrainDestruct TerrainDestruct => _terrainDestruct;
-    public MeshDotRendererA DotRenderer => _dotRenderer;
+    public MeshDotRenderer DotRenderer => _dotRenderer;
     public Rigidbody2D Rigidbody => _rigidbody;
     public float Area => _area;
 
@@ -111,10 +114,10 @@ public class TerrainContextA : MonoBehaviour
             _terrainDestruct = GetComponent<TerrainDestruct>();
 
         if (_terrainDestructEffect == null)
-            _terrainDestructEffect = GetComponent<TerrainDestructEffectA>();
+            _terrainDestructEffect = GetComponent<TerrainDestructEffect>();
 
         if (_dotRenderer == null)
-            _dotRenderer = GetComponent<MeshDotRendererA>();
+            _dotRenderer = GetComponent<MeshDotRenderer>();
 
         if (_rigidbody == null)
             _rigidbody = GetComponent<Rigidbody2D>();
@@ -176,13 +179,13 @@ public class TerrainContextA : MonoBehaviour
     public void ApplySettingsToRenderer()
     {
         if (_dotRenderer == null)
-            _dotRenderer = GetComponent<MeshDotRendererA>();
+            _dotRenderer = GetComponent<MeshDotRenderer>();
 
         // 設定アセットまたはレンダラーがなければ中断
         if (_dotRenderer == null || _terrainSettings == null)
             return;
 
-        // 通常の MeshDotRendererA の場合は TerrainParameter が必須
+        // 通常の MeshDotRenderer の場合は TerrainParameter が必須
         // BaseTerrainRenderer の場合は TerrainParameter が null でも動作可能
         bool isBaseRenderer = _dotRenderer is BaseTerrainRenderer;
         if (!isBaseRenderer && _terrainParameter == null)
@@ -233,7 +236,7 @@ public class TerrainContextA : MonoBehaviour
 
     private void CreateSplitTerrain(IReadOnlyList<Vector2> terrainPath, float area)
     {
-        TerrainContextA newTerrain = Instantiate(
+        TerrainContext newTerrain = Instantiate(
             _terrainSettings.TerrainPrefab, transform.position, transform.rotation);
 
         newTerrain.transform.localScale = transform.localScale;

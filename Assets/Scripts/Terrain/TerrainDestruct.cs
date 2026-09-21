@@ -62,7 +62,7 @@ public class TerrainDestruct : MonoBehaviour
         public Vector2 point;               // 交差位置
     }
 
-    private TerrainContextA _terrainContext;
+    private TerrainContext _terrainContext;
     private TerrainShape _terrainShape;
 
 
@@ -219,7 +219,7 @@ public class TerrainDestruct : MonoBehaviour
             _terrainShape = GetComponent<TerrainShape>();
 
         if(_terrainContext == null)
-            _terrainContext = GetComponent<TerrainContextA>();
+            _terrainContext = GetComponent<TerrainContext>();
     }
 
     // 円形のパスを生成する

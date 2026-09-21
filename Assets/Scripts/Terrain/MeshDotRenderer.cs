@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Scripting.APIUpdating;
 
 [ExecuteAlways]
 [RequireComponent(typeof(MeshFilter))]
-public class MeshDotRendererA : MonoBehaviour
+[MovedFrom(true, "", null, "MeshDotRendererA")]
+public class MeshDotRenderer : MonoBehaviour
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct DotInstance

@@ -1,19 +1,21 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 
 /// <summary>
 /// 地形の衝突時処理を行うコンポーネント
 /// </summary>
-[RequireComponent(typeof(TerrainContextA))]
-public class TerrainCollisionA : MonoBehaviour
+[RequireComponent(typeof(TerrainContext))]
+[MovedFrom(true, "", null, "TerrainCollisionA")]
+public class TerrainCollision : MonoBehaviour
 {
-    private TerrainContextA _terrainContext;
+    private TerrainContext _terrainContext;
 
 
     private void Awake()
     {
         if (_terrainContext == null)
-            _terrainContext = GetComponent<TerrainContextA>();
+            _terrainContext = GetComponent<TerrainContext>();
     }
 
 

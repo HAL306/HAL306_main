@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 /// <summary>
 /// 地形破壊時のエフェクト・サウンドを扱う
 /// </summary>
-[RequireComponent(typeof(TerrainContextA))]
-public class TerrainDestructEffectA : MonoBehaviour
+[RequireComponent(typeof(TerrainContext))]
+[MovedFrom(true, "", null, "TerrainDestructEffectA")] 
+public class TerrainDestructEffect : MonoBehaviour
 {
     // サウンドタイプ
     private enum SoundEffectType
@@ -14,7 +16,7 @@ public class TerrainDestructEffectA : MonoBehaviour
         BIG_CRACK,
     };
 
-    private TerrainContextA _terrainContext;
+    private TerrainContext _terrainContext;
 
     private static DestructEffectManager _destructEffectManager;
 
@@ -38,7 +40,7 @@ public class TerrainDestructEffectA : MonoBehaviour
     private void Awake()
     {
         if (_terrainContext == null)
-            _terrainContext = GetComponent<TerrainContextA>();
+            _terrainContext = GetComponent<TerrainContext>();
     }
 
     private void EmitDestructEffect(List<Vector2[]> destructPaths, float destructArea)
