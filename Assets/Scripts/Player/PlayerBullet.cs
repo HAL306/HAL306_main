@@ -81,6 +81,9 @@ public class PlayerBullet : MonoBehaviour
             {
                 HitDestruct(hit.point);
 
+                // エフェクト
+                GunhitEffectManager.Instance.Play(transform.position, transform.rotation);
+
                 // 地形破壊のバージョン変える いずれ消す
                 if (_terrainDestructVersion == TerrainDestructVersion.NEW)
                 {
