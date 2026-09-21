@@ -6,7 +6,7 @@ public class GunhitEffect : MonoBehaviour
     [SerializeField] private ParticleSystem particleSys;
     private Action<GunhitEffect> returnAction;
 
-    private bool isReleased;
+    private bool isReleased = true;
 
     private void Awake()
     {
