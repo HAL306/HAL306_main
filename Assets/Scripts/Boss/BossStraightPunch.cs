@@ -38,7 +38,8 @@ public class BossStraightPunch : BossAttackBase
     [SerializeField, Tooltip("予告マーカーの太さ")]
     private float markerThickness = 3.0f;
 
-
+    [SerializeField, Tooltip("拳の大きさ分、予告マーカーの長さに追加する値")]
+    private float markerLengthOffset = 2.0f;
 
     // 攻撃終了時刻
     private float endTime = -10.0f;
@@ -68,7 +69,8 @@ public class BossStraightPunch : BossAttackBase
     {
         base.Awake();
         bossController = GetComponentInParent<BossController>();
-
+        // ステージ開始直後はクールダウン状態から始める
+        endTime = Time.time;
     }
 
     public override bool CanExecute()
@@ -111,16 +113,25 @@ public class BossStraightPunch : BossAttackBase
                 DestroyPunchMarker();
                 punchMarkerInstance = Instantiate(punchMarker);
 
-                // マーカーの中心位置を、ボスの拳とパンチ到達地点の中間に設定
-                Vector3 markerCenter = startPos + punchDir * (punchRange / 2.0f);
-                punchMarkerInstance.transform.position = new Vector3(markerCenter.x, markerCenter.y, -1.0f);
+                // パンチ距離に拳の大きさ分を追加する
+                float markerLength = punchRange + markerLengthOffset;
 
-                // パンチの方向に向けてマーカーを回転させる
+                // マーカーの開始位置が拳の位置になるように
+                // 長くした分も含めて中心位置を計算する
+                Vector3 markerCenter =
+                    startPos + punchDir * (markerLength / 2.0f);
+
+                punchMarkerInstance.transform.position =
+                    new Vector3(markerCenter.x, markerCenter.y - 0.2f, -1.0f);
+
+                // パンチの方向にマーカーを向ける
                 float angle = Mathf.Atan2(punchDir.y, punchDir.x) * Mathf.Rad2Deg;
+
                 punchMarkerInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
 
-                // マーカーのスケールをパンチの距離に合わせる
-                punchMarkerInstance.transform.localScale = new Vector3(punchRange, markerThickness, 1.0f);
+                // 実際の攻撃範囲に合わせて長さを設定
+                punchMarkerInstance.transform.localScale =
+                    new Vector3(markerLength, markerThickness, 1.0f);
 
                 punchMarkerInstance.SetActive(true);
             }
