@@ -32,8 +32,8 @@ public class GunhitEffectManager : MonoBehaviour
     private GunhitEffect CreatePooledItem()
     {
         GunhitEffect item = Instantiate(effectPrefab, transform);
-        item.Initialize(ReleaseToPool);
         item.gameObject.SetActive(false);
+        item.Initialize(ReleaseToPool);
         return item;
     }
 

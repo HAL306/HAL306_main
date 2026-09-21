@@ -43,6 +43,9 @@ public class PlayerRocketShooter : MonoBehaviour
     [SerializeField, Tooltip("フィーバー開始時にロケランのリチャージするかどうか")]
     private bool canFeverCharge = true;
 
+    [SerializeField, Tooltip("フィーバー中のリチャージ時間")]
+    private float feverShootInterval = 2.0f;
+
     [SerializeField] private AudioClip _shootSound; // ショット音
 
 
@@ -155,7 +158,17 @@ public class PlayerRocketShooter : MonoBehaviour
         if (_inputShoot)
         {
             Shoot();
-            _cooldownTimer = _shootInterval;
+
+            // クールダウンタイマーをリセット
+            if (isFever)
+            {
+                // フィーバー中はクールダウンを短くする
+                _cooldownTimer = feverShootInterval;
+            }
+            else
+            {
+                _cooldownTimer = _shootInterval;
+            }
         }
     }
 
@@ -208,8 +221,19 @@ public class PlayerRocketShooter : MonoBehaviour
     {
         isFever = fever;
 
-        if (canFeverCharge && fever)    // フィーバー開始時にチャージ
+        if (!fever)
+            return;
+
+        // フィーバー中のクールダウンタイマーを調整
+        if (_cooldownTimer < feverShootInterval)
+        {
+            _cooldownTimer = feverShootInterval;
+        }
+
+        if (canFeverCharge)    // フィーバー開始時にチャージ
+        {
             _cooldownTimer = 0.0f;
+        }
     }
 
     public void Charge(float amount)

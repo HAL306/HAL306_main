@@ -6,6 +6,8 @@ public class GunhitEffect : MonoBehaviour
     [SerializeField] private ParticleSystem particleSys;
     private Action<GunhitEffect> returnAction;
 
+    private bool isReleased = true;
+
     private void Awake()
     {
         if (particleSys == null)
@@ -26,9 +28,18 @@ public class GunhitEffect : MonoBehaviour
         particleSys.Play();
     }
 
+    private void OnEnable()
+    {
+        // プールから取得された際にリセット
+        isReleased = false;
+    }
+
     // Stop Action: Disable によって非アクティブ化されたら自動でプールへ返却
     private void OnDisable()
     {
+        if (isReleased) return;
+        isReleased = true;
+
         returnAction?.Invoke(this);
     }
 }
