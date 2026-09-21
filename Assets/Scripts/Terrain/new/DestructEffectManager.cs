@@ -13,7 +13,7 @@ public class DestructEffectManager : MonoBehaviour
 
     // 破壊エフェクトを生成する
     public void Emit(List<Vector2[]> destructPaths, float destructArea, 
-        TerrainParameterA parameter, Transform terrainTransform)
+        TerrainParameter parameter, Transform terrainTransform)
     {
         if (destructPaths == null || destructPaths.Count == 0)
             return;

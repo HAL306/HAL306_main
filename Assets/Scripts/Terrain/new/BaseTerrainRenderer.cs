@@ -237,7 +237,7 @@ public class BaseTerrainRenderer : MeshDotRendererA
         }
     }
 
-    public override void ApplyConfiguration(TerrainParameterA parameter, float dotSize, float edgeWidthMultiplier)
+    public override void ApplyConfiguration(TerrainParameter parameter, float dotSize, float edgeWidthMultiplier)
     {
         _dotSize = Mathf.Max(0.005f, dotSize);
         RebuildDots();

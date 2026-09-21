@@ -43,7 +43,7 @@ public class TerrainDestructEffectA : MonoBehaviour
 
     private void EmitDestructEffect(List<Vector2[]> destructPaths, float destructArea)
     {
-        TerrainParameterA parameter = _terrainContext.TerrainParameter;
+        TerrainParameter parameter = _terrainContext.TerrainParameter;
         if (parameter == null)
             return;
 
@@ -58,8 +58,8 @@ public class TerrainDestructEffectA : MonoBehaviour
 
     private void PlayDestructSound(float destructArea)
     {
-        TerrainSettingsA settings = _terrainContext.TerrainSettings;
-        TerrainParameterA parameter = _terrainContext.TerrainParameter;
+        TerrainSettings settings = _terrainContext.TerrainSettings;
+        TerrainParameter parameter = _terrainContext.TerrainParameter;
         if (!parameter.IsSoundEnabled)
             return;
 

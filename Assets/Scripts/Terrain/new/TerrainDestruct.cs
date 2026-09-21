@@ -69,8 +69,8 @@ public class TerrainDestruct : MonoBehaviour
     // ポリゴンの破壊処理
     public DestructResult PolygonDestruct(Vector2 worldCenter, float radius, CrackParameter crack)
     {
-        TerrainSettingsA settings = _terrainContext.TerrainSettings;
-        TerrainParameterA parameter = _terrainContext.TerrainParameter;
+        TerrainSettings settings = _terrainContext.TerrainSettings;
+        TerrainParameter parameter = _terrainContext.TerrainParameter;
         Vector2 localCenter = _terrainContext.transform.InverseTransformPoint(worldCenter);
 
         // 計算用の地形パスを作成
@@ -123,8 +123,8 @@ public class TerrainDestruct : MonoBehaviour
     // ポリゴンにひびを入れる処理
     public DestructResult PolygonCrack(CrackData[] data, CrackParameter crack)
     {
-        TerrainSettingsA settings = _terrainContext.TerrainSettings;
-        TerrainParameterA parameter = _terrainContext.TerrainParameter;
+        TerrainSettings settings = _terrainContext.TerrainSettings;
+        TerrainParameter parameter = _terrainContext.TerrainParameter;
 
         // 計算用の地形パスを作成
         var oldTerrainPaths = new List<Vector2[]>();
@@ -246,8 +246,8 @@ public class TerrainDestruct : MonoBehaviour
     // ひび割れ形状生成処理
     private Vector2[] GenerateCrackPath(List<Vector2[]> mainPaths, Vector2 center, CrackParameter crack)
     {
-        TerrainSettingsA settings = _terrainContext.TerrainSettings;
-        TerrainParameterA parameter = _terrainContext.TerrainParameter;
+        TerrainSettings settings = _terrainContext.TerrainSettings;
+        TerrainParameter parameter = _terrainContext.TerrainParameter;
 
         // ひび割れ方向を求める
         Vector2 crackDir = _terrainContext.transform.InverseTransformDirection(crack.direction);
@@ -365,7 +365,7 @@ public class TerrainDestruct : MonoBehaviour
     private Vector2[] CreateCrackPath(
         Vector2 origin, Vector2 dir, float distance, float crackNoise = -1.0f)
     {
-        TerrainSettingsA settings = _terrainContext.TerrainSettings;
+        TerrainSettings settings = _terrainContext.TerrainSettings;
 
         if (crackNoise == -1.0f)
         {

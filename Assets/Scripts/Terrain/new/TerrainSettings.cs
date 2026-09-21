@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -8,8 +10,9 @@ using UnityEditor;
 /// 地形の詳細設定
 /// 基本的に一つだけ用意する
 /// </summary>
-[CreateAssetMenu(fileName = "TerrainSettingsA", menuName = "Scriptable Objects/TerrainSettingsA")]
-public class TerrainSettingsA : ScriptableObject
+[CreateAssetMenu(fileName = "TerrainSettings", menuName = "Scriptable Objects/TerrainSettings")]
+[MovedFrom(true, "", null, "TerrainSettings")]
+public class TerrainSettings : ScriptableObject
 {
     /// <summary>
     /// インスペクターで値が変更された際に発火するイベント

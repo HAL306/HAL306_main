@@ -13,10 +13,10 @@ using UnityEditor;
 public class TerrainContextA : MonoBehaviour
 {
     [SerializeField, Tooltip("地形の詳細設定")]
-    private TerrainSettingsA _terrainSettings;
+    private TerrainSettings _terrainSettings;
 
     [SerializeField, Tooltip("地形のパラメータ（BaseTerrainRenderer 使用時は空でも可）")]
-    private TerrainParameterA _terrainParameter;
+    private TerrainParameter _terrainParameter;
 
     private TerrainShape _terrainShape;
     private TerrainDestruct _terrainDestruct;
@@ -28,11 +28,11 @@ public class TerrainContextA : MonoBehaviour
     private float _area = 0.0f;
 
     // 購読状態をトラッキング（Inspector でのアセット差し替え対応）
-    private TerrainSettingsA _subscribedSettings;
-    private TerrainParameterA _subscribedParameter;
+    private TerrainSettings _subscribedSettings;
+    private TerrainParameter _subscribedParameter;
 
-    public TerrainSettingsA TerrainSettings => _terrainSettings;
-    public TerrainParameterA TerrainParameter => _terrainParameter;
+    public TerrainSettings TerrainSettings => _terrainSettings;
+    public TerrainParameter TerrainParameter => _terrainParameter;
     public TerrainShape TerrainShape => _terrainShape;
     public TerrainDestruct TerrainDestruct => _terrainDestruct;
     public MeshDotRendererA DotRenderer => _dotRenderer;
@@ -134,7 +134,7 @@ public class TerrainContextA : MonoBehaviour
             _subscribedSettings = _terrainSettings;
         }
 
-        // TerrainParameterA の変更購読
+        // TerrainParameter の変更購読
         if (_subscribedParameter != _terrainParameter)
         {
             if (_subscribedParameter != null)
@@ -182,8 +182,8 @@ public class TerrainContextA : MonoBehaviour
         if (_dotRenderer == null || _terrainSettings == null)
             return;
 
-        // 通常の MeshDotRendererA の場合は TerrainParameterA が必須
-        // BaseTerrainRenderer の場合は TerrainParameterA が null でも動作可能
+        // 通常の MeshDotRendererA の場合は TerrainParameter が必須
+        // BaseTerrainRenderer の場合は TerrainParameter が null でも動作可能
         bool isBaseRenderer = _dotRenderer is BaseTerrainRenderer;
         if (!isBaseRenderer && _terrainParameter == null)
             return;

@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -7,8 +9,9 @@ using UnityEditor;
 /// <summary>
 /// 地形のパラメータ（地形の種類ごとに設定）
 /// </summary>
-[CreateAssetMenu(fileName = "TerrainParameterA", menuName = "Scriptable Objects/TerrainParameterA")]
-public class TerrainParameterA : ScriptableObject
+[CreateAssetMenu(fileName = "TerrainParameter", menuName = "Scriptable Objects/TerrainParameter")]
+[MovedFrom(true, "", null, "TerrainParameter")]
+public class TerrainParameter : ScriptableObject
 {
     // 値変更通知用イベント
     public event Action onValuesChanged;

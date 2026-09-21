@@ -138,7 +138,7 @@ public class TerrainShape : MonoBehaviour
         if (_polygonCollider == null || _points == null) 
             return;
 
-        TerrainSettingsA settings = _terrainContext.TerrainSettings;
+        TerrainSettings settings = _terrainContext.TerrainSettings;
         if (settings == null)
             return;
 

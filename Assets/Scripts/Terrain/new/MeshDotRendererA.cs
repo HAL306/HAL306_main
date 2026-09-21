@@ -27,7 +27,7 @@ public class MeshDotRendererA : MonoBehaviour
     [SerializeField] protected ShadowCastingMode _shadowCastingMode = ShadowCastingMode.On;
     [SerializeField] protected bool _receiveShadows = true;
 
-    protected TerrainParameterA _parameter;
+    protected TerrainParameter _parameter;
     protected float _dotSize = 0.125f;
     protected float _edgeWidthMultiplier = 1.0f;
 
@@ -131,7 +131,7 @@ public class MeshDotRendererA : MonoBehaviour
         );
     }
 
-    public virtual void ApplyConfiguration(TerrainParameterA parameter, float dotSize, float edgeWidthMultiplier)
+    public virtual void ApplyConfiguration(TerrainParameter parameter, float dotSize, float edgeWidthMultiplier)
     {
         _parameter = parameter;
         _dotSize = Mathf.Max(0.005f, dotSize);
