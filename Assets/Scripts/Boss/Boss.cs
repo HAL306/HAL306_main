@@ -361,36 +361,37 @@ public class BOSScharge : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        // Fieldタグ以外に触れている場合は処理しない
-        if (!collision.CompareTag("Field")) return;
+        // 旧地形
+        //// Fieldタグ以外に触れている場合は処理しない
+        //if (!collision.CompareTag("Field")) return;
 
-        // 触れている地形からTerrainContextを取得する
-        TerrainContext terrain = collision.GetComponentInParent<TerrainContext>();
+        //// 触れている地形からTerrainContextを取得する
+        //TerrainContext terrain = collision.GetComponentInParent<TerrainContext>();
 
-        // TerrainContextが無ければ破壊できない
-        if (terrain == null) return;
+        //// TerrainContextが無ければ破壊できない
+        //if (terrain == null) return;
 
-        // 地形破壊処理を行う
-        BreakTerrain(terrain);
+        //// 地形破壊処理を行う
+        //BreakTerrain(terrain);
     }
 
 
-    // 地形を一定時間ごとに破壊する処理
-    private void BreakTerrain(TerrainContext terrain)
-    {
-        // 破壊間隔のタイマーを進める
-        destructTimer += Time.deltaTime;
+    //// 地形を一定時間ごとに破壊する処理
+    //private void BreakTerrain(TerrainContext terrain)
+    //{
+    //    // 破壊間隔のタイマーを進める
+    //    destructTimer += Time.deltaTime;
 
-        // 指定時間を超えたら地形を破壊する
-        if (destructTimer >= destructInterval)
-        {
-            // BOSSの現在位置を中心に地形を削る
-            terrain.Destruct(transform.position, destructRadius, crackParameter);
+    //    // 指定時間を超えたら地形を破壊する
+    //    if (destructTimer >= destructInterval)
+    //    {
+    //        // BOSSの現在位置を中心に地形を削る
+    //        terrain.Destruct(transform.position, destructRadius, crackParameter);
 
-            // タイマーをリセットする
-            destructTimer = 0.0f;
-        }
-    }
+    //        // タイマーをリセットする
+    //        destructTimer = 0.0f;
+    //    }
+    //}
 
 
     // BOSSが画面に映っているか確認する処理

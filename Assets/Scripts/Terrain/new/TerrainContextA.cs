@@ -122,7 +122,7 @@ public class TerrainContextA : MonoBehaviour
 
     private void SubscribeEvents()
     {
-        // TerrainSettingsA の変更購読
+        // TerrainSettings の変更購読
         if (_subscribedSettings != _terrainSettings)
         {
             if (_subscribedSettings != null)

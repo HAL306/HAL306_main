@@ -2,6 +2,36 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
+// ひび割れパラメータ
+[System.Serializable]
+public struct CrackParameter
+{
+    [Tooltip("ひび割れの基準方向")]
+    public Vector2 direction;
+
+    [Tooltip("ひび割れ方向の角度ノイズ")]
+    public float angleNoise;
+
+    [Tooltip("最大ひび割れ本数")]
+    public int maxCrackCount;
+
+    [Tooltip("最小ひび割れ本数")]
+    public int minCrackCount;
+}
+
+// ひび割れさせるときに渡す構造体
+public struct CrackData
+{
+    [Tooltip("始点")]
+    public Vector2 pos;
+
+    [Tooltip("向き")]
+    public Vector2 dir;
+
+    [Tooltip("長さ")]
+    public float length;
+}
+
 // 分離した地形のデータ
 public struct SplitTerrainDataA
 {

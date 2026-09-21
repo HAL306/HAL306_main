@@ -1,33 +1,33 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//ƒƒCƒ“•Ší‚Ì’Ç‰Á
+//ãƒ¡ã‚¤ãƒ³æ­¦å™¨ã®è¿½åŠ 
 [RequireComponent(typeof(LineRenderer))]
 public class MainWeapon : MonoBehaviour
 {
-    [SerializeField, Tooltip("Ë’ö‹——£")]
+    [SerializeField, Tooltip("å°„ç¨‹è·é›¢")]
     private float _shootRange = 20.0f;
 
-    [SerializeField, Tooltip("ƒVƒ‡ƒbƒg‘Ò‚¿ŠÔ")]
+    [SerializeField, Tooltip("ã‚·ãƒ§ãƒƒãƒˆå¾…ã¡æ™‚é–“")]
     private float _shootInterval = 0.5f;
 
-    [SerializeField, Tooltip("’…’e‚Ì”š”­”¼Œa")]
+    [SerializeField, Tooltip("ç€å¼¾æ™‚ã®çˆ†ç™ºåŠå¾„")]
     private float _explodeRadius = 0.2f;
 
 
-    [SerializeField, Tooltip("UŒ‚‚ª“–‚½‚éƒŒƒCƒ„[")]
+    [SerializeField, Tooltip("æ”»æ’ƒãŒå½“ãŸã‚‹ãƒ¬ã‚¤ãƒ¤ãƒ¼")]
     private LayerMask _hitLayer;
 
 
-    private bool _inputShoot;           // ƒVƒ‡ƒbƒg“ü—Í
-    private Vector2 _inputAim;          // ƒGƒCƒ€•ûŒü“ü—Í (ƒXƒeƒBƒbƒNŒÀ’è)
-    private bool _isMouseAim;           // ƒ}ƒEƒX‘€ì‚É‚æ‚éƒGƒCƒ€‚ğs‚¤ƒtƒ‰ƒO
+    private bool _inputShoot;           // ã‚·ãƒ§ãƒƒãƒˆå…¥åŠ›
+    private Vector2 _inputAim;          // ã‚¨ã‚¤ãƒ æ–¹å‘å…¥åŠ› (ã‚¹ãƒ†ã‚£ãƒƒã‚¯é™å®š)
+    private bool _isMouseAim;           // ãƒã‚¦ã‚¹æ“ä½œã«ã‚ˆã‚‹ã‚¨ã‚¤ãƒ ã‚’è¡Œã†ãƒ•ãƒ©ã‚°
 
     private LineRenderer _lineRenderer;
 
-    private Vector2 _shootAimTarget;    // Œ»İ‚ÌƒVƒ‡ƒbƒgƒ^[ƒQƒbƒgÀ•W
-    private Vector2 _mouseWorldPos;     // ƒ}ƒEƒX‚Ìƒ[ƒ‹ƒhÀ•W
-    private float _cooldownTimer;       // ƒVƒ‡ƒbƒg‘Ò‚¿ŠÔŒv‘ª—pƒ^ƒCƒ}[
+    private Vector2 _shootAimTarget;    // ç¾åœ¨ã®ã‚·ãƒ§ãƒƒãƒˆã‚¿ãƒ¼ã‚²ãƒƒãƒˆåº§æ¨™
+    private Vector2 _mouseWorldPos;     // ãƒã‚¦ã‚¹ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
+    private float _cooldownTimer;       // ã‚·ãƒ§ãƒƒãƒˆå¾…ã¡æ™‚é–“è¨ˆæ¸¬ç”¨ã‚¿ã‚¤ãƒãƒ¼
 
     private float _lineTimer;
     public void OnShoot(InputAction.CallbackContext context)
@@ -69,7 +69,7 @@ public class MainWeapon : MonoBehaviour
         }
     }
 
-    // ƒGƒCƒ€“ü—Íƒ‚[ƒh‚ğ©“®“I‚ÉØ‚è‘Ö‚¦‚é
+    // ã‚¨ã‚¤ãƒ å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã‚’è‡ªå‹•çš„ã«åˆ‡ã‚Šæ›¿ãˆã‚‹
     private void ChangeDeviceMode(InputAction.CallbackContext context)
     {
         if (context.control.device.layout == "Mouse")
@@ -82,24 +82,24 @@ public class MainWeapon : MonoBehaviour
         }
     }
 
-    // ƒVƒ‡ƒbƒgƒ^[ƒQƒbƒg‚ğˆÚ“®‚³‚¹‚é
+    // ã‚·ãƒ§ãƒƒãƒˆã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ç§»å‹•ã•ã›ã‚‹
     private void MoveAimTarget()
     {
-        // ƒ^[ƒQƒbƒgÀ•Wæ“¾
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆåº§æ¨™å–å¾—
         if (_isMouseAim)
         {
-            // ƒ}ƒEƒX‘€ì
+            // ãƒã‚¦ã‚¹æ“ä½œ
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             _mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePosition);
             _shootAimTarget = _mouseWorldPos - (Vector2)transform.position;
         }
         else
         {
-            // ƒXƒeƒBƒbƒN‘€ì
+            // ã‚¹ãƒ†ã‚£ãƒƒã‚¯æ“ä½œ
             _shootAimTarget = _inputAim.normalized;
         }
 
-        // ƒ[ƒ‘Îô
+        // ã‚¼ãƒ­å¯¾ç­–
         if (_shootAimTarget == Vector2.zero)
         {
             _shootAimTarget = Vector2.right;
@@ -112,7 +112,7 @@ public class MainWeapon : MonoBehaviour
         Vector2 origin = transform.position;
         Vector2 dir = _shootAimTarget.normalized;
 
-        // ƒVƒ‡ƒbƒg‚ª–½’†‚µ‚½‚©‚ğæ“¾‚·‚é
+        // ã‚·ãƒ§ãƒƒãƒˆãŒå‘½ä¸­ã—ãŸã‹ã‚’å–å¾—ã™ã‚‹
         hit = Physics2D.Raycast(origin, dir, _shootRange, _hitLayer);
         if (hit)
         {
@@ -133,21 +133,22 @@ public class MainWeapon : MonoBehaviour
 
     private void HitDestruct(Vector2 center, Vector2 dir)
     {
-        // ”š”­”»’è‚ğs‚¤
-        Collider2D[] hitColliders;
-        hitColliders = Physics2D.OverlapCircleAll(center, _explodeRadius, _hitLayer);
+        // æ—§åœ°å½¢
+        //// çˆ†ç™ºåˆ¤å®šã‚’è¡Œã†
+        //Collider2D[] hitColliders;
+        //hitColliders = Physics2D.OverlapCircleAll(center, _explodeRadius, _hitLayer);
 
-        foreach (Collider2D collider in hitColliders)
-        {
-            if (collider.TryGetComponent<TerrainContext>(out TerrainContext terrain))
-            {
-                CrackParameter crack;
-                crack.direction = dir;
-                crack.angleNoise = 120.0f;
-                crack.minCrackCount = 1;
-                crack.maxCrackCount = 2;
-                terrain.Destruct(center, _explodeRadius, crack);
-            }
-        }
+        //foreach (Collider2D collider in hitColliders)
+        //{
+        //    if (collider.TryGetComponent<TerrainContext>(out TerrainContext terrain))
+        //    {
+        //        CrackParameter crack;
+        //        crack.direction = dir;
+        //        crack.angleNoise = 120.0f;
+        //        crack.minCrackCount = 1;
+        //        crack.maxCrackCount = 2;
+        //        terrain.Destruct(center, _explodeRadius, crack);
+        //    }
+        //}
     }
 }
