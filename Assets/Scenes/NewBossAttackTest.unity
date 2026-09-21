@@ -2483,7 +2483,7 @@ Transform:
   m_GameObject: {fileID: 694725694}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.14, y: -3.3600001, z: -22.337704}
+  m_LocalPosition: {x: 4.72, y: -3.3600001, z: -22.337704}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5175,7 +5175,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1252782279758346500, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.14
+      value: 4.72
       objectReference: {fileID: 0}
     - target: {fileID: 1252782279758346500, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7092,7 +7092,7 @@ Transform:
   m_GameObject: {fileID: 1994316280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.14, y: -3.3600001, z: -22.337704}
+  m_LocalPosition: {x: 4.72, y: -3.3600001, z: -22.337704}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7808,6 +7808,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 2080541436}
+    - target: {fileID: -3627413203010702462, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: attacks.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 631788797360010003, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: fade
       value: 
@@ -7860,6 +7864,18 @@ PrefabInstance:
       propertyPath: playerPos
       value: 
       objectReference: {fileID: 2080541436}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: warningTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: markerThickness
+      value: 4.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6923334146087895574, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: markerLengthOffset
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8896673290602856705, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: m_Name
       value: Boss
