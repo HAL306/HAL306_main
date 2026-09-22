@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Scripting.APIUpdating;
 
 [ExecuteAlways]
 [RequireComponent(typeof(MeshFilter))]
+[MovedFrom(true, "", null, "MeshDotRendererA")]
 public class MeshDotRenderer : MonoBehaviour
 {
     [StructLayout(LayoutKind.Sequential)]
@@ -17,124 +20,99 @@ public class MeshDotRenderer : MonoBehaviour
         public float isEdge;
     }
 
-    [Header("Assets")]
-    [SerializeField] private Material _dotMaterial;
-    [SerializeField] private ComputeShader _computeShader;
-    [SerializeField] private Mesh _dotShapeMesh;
+    [Header("Base Assets")]
+    [SerializeField] protected Material _instancedDotMaterial;
+    [SerializeField] protected ComputeShader _computeShader;
+    [SerializeField] protected Mesh _dotShapeMesh;
 
-    [Header("Source Materials & Textures")]
-    [Tooltip("Shader Graph 等で作成したマテリアル")]
-    [SerializeField] private Material _sourceMaterial;
-    [SerializeField] private bool _dynamicUpdate = false;
-    [SerializeField] private Vector2Int _renderTextureSize = new Vector2Int(512, 512);
+    [Header("Shadow Settings")]
+    [SerializeField] protected ShadowCastingMode _shadowCastingMode = ShadowCastingMode.On;
+    [SerializeField] protected bool _receiveShadows = true;
 
-    [Header("Direct Texture Overrides")]
-    [SerializeField] private Texture2D _mainTexture;
-    [SerializeField] private Texture2D _normalTexture;
-    [Range(0f, 2f)] [SerializeField] private float _normalStrength = 1.0f;
+    protected TerrainParameter _parameter;
+    protected float _dotSize = 0.125f;
+    protected float _edgeWidthMultiplier = 1.0f;
 
-    [Header("Dot Configuration")]
-    [SerializeField] private float _dotSize = 0.125f;
-    [SerializeField] private Color _baseColor = Color.white;
-    [SerializeField] private Color _edgeColor = new Color(0.85f, 0.85f, 0.85f, 1.0f);
+    protected MeshFilter _meshFilter;
+    protected MaterialPropertyBlock _propBlock;
+    protected ComputeBuffer _dotBuffer;
+    protected ComputeBuffer _argsBuffer;
+    protected readonly uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
+    protected int _dotCount = 0;
 
-    private MeshFilter _meshFilter;
-    private MaterialPropertyBlock _propBlock;
-    private ComputeBuffer _dotBuffer;
-    private ComputeBuffer _argsBuffer;
-    private RenderTexture _bakedColorTex;
-    private readonly uint[] _args = new uint[5] { 0, 0, 0, 0, 0 };
-    private int _dotCount = 0;
-
-    public Material Material
-    {
-        get => _dotMaterial;
-        set => _dotMaterial = value;
-    }
-
-    public Material SourceMaterial
-    {
-        get => _sourceMaterial;
-        set { _sourceMaterial = value; BakeSourceMaterial(); }
-    }
-
-    public Texture2D Texture
-    {
-        get => _mainTexture;
-        set { _mainTexture = value; UpdateProperties(); }
-    }
-
-    public Texture2D CustomNormalTexture
-    {
-        get => _normalTexture;
-        set { _normalTexture = value; UpdateProperties(); }
-    }
-
-    public Color Color
-    {
-        get => _baseColor;
-        set { _baseColor = value; UpdateProperties(); }
-    }
-
-    public float DotSize
-    {
-        get => _dotSize;
-        set { _dotSize = Mathf.Max(0.005f, value); RebuildDots(); }
-    }
-
-    private void Awake()
+    protected virtual void Awake()
     {
         _meshFilter = GetComponent<MeshFilter>();
         _propBlock = new MaterialPropertyBlock();
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         if (_meshFilter == null) _meshFilter = GetComponent<MeshFilter>();
         if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
-        
-        BakeSourceMaterial();
+
+#if UNITY_EDITOR
+        // 非再生時、シーンビューのカメラ描画直前にも描画フックをかける
+        RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
+#endif
+
         RebuildDots();
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
+#if UNITY_EDITOR
+        RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
+#endif
         ReleaseBuffers();
-        ReleaseRenderTextures();
     }
 
-    private void OnDestroy()
+    protected virtual void OnValidate()
     {
-        ReleaseBuffers();
-        ReleaseRenderTextures();
-    }
-
-    private void OnValidate()
-    {
-        if (isActiveAndEnabled)
+        // エディタ非再生時にパラメータが変更されたら即座に再反映
+        if (!Application.isPlaying)
         {
             RebuildDots();
+            UpdateProperties();
         }
     }
 
-    private void Update()
+#if UNITY_EDITOR
+    private void OnBeginCameraRendering(ScriptableRenderContext context, Camera cam)
     {
-        if (_dynamicUpdate && _sourceMaterial != null)
+        // 非再生中かつシーンビューまたはプレビューカメラの場合に描画を実行
+        if (!Application.isPlaying && (cam.cameraType == CameraType.SceneView || cam.cameraType == CameraType.Preview))
         {
-            BakeSourceMaterial();
+            RenderIndirect(cam);
+        }
+    }
+#endif
+
+    protected virtual void OnDestroy()
+    {
+        ReleaseBuffers();
+    }
+
+    protected virtual void LateUpdate()
+    {
+        // 再生中は通常のLateUpdateで描画
+        if (Application.isPlaying)
+        {
+            RenderIndirect(null);
         }
     }
 
-    private void LateUpdate()
+    protected virtual void RenderIndirect(Camera targetCam)
     {
-        if (_dotBuffer == null || _argsBuffer == null || _dotCount == 0 || _dotMaterial == null || _dotShapeMesh == null)
+        if (_dotBuffer == null || _argsBuffer == null || _dotCount == 0 || _instancedDotMaterial == null || _dotShapeMesh == null)
         {
             return;
         }
 
         UpdateProperties();
 
-        Bounds localB = _meshFilter.sharedMesh != null ? _meshFilter.sharedMesh.bounds : new Bounds(Vector3.zero, Vector3.one * 10f);
+        MeshFilter mf = _meshFilter != null ? _meshFilter : GetComponent<MeshFilter>();
+        Bounds localB = mf != null && mf.sharedMesh != null ? mf.sharedMesh.bounds : new Bounds(Vector3.zero, Vector3.one * 10f);
         Vector3 worldCenter = transform.TransformPoint(localB.center);
         Vector3 worldSize = Vector3.Scale(localB.size, transform.lossyScale);
         float maxDim = Mathf.Max(Mathf.Abs(worldSize.x), Mathf.Max(Mathf.Abs(worldSize.y), Mathf.Abs(worldSize.z)));
@@ -143,66 +121,116 @@ public class MeshDotRenderer : MonoBehaviour
         Graphics.DrawMeshInstancedIndirect(
             _dotShapeMesh,
             0,
-            _dotMaterial,
+            _instancedDotMaterial,
             worldBounds,
             _argsBuffer,
             0,
             _propBlock,
-            ShadowCastingMode.Off,
-            false,
-            gameObject.layer
+            _shadowCastingMode,
+            _receiveShadows,
+            gameObject.layer,
+            targetCam // 指定カメラ（シーンビュー）に対して確実に描画
         );
     }
 
-    public void BakeSourceMaterial()
+    public virtual void ApplyConfiguration(TerrainParameter parameter, float dotSize, float edgeWidthMultiplier)
     {
-        if (_sourceMaterial == null) return;
+        _parameter = parameter;
+        _dotSize = Mathf.Max(0.005f, dotSize);
+        _edgeWidthMultiplier = Mathf.Max(0.1f, edgeWidthMultiplier);
 
-        if (_bakedColorTex == null || _bakedColorTex.width != _renderTextureSize.x)
-        {
-            ReleaseRenderTextures();
-            _bakedColorTex = new RenderTexture(_renderTextureSize.x, _renderTextureSize.y, 0, RenderTextureFormat.ARGB32)
-            {
-                filterMode = FilterMode.Point,
-                wrapMode = TextureWrapMode.Clamp
-            };
-            _bakedColorTex.Create();
-        }
-
-        Graphics.Blit(null, _bakedColorTex, _sourceMaterial, 0);
+        RebuildDots();
+        UpdateProperties();
     }
 
-    private void UpdateProperties()
+    protected virtual void UpdateProperties()
     {
         if (_propBlock == null || _dotBuffer == null) return;
 
         _propBlock.SetMatrix("_CustomLocalToWorld", transform.localToWorldMatrix);
         _propBlock.SetBuffer("_DotDataBuffer", _dotBuffer);
-        _propBlock.SetFloat("_DotSize", _dotSize); // 描画サイズを配置間隔と完全に一致
-        _propBlock.SetColor("_BaseColor", _baseColor);
-        _propBlock.SetColor("_EdgeColor", _edgeColor);
-        _propBlock.SetFloat("_BumpScale", _normalStrength);
+        _propBlock.SetFloat("_DotSize", _dotSize);
 
-        if (_bakedColorTex != null)
+        if (_parameter == null) return;
+
+        Texture mainTex = _parameter.GetEffectiveTexture();
+        _propBlock.SetTexture("_MainTex", mainTex != null ? mainTex : Texture2D.whiteTexture);
+
+        _propBlock.SetVector("_MainTex_ST", new Vector4(_parameter.UVScale.x, _parameter.UVScale.y, 0.0f, 0.0f));
+        _propBlock.SetFloat("_BumpScale", _parameter.NormalStrength);
+
+        Color finalBaseColor = _parameter.BaseColor;
+        bool hasNormal = false;
+
+        Material srcMat = _parameter.Material;
+        if (srcMat != null)
         {
-            _propBlock.SetTexture("_MainTex", _bakedColorTex);
-        }
-        else if (_mainTexture != null)
-        {
-            _propBlock.SetTexture("_MainTex", _mainTexture);
+            if (srcMat.HasProperty("_BaseColor"))
+                finalBaseColor *= srcMat.GetColor("_BaseColor");
+            else if (srcMat.HasProperty("_Color"))
+                finalBaseColor *= srcMat.GetColor("_Color");
+
+            if (srcMat.HasProperty("_BumpMap"))
+            {
+                Texture nTex = srcMat.GetTexture("_BumpMap");
+                if (nTex != null)
+                {
+                    _propBlock.SetTexture("_BumpMap", nTex);
+                    hasNormal = true;
+                }
+            }
         }
 
-        if (_normalTexture != null)
-        {
-            _propBlock.SetTexture("_BumpMap", _normalTexture);
-        }
-        else if (_sourceMaterial != null && _sourceMaterial.HasProperty("_BumpMap"))
-        {
-            _propBlock.SetTexture("_BumpMap", _sourceMaterial.GetTexture("_BumpMap"));
-        }
+        _propBlock.SetColor("_BaseColor", finalBaseColor);
+        _propBlock.SetFloat("_Metallic", _parameter.Metallic);
+        _propBlock.SetFloat("_Smoothness", _parameter.Smoothness);
+        _propBlock.SetFloat("_EnvLightStrength", _parameter.EnvLightStrength);
+        _propBlock.SetFloat("_ShadowColorRetain", _parameter.ShadowColorRetain);
+        _propBlock.SetFloat("_Cutoff", _parameter.Cutoff);
+        _propBlock.SetFloat("_HasBumpMap", hasNormal ? 1.0f : 0.0f);
     }
 
-    public void RebuildDots()
+    protected Vector4[] ExtractBoundaryEdges(Vector3[] vertices, int[] triangles)
+    {
+        Dictionary<ulong, int> edgeCountMap = new Dictionary<ulong, int>();
+        int triCount = triangles.Length / 3;
+
+        for (int t = 0; t < triCount; t++)
+        {
+            int i0 = triangles[t * 3 + 0];
+            int i1 = triangles[t * 3 + 1];
+            int i2 = triangles[t * 3 + 2];
+
+            AddEdge(i0, i1, edgeCountMap);
+            AddEdge(i1, i2, edgeCountMap);
+            AddEdge(i2, i0, edgeCountMap);
+        }
+
+        List<Vector4> boundaryList = new List<Vector4>();
+        foreach (var kvp in edgeCountMap)
+        {
+            if (kvp.Value == 1)
+            {
+                int iA = (int)(kvp.Key >> 32);
+                int iB = (int)(kvp.Key & 0xFFFFFFFF);
+                boundaryList.Add(new Vector4(vertices[iA].x, vertices[iA].y, vertices[iB].x, vertices[iB].y));
+            }
+        }
+
+        return boundaryList.Count > 0 ? boundaryList.ToArray() : new Vector4[] { Vector4.zero };
+    }
+
+    protected void AddEdge(int a, int b, Dictionary<ulong, int> map)
+    {
+        int min = Math.Min(a, b);
+        int max = Math.Max(a, b);
+        ulong key = ((ulong)min << 32) | (uint)max;
+
+        if (map.ContainsKey(key)) map[key]++;
+        else map[key] = 1;
+    }
+
+    public virtual void RebuildDots()
     {
         ReleaseBuffers();
 
@@ -212,29 +240,45 @@ public class MeshDotRenderer : MonoBehaviour
         }
 
         Mesh mesh = _meshFilter.sharedMesh;
-        Vector3[] vertices = mesh.vertices;
+        Vector3[] vertices3D = mesh.vertices;
         int[] triangles = mesh.triangles;
         Vector2[] uvs = mesh.uv;
 
-        if (vertices.Length == 0 || triangles.Length == 0) return;
+        if (vertices3D.Length == 0 || triangles.Length == 0) return;
 
-        if (uvs == null || uvs.Length != vertices.Length)
+        Vector2[] vertices2D = new Vector2[vertices3D.Length];
+        for (int i = 0; i < vertices3D.Length; i++)
         {
-            uvs = new Vector2[vertices.Length];
+            vertices2D[i] = new Vector2(vertices3D[i].x, vertices3D[i].y);
         }
 
-        ComputeBuffer vertexBuffer = new ComputeBuffer(vertices.Length, sizeof(float) * 3);
+        if (uvs == null || uvs.Length != vertices3D.Length)
+        {
+            uvs = new Vector2[vertices3D.Length];
+        }
+
+        Vector4[] boundaryEdges = ExtractBoundaryEdges(vertices3D, triangles);
+
+        ComputeBuffer vertexBuffer = new ComputeBuffer(vertices2D.Length, sizeof(float) * 2);
         ComputeBuffer triangleBuffer = new ComputeBuffer(triangles.Length, sizeof(int));
         ComputeBuffer uvBuffer = new ComputeBuffer(uvs.Length, sizeof(float) * 2);
+        ComputeBuffer edgeBuffer = new ComputeBuffer(boundaryEdges.Length, sizeof(float) * 4);
 
-        vertexBuffer.SetData(vertices);
+        vertexBuffer.SetData(vertices2D);
         triangleBuffer.SetData(triangles);
         uvBuffer.SetData(uvs);
+        edgeBuffer.SetData(boundaryEdges);
 
         Bounds b = mesh.bounds;
         float size = Mathf.Max(0.005f, _dotSize);
-        int gridX = Mathf.CeilToInt(b.size.x / size) + 2;
-        int gridY = Mathf.CeilToInt(b.size.y / size) + 2;
+
+        Vector2 gridOffset = new Vector2(
+            Mathf.Floor(b.min.x / size) * size + size * 0.5f,
+            Mathf.Floor(b.min.y / size) * size + size * 0.5f
+        );
+
+        int gridX = Mathf.CeilToInt((b.max.x - gridOffset.x) / size) + 2;
+        int gridY = Mathf.CeilToInt((b.max.y - gridOffset.y) / size) + 2;
         int maxCapacity = Mathf.Clamp(gridX * gridY, 64, 262144);
 
         _dotBuffer = new ComputeBuffer(maxCapacity, Marshal.SizeOf(typeof(DotInstance)), ComputeBufferType.Append);
@@ -244,13 +288,17 @@ public class MeshDotRenderer : MonoBehaviour
         _computeShader.SetBuffer(kernel, "_Vertices", vertexBuffer);
         _computeShader.SetBuffer(kernel, "_Triangles", triangleBuffer);
         _computeShader.SetBuffer(kernel, "_UVs", uvBuffer);
+        _computeShader.SetBuffer(kernel, "_BoundaryEdges", edgeBuffer);
         _computeShader.SetBuffer(kernel, "_ResultDots", _dotBuffer);
 
+        _computeShader.SetVector("_GridOffset", gridOffset);
         _computeShader.SetVector("_BoundsMin", b.min);
         _computeShader.SetVector("_BoundsMax", b.max);
-        _computeShader.SetFloat("_DotSize", size);
+        _computeShader.SetVector("_GridSpacing", new Vector2(size, size));
+        _computeShader.SetFloat("_EdgeSize", _edgeWidthMultiplier);
         _computeShader.SetInt("_TriangleCount", triangles.Length / 3);
-        _computeShader.SetInts("_GridDimensions", new int[] { gridX, gridY, 1 });
+        _computeShader.SetInt("_EdgeCount", boundaryEdges.Length);
+        _computeShader.SetInts("_GridDimensions", new int[] { gridX, gridY });
 
         int threadGroupsX = Mathf.CeilToInt(gridX / 8.0f);
         int threadGroupsY = Mathf.CeilToInt(gridY / 8.0f);
@@ -274,22 +322,13 @@ public class MeshDotRenderer : MonoBehaviour
         vertexBuffer.Release();
         triangleBuffer.Release();
         uvBuffer.Release();
+        edgeBuffer.Release();
     }
 
-    private void ReleaseBuffers()
+    protected virtual void ReleaseBuffers()
     {
         if (_dotBuffer != null) { _dotBuffer.Release(); _dotBuffer = null; }
         if (_argsBuffer != null) { _argsBuffer.Release(); _argsBuffer = null; }
         _dotCount = 0;
-    }
-
-    private void ReleaseRenderTextures()
-    {
-        if (_bakedColorTex != null)
-        {
-            if (_bakedColorTex.IsCreated()) _bakedColorTex.Release();
-            DestroyImmediate(_bakedColorTex);
-            _bakedColorTex = null;
-        }
     }
 }

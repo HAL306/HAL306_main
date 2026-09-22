@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 
 /// <summary>
 /// 地形の衝突時処理を行うコンポーネント
 /// </summary>
 [RequireComponent(typeof(TerrainContext))]
+[MovedFrom(true, "", null, "TerrainCollisionA")]
 public class TerrainCollision : MonoBehaviour
 {
     private TerrainContext _terrainContext;
@@ -12,15 +14,15 @@ public class TerrainCollision : MonoBehaviour
 
     private void Awake()
     {
-        _terrainContext = GetComponent<TerrainContext>();
+        if (_terrainContext == null)
+            _terrainContext = GetComponent<TerrainContext>();
     }
 
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-
         //プレイヤーか判定
-        if ( collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player")
         {
             // プレイヤーのスクリプトを取得する
             if (collision.gameObject.TryGetComponent(out PlayerMove player))
@@ -29,6 +31,7 @@ public class TerrainCollision : MonoBehaviour
                 if (!player._isDestroyCrystalByWeight) return;
             }
         }
+
         float impact = GetImpact(collision);
         if (impact < 5.0f)
             return;
@@ -56,11 +59,11 @@ public class TerrainCollision : MonoBehaviour
         float massRatio = 1.0f;
         if (otherRigid != null)
         {
-            massRatio = otherRigid.mass / _terrainContext.Mass;
+            massRatio = otherRigid.mass / _terrainContext.Area;
         }
 
         // 重さにより変化が大きくなりすぎないよう補正
         massRatio = Mathf.Sqrt(massRatio);
-        return massRatio * speed / Mathf.Pow(_terrainContext.Mass, 0.2f);
+        return massRatio * speed / Mathf.Pow(_terrainContext.Area, 0.2f);
     }
 }

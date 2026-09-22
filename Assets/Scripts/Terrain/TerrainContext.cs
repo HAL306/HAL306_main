@@ -1,369 +1,274 @@
-using UnityEngine;
-using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// 地形のコアコンポーネント
+/// エディタ非再生中（Edit Mode）でも ScriptableObject の変更を検知して即時描画更新を行います。
 /// </summary>
-[RequireComponent(typeof(PolygonCollider2D), typeof(MeshFilter), typeof(MeshDotRenderer))]
+[ExecuteAlways]
+[RequireComponent(typeof(TerrainShape), typeof(MeshFilter))]
+[MovedFrom(true, "", null, "TerrainContextA")]
 public class TerrainContext : MonoBehaviour
 {
     [SerializeField, Tooltip("地形の詳細設定")]
     private TerrainSettings _terrainSettings;
 
-    [SerializeField, Tooltip("地形のパラメータ")]
+    [SerializeField, Tooltip("地形のパラメータ（BaseTerrainRenderer 使用時は空でも可）")]
     private TerrainParameter _terrainParameter;
 
-    [SerializeField, Tooltip("開始地点で存在している地形フラグ")]
-    private bool _isStartTerrain = false;
-
-    [SerializeField, Tooltip("ベース地形のレイヤー")]
-    private LayerMask _baseTerrainLayer;
-
-    [Header("サウンド設定")]
-    [SerializeField, Tooltip("結晶の破壊音を再生するか")]
-    private bool _enableBreakSound = true;
-
-    [SerializeField, Tooltip("小さいひび割れ音（複数からランダム再生）")]
-    private AudioClip[] _smallCrackSounds;
-
-    [SerializeField, Tooltip("大きいひび割れ音（複数からランダム再生・完全破壊時にも使用）")]
-    private AudioClip[] _bigCrackSounds;
-
-    [SerializeField, Tooltip("小と大のひびを区別する面積のしきい値")]
-    private float _bigCrackAreaThreshold = 1.0f;
-
-    [SerializeField, Tooltip("再生ピッチの範囲（最小）")]
-    [Range(0.1f, 3.0f)] private float _pitchMin = 0.85f;
-
-    [SerializeField, Tooltip("再生ピッチの範囲（最大）")]
-    [Range(0.1f, 3.0f)] private float _pitchMax = 1.15f;
-
-    [SerializeField, Tooltip("再生音量の範囲（最小）")]
-    [Range(0.0f, 1.0f)] private float _volumeMin = 0.7f;
-
-    [SerializeField, Tooltip("再生音量の範囲（最大）")]
-    [Range(0.0f, 1.0f)] private float _volumeMax = 1.0f;
-
-    [SerializeField, Tooltip("同種の音の最短再生間隔（秒）")]
-    [Range(0.0f, 1.0f)] private float _soundInterval = 0.03f;
-
-    private static AudioSource _sfxSource;
-    private static readonly Dictionary<SoundEffectType, float> _lastPlayTime = new Dictionary<SoundEffectType, float>();
-    private float _lastActionArea;
-
-    private TerrainPolygon _terrainPolygon;         // 地形形状
-    private Action _onChangeTerrainEvent;           // 地形変更時イベント
-
-    private PolygonCollider2D _polygonCollider;
-    private Rigidbody2D _rigidbody;
-    private TerrainDestructEffect _destructEffect;
-
-    private List<Collider2D> _overlapColliderList;  // 重なっているコライダーのリスト
-    private float _mass;
-    
-    private MeshFilter _meshFilter;
+    private TerrainShape _terrainShape;
+    private TerrainDestruct _terrainDestruct;
+    private TerrainDestructEffect _terrainDestructEffect;
     private MeshDotRenderer _dotRenderer;
-    private TerrainCollision _collision;
+    private Rigidbody2D _rigidbody;
 
-    static private BOSScharge _boss;
+    private bool _isOverlap = true;
+    private float _area = 0.0f;
+
+    // 購読状態をトラッキング（Inspector でのアセット差し替え対応）
+    private TerrainSettings _subscribedSettings;
+    private TerrainParameter _subscribedParameter;
 
     public TerrainSettings TerrainSettings => _terrainSettings;
     public TerrainParameter TerrainParameter => _terrainParameter;
+    public TerrainShape TerrainShape => _terrainShape;
+    public TerrainDestruct TerrainDestruct => _terrainDestruct;
     public MeshDotRenderer DotRenderer => _dotRenderer;
-    public TerrainPolygon TerrainPolygon => _terrainPolygon;
-    public PolygonCollider2D PolygonCollider => _polygonCollider;
     public Rigidbody2D Rigidbody => _rigidbody;
-    public MeshFilter MeshFilter => _meshFilter;
-    public float Mass => _mass;
+    public float Area => _area;
 
-    private enum SoundEffectType
-    {
-        SMALL_CRACK,
-        BIG_CRACK,
-    };
-
-    // 分離時の初期化処理
-    public void InitializeOnSplit(SplitTerrainData splitTerrain)
-    {
-        _terrainPolygon.Initialize(this, splitTerrain);
-    }
-
-    // 地形破壊処理 (破壊面積を返す)
     public float Destruct(Vector2 worldCenter, float radius, CrackParameter crack)
     {
-        List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonDestruct(worldCenter, radius, crack);
-        float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
-        _lastActionArea = area;
+        if (_terrainDestruct == null)
+            return 0.0f;
 
-        for (int i = 0; i < splitTerrains.Count; ++i)
-        {
-            CreateSplitTerrain(splitTerrains[i]);
-        }
-        OnChangeTerrain();
-        return area;
+        DestructResult destructResult = _terrainDestruct.PolygonDestruct(worldCenter, radius, crack);
+        return OnDestruct(destructResult);
     }
 
-    // 地形にひびを入れる処理 (破壊面積を返す)
     public float Crack(CrackData[] data, CrackParameter crack)
     {
-        List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonCrack(data, crack);
-        float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
-        _lastActionArea = area;
+        if (_terrainDestruct == null)
+            return 0.0f;
 
-        for (int i = 0; i < splitTerrains.Count; ++i)
-        {
-            CreateSplitTerrain(splitTerrains[i]);
-        }
-        OnChangeTerrain();
-        return area;
-    }
-
-    // 地形変更時イベントを登録する
-    public void AddChangeTerrainEvent(Action onDestructEvent)
-    {
-        _onChangeTerrainEvent += onDestructEvent;
+        DestructResult destructResult = _terrainDestruct.PolygonCrack(data, crack);
+        return OnDestruct(destructResult);
     }
 
     private void Awake()
     {
-        _terrainPolygon = new TerrainPolygon();
-        _polygonCollider = GetComponent<PolygonCollider2D>();
-        _rigidbody = GetComponent<Rigidbody2D>();
-        _destructEffect = GetComponent<TerrainDestructEffect>();
-        _meshFilter = GetComponent<MeshFilter>();
-        _dotRenderer = GetComponent<MeshDotRenderer>();
-
-        if (_dotRenderer == null)
-        {
-            _dotRenderer = gameObject.AddComponent<MeshDotRenderer>();
-        }
-
-        if (_isStartTerrain)
-        {
-            // コライダー形状を地形パスとして利用
-            List<Vector2[]> terrainPath = new List<Vector2[]>(_polygonCollider.pathCount);
-            for (int i = 0; i < _polygonCollider.pathCount; ++i)
-            {
-                terrainPath.Add(_polygonCollider.GetPath(i));
-            }
-            _terrainPolygon.Initialize(this, terrainPath);
-        }
+        InitComponents();
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        if (_isStartTerrain)
-        {
-            OnChangeTerrain();
-        }
+        InitComponents();
+        SubscribeEvents();
+        ApplySettingsToRenderer();
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if (_rigidbody != null && Camera.main != null)
-        {
-            // 画面外の場合はRigidbodyを無効化する
-            Bounds bounds = _polygonCollider.bounds;
-            Vector3 camPos = Camera.main.transform.position;
-            float space = 1.0f; // 画面外判定の余白
-            float halfHeight = Camera.main.orthographicSize + space;
-            float halfWidth = halfHeight * Camera.main.aspect;
-
-            bool inCamera =
-                bounds.max.x >= camPos.x - halfWidth &&
-                bounds.min.x <= camPos.x + halfWidth &&
-                bounds.max.y >= camPos.y - halfHeight &&
-                bounds.min.y <= camPos.y + halfHeight;
-
-            _rigidbody.simulated = inCamera;
-        }
-
-        // 不要なオブジェクト削除
-        if (_boss == null)
-        {
-            _boss = FindAnyObjectByType<BOSScharge>();
-            if (_boss == null)
-                return;
-        }
-        if (_polygonCollider != null && _polygonCollider.bounds.max.x < _boss.transform.position.x)
-        {
-            Destroy(gameObject);
-        }
+        UnsubscribeEvents();
     }
 
     private void OnDestroy()
     {
-        // MeshDotManager の登録解除処理は不要となったため安全にクリーンアップ
-        _onChangeTerrainEvent = null;
+        UnsubscribeEvents();
     }
 
-    // 分離地形のオブジェクトを生成する
-    private void CreateSplitTerrain(SplitTerrainData splitTerrain)
+    private void Start()
     {
-        TerrainContext newTerrain = Instantiate(
-            _terrainSettings.BaseTerrainPrefab, transform.position, transform.rotation);
-
-        // 分離地形の初期化
-        newTerrain.InitializeOnSplit(splitTerrain);
-        newTerrain._terrainSettings = _terrainSettings;
-        newTerrain._terrainParameter = _terrainParameter;
-        newTerrain._overlapColliderList = _overlapColliderList != null ? new List<Collider2D>(_overlapColliderList) : new List<Collider2D>();
-
-        newTerrain.OnChangeTerrain();
-    }
-
-    // 地形変更時の処理を行う
-    private void OnChangeTerrain()
-    {
-        // 最小サイズより小さくなったら削除
-        if (_terrainPolygon.Area < _terrainSettings.MinArea)
+        if (_terrainShape != null)
         {
-            if (_destructEffect != null)
-            {
-                _destructEffect.EmitDestructEffect(_terrainPolygon.DestructPaths);
-            }
-            PlaySoundEffect(SoundEffectType.BIG_CRACK);
-            Destroy(this.gameObject);
-            return;
+            _area = CipperUtility.GetArea(_terrainShape.Points);
         }
+        ApplySettingsToRenderer();
+    }
 
-        // コライダー形状を更新
-        UpdateCollider();
+    private void OnValidate()
+    {
+        InitComponents();
+        SubscribeEvents();
+        ApplySettingsToRenderer();
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            SceneView.RepaintAll();
+        }
+#endif
+    }
+
+    private void InitComponents()
+    {
+        if (_terrainShape == null)
+            _terrainShape = GetComponent<TerrainShape>();
+
+        if (_terrainDestruct == null)
+            _terrainDestruct = GetComponent<TerrainDestruct>();
+
+        if (_terrainDestructEffect == null)
+            _terrainDestructEffect = GetComponent<TerrainDestructEffect>();
+
+        if (_dotRenderer == null)
+            _dotRenderer = GetComponent<MeshDotRenderer>();
 
         if (_rigidbody == null)
-        {
-            if (_overlapColliderList == null)
-            {
-                GetOverlapCollider();
+            _rigidbody = GetComponent<Rigidbody2D>();
+    }
 
-                if (_overlapColliderList.Count == 0)
-                    AddRigidbody();
-            }
-            else
-            {
-                if (!CheckOverlapCollider())
-                    AddRigidbody();
-            }
-        }
-        else
+    private void SubscribeEvents()
+    {
+        // TerrainSettings の変更購読
+        if (_subscribedSettings != _terrainSettings)
         {
-            // 重さを設定
-            _mass = _terrainPolygon.Area * _terrainParameter.Density;
-            _rigidbody.mass = _mass;
+            if (_subscribedSettings != null)
+                _subscribedSettings.onValuesChanged -= OnScriptableObjectChanged;
+
+            if (_terrainSettings != null)
+                _terrainSettings.onValuesChanged += OnScriptableObjectChanged;
+
+            _subscribedSettings = _terrainSettings;
         }
 
-        // 他のコンポーネントの地形破壊時イベント呼び出し
-        _onChangeTerrainEvent?.Invoke();
-
-        // メッシュのポリゴン生成およびMeshDotRendererのドット再構築
-        if (_meshFilter != null)
+        // TerrainParameter の変更購読
+        if (_subscribedParameter != _terrainParameter)
         {
-            _terrainPolygon.GenerateMesh(_meshFilter);
-        }
+            if (_subscribedParameter != null)
+                _subscribedParameter.onValuesChanged -= OnScriptableObjectChanged;
 
-        if (_dotRenderer != null)
-        {
-            _dotRenderer.RebuildDots();
+            if (_terrainParameter != null)
+                _terrainParameter.onValuesChanged += OnScriptableObjectChanged;
+
+            _subscribedParameter = _terrainParameter;
         }
     }
 
-    // コライダー形状を更新する
-    private void UpdateCollider()
+    private void UnsubscribeEvents()
     {
-        List<EdgeLoop> terrainPath = _terrainPolygon.TerrainPaths;
-        _polygonCollider.pathCount = terrainPath.Count;
-
-        PlaySoundEffect(_lastActionArea >= _bigCrackAreaThreshold ? SoundEffectType.BIG_CRACK : SoundEffectType.SMALL_CRACK);
-
-        for (int i = 0; i < terrainPath.Count; ++i)
+        if (_subscribedSettings != null)
         {
-            List<Vector2> path = new List<Vector2>(terrainPath[i].points);
-            path = RamerDouglasPeucker.RamerDouglasPeuckerAlgorithm(path, 0.5f);
-            _polygonCollider.SetPath(i, path);
+            _subscribedSettings.onValuesChanged -= OnScriptableObjectChanged;
+            _subscribedSettings = null;
+        }
+        if (_subscribedParameter != null)
+        {
+            _subscribedParameter.onValuesChanged -= OnScriptableObjectChanged;
+            _subscribedParameter = null;
         }
     }
 
-    // 重なっているベース地形のコライダーを取得する
-    private void GetOverlapCollider()
+    private void OnScriptableObjectChanged()
     {
-        _overlapColliderList = new List<Collider2D>();
-        ContactFilter2D filter = ContactFilter2D.noFilter;
-        filter.layerMask = _baseTerrainLayer;
-        filter.useLayerMask = true;
-        filter.useTriggers = false;
+        ApplySettingsToRenderer();
 
-        _polygonCollider.Overlap(filter, _overlapColliderList);
-    }
-
-    // ベース地形との重なりを調べる
-    private bool CheckOverlapCollider()
-    {
-        for (int i = 0; i < _overlapColliderList.Count; ++i)
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
         {
-            if (_overlapColliderList[i] == null)
-            {
-                _overlapColliderList.RemoveAt(i);
-                i--;
-                continue;
-            }
-
-            ColliderDistance2D distance = _polygonCollider.Distance(_overlapColliderList[i]);
-
-            if (distance.isOverlapped)
-            {
-                break;
-            }
-            else
-            {
-                _overlapColliderList.RemoveAt(i);
-                i--;
-            }
+            SceneView.RepaintAll();
         }
-
-        return _overlapColliderList.Count != 0;
+#endif
     }
 
-    // Rigidbodyコンポーネントを追加し、初期設定を行う
-    private void AddRigidbody()
+    public void ApplySettingsToRenderer()
     {
+        if (_dotRenderer == null)
+            _dotRenderer = GetComponent<MeshDotRenderer>();
+
+        // 設定アセットまたはレンダラーがなければ中断
+        if (_dotRenderer == null || _terrainSettings == null)
+            return;
+
+        // 通常の MeshDotRenderer の場合は TerrainParameter が必須
+        // BaseTerrainRenderer の場合は TerrainParameter が null でも動作可能
+        bool isBaseRenderer = _dotRenderer is BaseTerrainRenderer;
+        if (!isBaseRenderer && _terrainParameter == null)
+            return;
+
+        _dotRenderer.ApplyConfiguration(
+            _terrainParameter,
+            _terrainSettings.DotSize,
+            _terrainSettings.EdgeWidthMultiplier
+        );
+    }
+
+    public void OnOverlapEmpty()
+    {
+        if (!_isOverlap)
+            return;
+
+        _isOverlap = false;
         if (_rigidbody != null)
-            return;
-
-        _rigidbody = gameObject.AddComponent<Rigidbody2D>();
-
-        _mass = _terrainPolygon.Area * _terrainParameter.Density;
-        _rigidbody.mass = _mass;
+        {
+            _rigidbody.bodyType = RigidbodyType2D.Dynamic;
+            if (_terrainShape != null && _terrainParameter != null)
+            {
+                float mass = CipperUtility.GetArea(_terrainShape.Points) * _terrainParameter.Density;
+                _rigidbody.mass = mass;
+            }
+        }
     }
 
-    private void PlaySoundEffect(SoundEffectType soundEffect)
+    private float OnDestruct(DestructResult destructResult)
     {
-        if (!_enableBreakSound)
-            return;
-
-        if (_soundInterval > 0.0f)
+        for (int i = 0; i < destructResult.splitTerrainData.Count; ++i)
         {
-            if (_lastPlayTime.TryGetValue(soundEffect, out float last) &&
-                Time.time - last < _soundInterval)
-                return;
-            _lastPlayTime[soundEffect] = Time.time;
+            if (destructResult.splitTerrainData[i].area < _terrainSettings.MinArea)
+                continue;
+
+            SplitTerrainDataA splitData = destructResult.splitTerrainData[i];
+            CreateSplitTerrain(splitData.path, splitData.area);
         }
 
-        AudioClip[] clipPool = soundEffect == SoundEffectType.BIG_CRACK ? _bigCrackSounds : _smallCrackSounds;
-        if (clipPool == null || clipPool.Length == 0)
-            return;
+        ChangeTerrain(destructResult.mainPath, destructResult.mainArea);
 
-        AudioClip clip = clipPool[UnityEngine.Random.Range(0, clipPool.Length)];
-        if (clip == null)
-            return;
+        if (_terrainDestructEffect != null)
+            _terrainDestructEffect.OnDestruct(destructResult.destructPaths, destructResult.destructArea);
 
-        if (_sfxSource == null)
+        return destructResult.destructArea;
+    }
+
+    private void CreateSplitTerrain(IReadOnlyList<Vector2> terrainPath, float area)
+    {
+        TerrainContext newTerrain = Instantiate(
+            _terrainSettings.TerrainPrefab, transform.position, transform.rotation);
+
+        newTerrain.transform.localScale = transform.localScale;
+
+        newTerrain._terrainSettings = _terrainSettings;
+        newTerrain._terrainParameter = _terrainParameter;
+        newTerrain._area = area;
+
+        newTerrain.ApplySettingsToRenderer();
+
+        if (newTerrain._terrainShape != null)
         {
-            GameObject go = new GameObject("TerrainSFX");
-            _sfxSource = go.AddComponent<AudioSource>();
+            newTerrain._terrainShape.Initialize(terrainPath);
         }
 
-        _sfxSource.pitch = UnityEngine.Random.Range(_pitchMin, _pitchMax);
-        _sfxSource.PlayOneShot(clip, UnityEngine.Random.Range(_volumeMin, _volumeMax));
+        if (!_isOverlap)
+        {
+            newTerrain.OnOverlapEmpty();
+        }
+    }
+
+    private void ChangeTerrain(IReadOnlyList<Vector2> terrainPath, float area)
+    {
+        if (area < _terrainSettings.MinArea)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        if (_terrainShape != null)
+        {
+            _terrainShape.UpdatePoints(terrainPath);
+        }
     }
 }

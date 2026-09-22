@@ -154,24 +154,25 @@ public class BossPunchFist : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (!IsMoving) return;
+        // 旧地形
+        //if (!IsMoving) return;
 
-        // Fieldタグ以外は破壊しない
-        if (!collision.CompareTag("Field")) return;
+        //// Fieldタグ以外は破壊しない
+        //if (!collision.CompareTag("Field")) return;
 
-        // 地形破壊用コンポーネントを取得
-        TerrainContext terrain = collision.GetComponentInParent<TerrainContext>();
+        //// 地形破壊用コンポーネントを取得
+        //TerrainContext terrain = collision.GetComponentInParent<TerrainContext>();
 
-        // TerrainContextがない場合は破壊できない
-        if (terrain == null) return;
+        //// TerrainContextがない場合は破壊できない
+        //if (terrain == null) return;
 
-        // 一定時間ごとに地形を破壊する
-        destructTimer += Time.deltaTime;
+        //// 一定時間ごとに地形を破壊する
+        //destructTimer += Time.deltaTime;
 
-        if (destructTimer >= 0.1f)
-        {
-            terrain.Destruct(transform.position, destructRadius, crackParameter);
-            destructTimer = 0.0f;
-        }
+        //if (destructTimer >= 0.1f)
+        //{
+        //    terrain.Destruct(transform.position, destructRadius, crackParameter);
+        //    destructTimer = 0.0f;
+        //}
     }
 }
