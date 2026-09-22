@@ -1,20 +1,21 @@
 using LibTessDotNet;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerFever : MonoBehaviour
 {
-    [SerializeField, Tooltip("•K—vƒ`ƒƒ[ƒW—Ê")]
+    [SerializeField, Tooltip("å¿…è¦ãƒãƒ£ãƒ¼ã‚¸é‡")]
     private float maxCharge = 20.0f;
 
 
-    [SerializeField, Tooltip("ƒtƒB[ƒo[‚ÌŠÔ")]
+    [SerializeField, Tooltip("ãƒ•ã‚£ãƒ¼ãƒãƒ¼ã®æ™‚é–“")]
     private float feverTime = 10.0f;
 
 
-    private float charge = 0.0f;    // Œ»İ‚Ìƒ`ƒƒ[ƒW—Ê
-    private bool isFever = false;   // ƒtƒB[ƒo[‚©‚Ç‚¤‚©
-    private float timer = 0.0f;     // ƒtƒB[ƒo[‚ÌŠÔ‚ğ‘ª‚é
+    private float charge = 0.0f;    // ç¾åœ¨ã®ãƒãƒ£ãƒ¼ã‚¸é‡
+    private bool isFever = false;   // ãƒ•ã‚£ãƒ¼ãƒãƒ¼ã‹ã©ã†ã‹
+    private float timer = 0.0f;     // ãƒ•ã‚£ãƒ¼ãƒãƒ¼ã®æ™‚é–“ã‚’æ¸¬ã‚‹
 
     private PlayerShooter playerShooter;
     private PlayerRocketShooter playerRocketShooter;
@@ -44,7 +45,7 @@ public class PlayerFever : MonoBehaviour
         }
     }
 
-    // ƒtƒB[ƒo[ŠJnˆ—
+    // ãƒ•ã‚£ãƒ¼ãƒãƒ¼é–‹å§‹å‡¦ç†
     private void StartFever()
     {
         timer = 0.0f;
@@ -52,9 +53,20 @@ public class PlayerFever : MonoBehaviour
         playerRocketShooter.SetFever(true);
         playerShooter.SetFever(true);
         playerMove.SetFever(true);
+
+        Camera camera = Camera.main;
+
+        if (camera == null) return;
+
+        // ã‚«ãƒ¡ãƒ©ã®URPè¿½åŠ ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
+        var cameraData = camera.GetUniversalAdditionalCameraData();
+
+        // æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®Rendererã¸åˆ‡ã‚Šæ›¿ãˆ
+        // ãƒ•ã‚£ãƒ¼ãƒãƒ¼ç”¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯1
+        cameraData.SetRenderer(1);
     }
 
-    // ƒtƒB[ƒo[I—¹ˆ—
+    // ãƒ•ã‚£ãƒ¼ãƒãƒ¼çµ‚äº†å‡¦ç†
     private void EndFever()
     {
         charge = 0.0f;
@@ -62,15 +74,27 @@ public class PlayerFever : MonoBehaviour
         playerRocketShooter.SetFever(false);
         playerShooter.SetFever(false);
         playerMove.SetFever(false);
+
+
+        Camera camera = Camera.main;
+
+        if (camera == null) return;
+
+        // ã‚«ãƒ¡ãƒ©ã®URPè¿½åŠ ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
+        var cameraData = camera.GetUniversalAdditionalCameraData();
+
+        // æŒ‡å®šã—ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®Rendererã¸åˆ‡ã‚Šæ›¿ãˆ
+        // ãƒ•ã‚£ãƒ¼ãƒãƒ¼ç”¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯1
+        cameraData.SetRenderer(0);
     }
-    // ƒ`ƒƒ[ƒW‚·‚é
-    // area : ”j‰ó‚µ‚½–ÊÏ
+    // ãƒãƒ£ãƒ¼ã‚¸ã™ã‚‹
+    // area : ç ´å£Šã—ãŸé¢ç©
     public void Charge(float area)
     {
         charge += area;
     }
 
-    // Š„‡‚ğæ“¾ UI—p
+    // å‰²åˆã‚’å–å¾— UIç”¨
     public float GetRate()
     {
         float rate = 0.0f;

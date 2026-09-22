@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 /// CircleCastで移動範囲内の衝突を正確に取得する
 /// </summary>
 public class PlayerRocket : MonoBehaviour
-{
+{ 
     [SerializeField, Tooltip("弾の移動速度")]
     [Range(0.0f, 100.0f)]
     private float _speed = 30.0f;
@@ -44,6 +44,13 @@ public class PlayerRocket : MonoBehaviour
         EXPLODE_CRYSTAL,
     }
 
+    // 地形破壊のバージョン　いずれ消す
+    private enum TerrainDestructVersion 
+    {
+        OLD,
+        NEW
+    }
+
     private Vector2 _direction;        // 移動方向
     private float _explodeRadius;      // 爆発半径
     private LayerMask _hitLayer;       // 衝突レイヤー
@@ -62,6 +69,9 @@ public class PlayerRocket : MonoBehaviour
     [SerializeField, Tooltip("ロケラン爆破ライト")]
     private GameObject explosionLight = null;
 
+    // 地形破壊のバージョン　いずれ消す
+    [SerializeField, Tooltip("地形破壊のバージョン")]
+    private TerrainDestructVersion _terrainDestructVersion = TerrainDestructVersion.OLD;    
 
     /// <summary>
     /// 弾を初期化する
@@ -117,6 +127,21 @@ public class PlayerRocket : MonoBehaviour
         Move();
     }
 
+    /// <summary>
+    /// Plays the rocket's real impact presentation without applying gameplay damage.
+    /// Used by non-gameplay showcases such as the title scene.
+    /// </summary>
+    public void DetonateVisualOnly()
+    {
+        if (explosionEffect != null)
+            Instantiate(explosionEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+        if (explosionLight != null)
+            Instantiate(explosionLight, transform.position, Quaternion.Euler(0.0f, 0.0f, -1.0f));
+
+        PlaySoundEffect(SoundEffectType.EXPLODE);
+        Destroy(gameObject);
+    }
+
     // 移動処理 + CircleCastによる衝突判定
     private void Move()
     {
@@ -135,24 +160,45 @@ public class PlayerRocket : MonoBehaviour
                 HitDestruct(hit.point);
 
                 // エフェクト再生
-                Instantiate(explosionEffect,transform.position,Quaternion.Euler(-90.0f,0.0f,0.0f));
-                Instantiate(explosionLight, transform.position,Quaternion.Euler(0.0f,0.0f,-1.0f));
-                //explosionEffect.Play();
+                var instance = Instantiate(explosionEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+                instance.Play();
+                Destroy(instance.gameObject, 2.0f); // 2.0秒後に削除
 
-                if (hit.collider.TryGetComponent(out TerrainContext terrain))
+                Instantiate(explosionLight, transform.position, Quaternion.Euler(0.0f, 0.0f, -1.0f));
+
+                // 地形破壊のバージョン変える いずれ消す
+                if (_terrainDestructVersion == TerrainDestructVersion.NEW)
                 {
-                    if(penetrationPower < terrain.TerrainPolygon.Area)
+                    if (hit.collider.TryGetComponent(out TerrainContextA terrain))
                     {
-                        // 貫通力より大きい地形に当たったら弾は消滅する
-                        PlaySoundEffect(SoundEffectType.EXPLODE_CRYSTAL);
-                        Destroy(gameObject);
-                        return;
+                        if (penetrationPower < terrain.Area)
+                        {
+                            // 貫通力より大きい地形に当たったら弾は消滅する
+                            PlaySoundEffect(SoundEffectType.EXPLODE_CRYSTAL);
+                            Destroy(gameObject);
+                            return;
+                        }
+                    }
+                }
+                else if (_terrainDestructVersion == TerrainDestructVersion.OLD)
+                {
+                    if (hit.collider.TryGetComponent(out TerrainContext terrain))
+                    {
+                        if (penetrationPower < terrain.TerrainPolygon.Area)
+                        {
+                            // 貫通力より大きい地形に当たったら弾は消滅する
+                            PlaySoundEffect(SoundEffectType.EXPLODE_CRYSTAL);
+                            Destroy(gameObject);
+                            return;
+                        }
                     }
                 }
             }
             else
             {
                 // どの地形に当たっても弾は消滅する
+                // エフェクト
+                GunhitEffectManager.Instance.Play(transform.position, transform.rotation);
                 PlaySoundEffect(SoundEffectType.EXPLODE);
                 Destroy(gameObject);
                 return;
@@ -173,14 +219,29 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider2D collider in hitColliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            // 地形破壊のバージョン変える いずれ消す
+            if (_terrainDestructVersion == TerrainDestructVersion.NEW)
             {
-                CrackParameter crack;
-                crack.direction = _direction;
-                crack.angleNoise = 240.0f;
-                crack.minCrackCount = 0;
-                crack.maxCrackCount = 0;
-                area += terrain.Destruct(hitPoint, _explodeRadius, crack);
+                if (collider.TryGetComponent(out TerrainContextA terrain))
+                {
+                    CrackParameter crack;
+                    crack.direction = _direction;
+                    crack.angleNoise = 240.0f;
+                    crack.minCrackCount = 0;
+                    crack.maxCrackCount = 0;
+                    area += terrain.Destruct(hitPoint, _explodeRadius, crack);
+                }
+            }else if(_terrainDestructVersion == TerrainDestructVersion.OLD)
+            {
+                if (collider.TryGetComponent(out TerrainContext terrain))
+                {
+                    CrackParameter crack;
+                    crack.direction = _direction;
+                    crack.angleNoise = 240.0f;
+                    crack.minCrackCount = 0;
+                    crack.maxCrackCount = 0;
+                    area += terrain.Destruct(hitPoint, _explodeRadius, crack);
+                }
             }
         }
 
@@ -194,23 +255,47 @@ public class PlayerRocket : MonoBehaviour
             crackDatas[i].pos.x += transform.position.x;
             crackDatas[i].pos.y += transform.position.y;
         }
-        
+
         foreach (Collider2D collider in crackColliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            // 地形破壊のバージョン変える いずれ消す
+            if (_terrainDestructVersion == TerrainDestructVersion.NEW)
             {
-                CrackParameter crack;
-                crack.direction = _direction;
-                crack.angleNoise = 240.0f;
-                crack.minCrackCount = 0;
-                crack.maxCrackCount = 0;
-                // ひび入れる
-                area += terrain.Crack(crackDatas, crack);
-            }
-        }
 
-        playerFever.Charge(area * rocketChrgeRatio);
-        playerRocketShooter.Charge(area);
+                if (collider.TryGetComponent(out TerrainContextA terrain))
+                {
+                    CrackParameter crack;
+                    crack.direction = _direction;
+                    crack.angleNoise = 240.0f;
+                    crack.minCrackCount = 0;
+                    crack.maxCrackCount = 0;
+                    // ひび入れる
+                    area += terrain.Crack(crackDatas, crack);
+                }
+            }
+            else if (_terrainDestructVersion == TerrainDestructVersion.OLD)
+            {
+                if (collider.TryGetComponent(out TerrainContext terrain))
+                {
+                    CrackParameter crack;
+                    crack.direction = _direction;
+                    crack.angleNoise = 240.0f;
+                    crack.minCrackCount = 0;
+                    crack.maxCrackCount = 0;
+                    // ひび入れる
+                    area += terrain.Crack(crackDatas, crack);
+                }
+            }
+
+            }
+
+        // フィーバーをためる
+        if (playerFever != null)
+            playerFever.Charge(area * rocketChrgeRatio);
+
+        // フィーバー中だとロケランがたまる
+        if (playerRocketShooter != null)
+            playerRocketShooter.Charge(area);
 
         // 爆風
         Collider2D[] colliders = Physics2D.OverlapCircleAll(
@@ -219,16 +304,33 @@ public class PlayerRocket : MonoBehaviour
 
         foreach (Collider2D collider in colliders)
         {
-            if (collider.TryGetComponent(out TerrainContext terrain))
+            // 地形破壊のバージョン変える いずれ消す
+            if (_terrainDestructVersion == TerrainDestructVersion.NEW)
             {
-                // 向き計算
-                Vector2 dir = Vector2.zero;
-                dir.x = collider.bounds.center.x - hitPoint.x;
-                dir.y = collider.bounds.center.y - hitPoint.y;
-                dir.Normalize();
+                if (collider.TryGetComponent(out TerrainContextA terrain))
+                {
+                    // 向き計算
+                    Vector2 dir = Vector2.zero;
+                    dir.x = collider.bounds.center.x - hitPoint.x;
+                    dir.y = collider.bounds.center.y - hitPoint.y;
+                    dir.Normalize();
 
-                if(collider.attachedRigidbody != null)
-                    collider.attachedRigidbody.AddForce(dir * windPower,ForceMode2D.Impulse);
+                    if (collider.attachedRigidbody != null)
+                        collider.attachedRigidbody.AddForce(dir * windPower, ForceMode2D.Impulse);
+                }
+            }
+            else if (_terrainDestructVersion == TerrainDestructVersion.OLD)
+            {
+                if (collider.TryGetComponent(out TerrainContext terrain))
+                {
+                    // 向き計算
+                    Vector2 dir = Vector2.zero;
+                    dir.x = collider.bounds.center.x - hitPoint.x;
+                    dir.y = collider.bounds.center.y - hitPoint.y;
+                    dir.Normalize();
+                    if (collider.attachedRigidbody != null)
+                        collider.attachedRigidbody.AddForce(dir * windPower, ForceMode2D.Impulse);
+                }
             }
         }
     }

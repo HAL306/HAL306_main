@@ -927,6 +927,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: b7a66173-5963-4d68-aaef-edf549555c32
     m_ActionName: 'UI/Interact[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c993ae5b-a333-428b-b2b2-ecfd9129b3fa
+    m_ActionName: 'Player/Interact[/Keyboard/f]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c89e734a-05c6-4029-a5c4-cb1c454c3bbd
+    m_ActionName: 'Player/Pause[/Keyboard/p]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 60ab4bf5-36c6-45bd-8a20-abaade146026
+    m_ActionName: 'UI/Back[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: 
@@ -947,7 +959,7 @@ MonoBehaviour:
   _titleUIAnimator: {fileID: 211565194}
   _titleCameraAnimator: {fileID: 21720310}
   _fadeUI: {fileID: 1622779079}
-  _nextSceneName: ModeSelectScene
+  _nextSceneName: StageSelectScene
 --- !u!4 &1387252781
 Transform:
   m_ObjectHideFlags: 0
@@ -1030,12 +1042,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1925466566303720149, guid: 441b460dd8a985848bb30c2cac01000f, type: 3}
+  m_Sprite: {fileID: -8460808981215103496, guid: 6f010d7562fc417489bbecf70a30d5c0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 4.6, y: 3.77}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

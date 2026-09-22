@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 /// <summary>
@@ -30,7 +31,7 @@ public class ParallaxBackground : MonoBehaviour
 
         if (_spriteRenderers.Length == 0)
         {
-            Debug.LogError($"{name}: SpriteRendererが見つかりません");
+            //Debug.LogError($"{name}: SpriteRendererが見つかりません");
         }
 
         _startPos = transform.position;
@@ -97,5 +98,7 @@ public class ParallaxBackground : MonoBehaviour
     public void CameraReset()
     {
         _cam = Camera.main;
+        _startPos = transform.position;
+        _startCamPos = _cam.transform.position;
     }
 }

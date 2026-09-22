@@ -1,0 +1,225 @@
+using UnityEngine;
+
+public class BossStraightPunch : BossAttackBase
+{
+    [Header("参照")]
+    [SerializeField, Tooltip("プレイヤーの位置")]
+    private Transform playerPos;
+
+    [SerializeField, Tooltip("画面内判定用のボスのRenderer")]
+    private Renderer bossRenderer;
+
+    [SerializeField, Tooltip("飛ばす拳のオブジェクト")]
+    private Transform fist;
+
+    [SerializeField, Tooltip("Projectウィンドウにある赤い予告マーカーのプレハブ")]
+    private GameObject punchMarker;
+
+    // Scene内に生成した実体
+    private GameObject punchMarkerInstance;
+
+    [Header("攻撃設定")]
+    [SerializeField, Tooltip("パンチ（突進）の移動速度")]
+    private float punchSpeed = 20.0f;
+
+    [SerializeField, Tooltip("拳が戻る時の移動速度")]
+    private float returnSpeed = 10.0f;
+
+    [SerializeField, Tooltip("パンチで移動する最大距離")]
+    private float punchRange = 15.0f;
+
+    [SerializeField, Tooltip("再攻撃可能になるまでのクールタイム")]
+    private float coolTime = 3.0f;
+
+    [Header("予告")]
+    [SerializeField, Tooltip("赤い予告を表示する時間")]
+    private float warningTime = 0.7f;
+
+    [SerializeField, Tooltip("予告マーカーの太さ")]
+    private float markerThickness = 3.0f;
+
+    [SerializeField, Tooltip("拳の大きさ分、予告マーカーの長さに追加する値")]
+    private float markerLengthOffset = 2.0f;
+
+    // 攻撃終了時刻
+    private float endTime = -10.0f;
+
+    // パンチ開始時の位置と方向
+    private Vector3 startPos;
+    private Vector3 punchDir;
+
+    // 拳の元の状態を記録する変数
+    private Transform originalParent;
+    private Vector3 localOffset;
+    private Quaternion localRotationOffset;
+
+    // ステート管理
+    private bool isWarning;
+    private bool isPunching;
+    private bool isReturning;
+    private float warningTimer;
+
+    private BossController bossController;
+
+    // playerkiller
+    [SerializeField]
+    private PlayerKiller playerKiller;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        bossController = GetComponentInParent<BossController>();
+        // ステージ開始直後はクールダウン状態から始める
+        endTime = Time.time;
+    }
+
+    public override bool CanExecute()
+    {
+        if (Time.time - endTime < coolTime)
+            return false;
+
+        if (IsVisible())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    protected override void OnBegin()
+    {
+
+        isWarning = true;
+        isPunching = false;
+        isReturning = false;
+        warningTimer = 0.0f;
+        playerKiller.enabled = true;
+        if (bossController != null)
+        {
+            bossController.SetIsMove(false);
+        }
+
+        startPos = fist.position;
+
+        originalParent = fist.parent;
+        localOffset = fist.localPosition;
+        localRotationOffset = fist.localRotation;
+
+        if (playerPos != null)
+        {
+            punchDir = (playerPos.position - startPos).normalized;
+
+            if (punchMarker != null)
+            {
+                DestroyPunchMarker();
+                punchMarkerInstance = Instantiate(punchMarker);
+
+                // パンチ距離に拳の大きさ分を追加する
+                float markerLength = punchRange + markerLengthOffset;
+
+                // マーカーの開始位置が拳の位置になるように
+                // 長くした分も含めて中心位置を計算する
+                Vector3 markerCenter =
+                    startPos + punchDir * (markerLength / 2.0f);
+
+                punchMarkerInstance.transform.position =
+                    new Vector3(markerCenter.x, markerCenter.y - 0.2f, -1.0f);
+
+                // パンチの方向にマーカーを向ける
+                float angle = Mathf.Atan2(punchDir.y, punchDir.x) * Mathf.Rad2Deg;
+
+                punchMarkerInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+                // 実際の攻撃範囲に合わせて長さを設定
+                punchMarkerInstance.transform.localScale =
+                    new Vector3(markerLength, markerThickness, 1.0f);
+
+                punchMarkerInstance.SetActive(true);
+            }
+        }
+        else
+        {
+            punchDir = Vector3.left;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (isWarning)
+        {
+            warningTimer += Time.fixedDeltaTime;
+            if (warningTimer >= warningTime)
+            {
+                isWarning = false;
+                isPunching = true;
+
+                fist.SetParent(null, true);
+            }
+        }
+        else if (isPunching)
+        {
+            fist.position += punchDir * punchSpeed * Time.fixedDeltaTime;
+
+            // 最大距離になったら
+            if (Vector3.Distance(startPos, fist.position) >= punchRange)
+            {
+                isPunching = false;
+                isReturning = true;
+
+                playerKiller.enabled = false;
+
+                DestroyPunchMarker();
+            }
+        }
+        else if (isReturning)
+        {
+            Vector3 targetPos = originalParent.TransformPoint(localOffset);
+            fist.position = Vector3.MoveTowards(fist.position, targetPos, returnSpeed * Time.fixedDeltaTime);
+
+            if (Vector3.Distance(fist.position, targetPos) <= 0.01f)
+            {
+                EndAttack();
+            }
+        }
+    }
+
+    protected override void OnEnd()
+    {
+        if (fist.parent != originalParent)
+        {
+            fist.SetParent(originalParent, true);
+            fist.localPosition = localOffset;
+            fist.localRotation = localRotationOffset;
+        }
+
+        DestroyPunchMarker();
+
+        isWarning = false;
+        isPunching = false;
+        isReturning = false;
+        endTime = Time.time;
+
+        if (bossController != null)
+        {
+            bossController.SetIsMove(true);
+        }
+        playerKiller.enabled = false;
+    }
+
+    // 生成した実体だけを削除する。
+    private void DestroyPunchMarker()
+    {
+        if (punchMarkerInstance == null) return;
+
+        punchMarkerInstance.SetActive(false);
+        Destroy(punchMarkerInstance);
+        punchMarkerInstance = null;
+    }
+
+    private bool IsVisible()
+    {
+        if (Camera.main == null || bossRenderer == null) return false;
+
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
+        return GeometryUtility.TestPlanesAABB(planes, bossRenderer.bounds);
+    }
+}

@@ -1,8 +1,7 @@
 using Clipper2Lib;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-
 
 // エッジループ
 public class EdgeLoop
@@ -13,7 +12,6 @@ public class EdgeLoop
     [Tooltip("回転方向")]
     public bool isClockwise;
 }
-
 
 // ひび割れパラメータ
 [System.Serializable]
@@ -45,7 +43,6 @@ public struct CrackData
     public float length;
 }
 
-
 // 分離した地形のデータ
 public struct SplitTerrainData
 {
@@ -56,9 +53,8 @@ public struct SplitTerrainData
     public float area;
 }
 
-
 /// <summary>
-/// 地形の形状データ
+/// 地形の形状データおよびメッシュ構築クラス
 /// </summary>
 public class TerrainPolygon
 {
@@ -70,17 +66,14 @@ public class TerrainPolygon
         public Vector2 point;               // 交差位置
     }
 
-
     private TerrainContext _terrainContext;
     private List<EdgeLoop> _terrainPaths;       // 地形形状
     private List<EdgeLoop> _destructPaths;      // 直前の破壊の形状
     private float _area;                        // 面積
 
-
     public List<EdgeLoop> TerrainPaths => _terrainPaths;
     public List<EdgeLoop> DestructPaths => _destructPaths;
     public float Area => _area;
-
 
     // 初期化処理
     public void Initialize(TerrainContext terrainContext, List<Vector2[]> terrainPaths)
@@ -97,12 +90,106 @@ public class TerrainPolygon
         }
         _area = GetArea(_terrainPaths);
     }
+
     public void Initialize(TerrainContext terrainContext, SplitTerrainData splitTerrainData)
     {
         _terrainContext = terrainContext;
         _terrainPaths = splitTerrainData.paths;
         _destructPaths = new List<EdgeLoop>();
         _area = splitTerrainData.area;
+    }
+
+    /// <summary>
+    /// 現在のパスからメッシュを生成し、MeshFilterに適用する
+    /// </summary>
+    public void GenerateMesh(MeshFilter meshFilter)
+    {
+        if (meshFilter == null || _terrainPaths == null || _terrainPaths.Count == 0)
+        {
+            if (meshFilter != null)
+            {
+                meshFilter.sharedMesh = null;
+            }
+            return;
+        }
+
+        // LibTessDotNet を使用してポリゴンを三角形分割
+        LibTessDotNet.Tess tess = new LibTessDotNet.Tess();
+
+        for (int i = 0; i < _terrainPaths.Count; i++)
+        {
+            Vector2[] pts = _terrainPaths[i].points;
+            if (pts == null || pts.Length < 3) continue;
+
+            LibTessDotNet.ContourVertex[] contour = new LibTessDotNet.ContourVertex[pts.Length];
+            for (int j = 0; j < pts.Length; j++)
+            {
+                contour[j].Position = new LibTessDotNet.Vec3(pts[j].x, pts[j].y, 0);
+            }
+            tess.AddContour(contour, LibTessDotNet.ContourOrientation.Clockwise);
+        }
+
+        // ElementType を指定しないオーバーロードを使用 (デフォルトで三角形ポリゴン分割を実行)
+        tess.Tessellate(LibTessDotNet.WindingRule.EvenOdd);
+
+        int numTriangles = tess.ElementCount;
+        if (numTriangles == 0)
+        {
+            meshFilter.sharedMesh = null;
+            return;
+        }
+
+        Vector3[] vertices = new Vector3[tess.VertexCount];
+        Vector2[] uvs = new Vector2[tess.VertexCount];
+        int[] triangles = new int[numTriangles * 3];
+
+        Vector2 minUV = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 maxUV = new Vector2(float.MinValue, float.MinValue);
+
+        for (int i = 0; i < tess.VertexCount; i++)
+        {
+            float vx = tess.Vertices[i].Position.X;
+            float vy = tess.Vertices[i].Position.Y;
+            vertices[i] = new Vector3(vx, vy, 0);
+
+            if (vx < minUV.x) minUV.x = vx;
+            if (vx > maxUV.x) maxUV.x = vx;
+            if (vy < minUV.y) minUV.y = vy;
+            if (vy > maxUV.y) maxUV.y = vy;
+        }
+
+        float width = Mathf.Max(0.0001f, maxUV.x - minUV.x);
+        float height = Mathf.Max(0.0001f, maxUV.y - minUV.y);
+
+        for (int i = 0; i < tess.VertexCount; i++)
+        {
+            uvs[i] = new Vector2((vertices[i].x - minUV.x) / width, (vertices[i].y - minUV.y) / height);
+        }
+
+        for (int i = 0; i < numTriangles; i++)
+        {
+            triangles[i * 3 + 0] = tess.Elements[i * 3 + 0];
+            triangles[i * 3 + 1] = tess.Elements[i * 3 + 1];
+            triangles[i * 3 + 2] = tess.Elements[i * 3 + 2];
+        }
+
+        Mesh mesh = meshFilter.sharedMesh;
+        if (mesh == null)
+        {
+            mesh = new Mesh();
+            mesh.name = "TerrainMesh";
+            meshFilter.sharedMesh = mesh;
+        }
+        else
+        {
+            mesh.Clear();
+        }
+
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
     }
 
     // ポリゴンの破壊処理
@@ -179,7 +266,7 @@ public class TerrainPolygon
 
         // パスがなくなったら終了
         List<SplitTerrainData> splitTerrains = new List<SplitTerrainData>();
-        if(_terrainPaths.Count == 0)
+        if (_terrainPaths.Count == 0)
         {
             _area = 0.0f;
             return splitTerrains;
@@ -191,7 +278,6 @@ public class TerrainPolygon
         return splitTerrains;
     }
 
-    // 三品怜、芝晃佑
     // ポリゴンにひびを入れる処理
     public List<SplitTerrainData> PolygonCrack(CrackData[] data, CrackParameter crack)
     {
@@ -208,39 +294,26 @@ public class TerrainPolygon
         // すべてのひび割れ形状を格納するリスト
         List<Vector2[]> allCrackPaths = new List<Vector2[]>(data.Length);
         
-        for(int idx = 0; idx < data.Length; ++idx)
+        for (int idx = 0; idx < data.Length; ++idx)
         {
             Vector2 localCenter = _terrainContext.transform.InverseTransformPoint(data[idx].pos);
             Vector2 normalizedDir = data[idx].dir.normalized;
-            // ひび割れ処理
+            
             // ひび割れとの最小交差距離を求める
             float minDistance = float.MaxValue;
             for (int i = 0; i < terrainPaths.Count; ++i)
             {
                 Vector2[] path = terrainPaths[i];
             
-                // 全ての辺に対してひび割れとの交差を求める
                 for (int j = 0; j < path.Length; ++j)
                 {
                     Vector2 a = path[j];
-                    Vector2 b;
-                    if (j + 1 < path.Length)
-                    {
-                        b = path[j + 1];
-                    }
-                    else
-                    {
-                        b = path[j + 1 - path.Length];
-                    }
+                    Vector2 b = (j + 1 < path.Length) ? path[j + 1] : path[j + 1 - path.Length];
             
-                    // 辺とひび割れとの交差判定
-                    IntercectResult result;
-                    result = RaySegmentIntersection(localCenter, normalizedDir, a, b);
+                    IntercectResult result = RaySegmentIntersection(localCenter, normalizedDir, a, b);
             
-                    if (!result.isHit)
-                        continue;
+                    if (!result.isHit) continue;
             
-                    // 最も近い交差距離を保持
                     if (result.distance < minDistance)
                     {
                         minDistance = result.distance;
@@ -249,23 +322,18 @@ public class TerrainPolygon
             }
 
             Vector2[] crackPath;
-            // 辺に届いてたら辺までの長さにする、届いてなくてもひびは入れる
             if (minDistance < data[idx].length)
             {
-                // ひび割れ形状を作る
                 crackPath = CreateCrackPath(localCenter, data[idx].dir, minDistance, 0.0f);
             }
             else
             {
-                // ひび割れ形状を作る
                 crackPath = CreateCrackPath(localCenter, data[idx].dir, data[idx].length, 0.0f);
             }
             
-            // ひび割れ形状をリストに追加し、後で一括処理
             allCrackPaths.Add(crackPath);
         }
         
-        // リストアップしたひび割れ形状を一括で削る
         if (allCrackPaths.Count > 0)
         {
             terrainPaths = PolygonDifference(terrainPaths, allCrackPaths);
@@ -294,7 +362,6 @@ public class TerrainPolygon
         // 破壊形状パスを更新
         _destructPaths.Clear();
 
-        // パスがなくなったら終了
         List<SplitTerrainData> splitTerrains = new List<SplitTerrainData>();
         if (_terrainPaths.Count == 0)
         {
@@ -308,54 +375,40 @@ public class TerrainPolygon
         return splitTerrains;
     }
 
-    // ポリゴンの交差を求める
     private List<Vector2[]> PolygonIntersect(List<Vector2[]> mainPaths, Vector2[] intersectPath)
     {
-        // Clipper2用の配列に変換
         PathsD mainPathsD = VectorPathsToPathsD(mainPaths);
         PathD intersectPathD = VectorPathToPathD(intersectPath);
 
-        // ポリゴン減算
         PathsD newPathsD = Clipper.Intersect(mainPathsD, new PathsD { intersectPathD }, Clipper2Lib.FillRule.NonZero);
 
-        // Vector2配列に変換
         return PathsDToVectorPaths(newPathsD);
     }
     
-    // ポリゴンの減算を行う
     private List<Vector2[]> PolygonDifference(List<Vector2[]> mainPaths, Vector2[] clipPath)
     {
-        // Clipper2用の配列に変換
         PathsD mainPathsD = VectorPathsToPathsD(mainPaths);
         PathD clipPathD = VectorPathToPathD(clipPath);
 
-        // ポリゴン減算
         PathsD newPathsD = Clipper.Difference(mainPathsD, new PathsD() { clipPathD }, Clipper2Lib.FillRule.NonZero);
 
-        // Vector2配列に変換
         return PathsDToVectorPaths(newPathsD);
     }
     
-    // ポリゴンの減算を行う(一括処理対応)
     private List<Vector2[]> PolygonDifference(List<Vector2[]> mainPaths, List<Vector2[]> clipPaths)
     {
         if (clipPaths == null || clipPaths.Count == 0) return mainPaths;
 
-        // Clipper2用の配列に変換
         PathsD mainPathsD = VectorPathsToPathsD(mainPaths);
         PathsD clipPathsD = VectorPathsToPathsD(clipPaths);
 
-        // ポリゴン減算
         PathsD newPathsD = Clipper.Difference(mainPathsD, clipPathsD, Clipper2Lib.FillRule.NonZero);
 
-        // Vector2配列に変換
         return PathsDToVectorPaths(newPathsD);
     }
 
-    // Vector2のパス配列をClipper2用配列に変換する
     private PathD VectorPathToPathD(Vector2[] vectorPath)
     {
-        // Clipper2用配列に変換
         PathD pathD = new PathD(vectorPath.Length);
         for (int i = 0; i < vectorPath.Length; i++)
         {
@@ -364,9 +417,9 @@ public class TerrainPolygon
         }
         return pathD;
     }
+
     private PathsD VectorPathsToPathsD(List<Vector2[]> vectorPaths)
     {
-        // Clipper2用配列に変換
         PathsD pathsD = new PathsD(vectorPaths.Count);
         for (int i = 0; i < vectorPaths.Count; ++i)
         {
@@ -375,10 +428,8 @@ public class TerrainPolygon
         return pathsD;
     }
 
-    // Clipper2用配列をVector2のパス配列に変換する
     private Vector2[] PathDToVectorPath(PathD pathD)
     {
-        // Vector2のパス配列に変換
         Vector2[] vectorPath = new Vector2[pathD.Count];
         for (int i = 0; i < pathD.Count; i++)
         {
@@ -387,6 +438,7 @@ public class TerrainPolygon
         }
         return vectorPath;
     }   
+
     private List<Vector2[]> PathsDToVectorPaths(PathsD pathsD)
     {
         List<Vector2[]> vectorPaths = new List<Vector2[]>(pathsD.Count);
@@ -397,70 +449,43 @@ public class TerrainPolygon
         return vectorPaths;
     }
 
-    // 円形のパスを生成する
     private Vector2[] CreateCirclePath(Vector2 center, float radius, int vertexCount)
     {
-        // 破壊範囲の円を生成
         Vector2[] circlePath = new Vector2[vertexCount];
         for (int i = 0; i < vertexCount; ++i)
         {
-            float rad = (float)i / vertexCount;
-            rad *= Mathf.PI * 2.0f;
-
-            Vector2 pos;
-            pos.x = Mathf.Cos(rad) * radius;
-            pos.y = Mathf.Sin(rad) * radius;
-            pos += center;
-
-            circlePath[i] = pos;
+            float rad = (float)i / vertexCount * Mathf.PI * 2.0f;
+            circlePath[i] = new Vector2(Mathf.Cos(rad) * radius, Mathf.Sin(rad) * radius) + center;
         }
-
         return circlePath;
     }
 
-    // ひび割れ形状生成処理
     private Vector2[] GenerateCrackPath(List<Vector2[]> mainPaths, Vector2 center, CrackParameter crack)
     {
         TerrainSettings settings = _terrainContext.TerrainSettings;
         TerrainParameter parameter = _terrainContext.TerrainParameter;
 
-        // ひび割れ方向を求める
         Vector2 crackDir = _terrainContext.transform.InverseTransformDirection(crack.direction);
         float rotateAngle = UnityEngine.Random.Range(-crack.angleNoise, crack.angleNoise) * 0.5f;
         crackDir = Quaternion.Euler(0.0f, 0.0f, rotateAngle) * crackDir;
         crackDir.Normalize();
 
-        // ひび割れ距離を求める
         float crackDistance = settings.CrackDistance * parameter.FractureMultiplier;
-
-        // ひび割れとの最小交差距離を求める
         float minDistance = float.MaxValue;
+
         for (int i = 0; i < mainPaths.Count; ++i)
         {
             Vector2[] path = mainPaths[i];
 
-            // 全ての辺に対してひび割れとの交差を求める
             for (int j = 0; j < path.Length; ++j)
             {
                 Vector2 a = path[j];
-                Vector2 b;
-                if (j + 1 < path.Length)
-                {
-                    b = path[j + 1];
-                }
-                else
-                {
-                    b = path[j + 1 - path.Length];
-                }
+                Vector2 b = (j + 1 < path.Length) ? path[j + 1] : path[j + 1 - path.Length];
 
-                // 辺とひび割れとの交差判定
-                IntercectResult result;
-                result = RaySegmentIntersection(center, crackDir, a, b);
+                IntercectResult result = RaySegmentIntersection(center, crackDir, a, b);
 
-                if (!result.isHit)
-                    continue;
+                if (!result.isHit) continue;
 
-                // 最も近い交差距離を保持
                 if (result.distance < minDistance)
                 {
                     minDistance = result.distance;
@@ -468,7 +493,6 @@ public class TerrainPolygon
             }
         }
 
-        // ひび割れ形状を返す
         if (minDistance < crackDistance)
         {
             return CreateCrackPath(center, crackDir, minDistance);
@@ -477,16 +501,10 @@ public class TerrainPolygon
         return null;
     }
 
-    // レイと線分の交差判定を行う
-    // rayDirは正規化してから渡してください！！
-    private IntercectResult RaySegmentIntersection(
-        Vector2 rayOrigin, Vector2 rayDir, Vector2 segA, Vector2 segB)
+    private IntercectResult RaySegmentIntersection(Vector2 rayOrigin, Vector2 rayDir, Vector2 segA, Vector2 segB)
     {
         IntercectResult result = new IntercectResult();
-        // 最適化のため正規化をスキップ
-        //rayDir = rayDir.normalized;
 
-        // ポリゴン内部に入る交差はスキップ
         Vector2 segVec = segB - segA;
         Vector2 normal = new Vector2(segVec.y, -segVec.x);
         float dot = Vector2.Dot(rayDir, normal);
@@ -496,20 +514,14 @@ public class TerrainPolygon
             return result;
         }
 
-        // レイ方向と線分ベクトルの外積をとる
         float cross = Cross(rayDir, segVec);
-
-        // 平行判定
         if (Mathf.Abs(cross) < Mathf.Epsilon)
         {
             result.isHit = false;
             return result;
         }
 
-        // レイ始点から線分始点へのベクトルを求める
         Vector2 diff = segA - rayOrigin;
-
-        // 線分を何倍すればRayと交差するか調べる
         float u = Cross(diff, rayDir) / cross;
         if (u < 0.0f || u > 1.0f)
         {
@@ -517,7 +529,6 @@ public class TerrainPolygon
             return result;
         }
 
-        // レイの始点からの交差位置までの距離を求める
         float t = Cross(diff, segVec) / cross;
         if (t < 0.0f)
         {
@@ -532,14 +543,12 @@ public class TerrainPolygon
         return result;
     }
 
-    // 2D外積を求める
     private float Cross(Vector2 a, Vector2 b)
     {
         return a.x * b.y - a.y * b.x;
     }
 
-    // ひび割れ形状のパスを生成する
-    private Vector2[] CreateCrackPath(Vector2 origin, Vector2 dir, float distance,float crackNoise = -1.0f)
+    private Vector2[] CreateCrackPath(Vector2 origin, Vector2 dir, float distance, float crackNoise = -1.0f)
     {
         TerrainSettings settings = _terrainContext.TerrainSettings;
 
@@ -559,59 +568,44 @@ public class TerrainPolygon
         int start_b = end_a + 1;
         int end_b = start_b + divisionCount + 1;
 
-
-        // 基準となる線を作成
         Vector2[] crackPath = new Vector2[end_b + 1];
         crackPath[start_a] = origin - dir * weight - normal * halfWidth;
         crackPath[end_a] = origin + dir * (distance + weight) - normal * halfWidth;
         crackPath[start_b] = origin + dir * (distance + weight) + normal * halfWidth;
         crackPath[end_b] = origin - dir * weight + normal * halfWidth;
 
-        // 細分化しノイズでずらす
         for (int i = 0; i < divisionCount; ++i)
         {
-            //float maxNoise = distance * settings.CrackNoise * 0.5f;
             float maxNoise = distance * crackNoise * 0.5f;
-
             float noise = UnityEngine.Random.Range(-maxNoise, maxNoise);
             float ratio = (float)(i + 1) / (float)(divisionCount + 1);
 
             int index_a = start_a + i + 1;
             int index_b = end_b - i - 1;
 
-            crackPath[index_a] = Vector2.Lerp(crackPath[start_a], crackPath[end_a], ratio);
-            crackPath[index_b] = Vector2.Lerp(crackPath[end_b], crackPath[start_b], ratio);
-            crackPath[index_a] += normal * noise;
-            crackPath[index_b] += normal * noise;
+            crackPath[index_a] = Vector2.Lerp(crackPath[start_a], crackPath[end_a], ratio) + normal * noise;
+            crackPath[index_b] = Vector2.Lerp(crackPath[end_b], crackPath[start_b], ratio) + normal * noise;
         }
 
         return crackPath;
     }
 
-    // エッジループの向きを調べる
     private bool IsClockwise(Vector2[] edgeLoop)
     {
         float area = 0.0f;
-
-        // 符号付き面積を求める
         for (int i = 0; i < edgeLoop.Length; ++i)
         {
             Vector2 a = edgeLoop[i];
             Vector2 b = edgeLoop[(i + 1) % edgeLoop.Length];
-
             area += a.x * b.y - b.x * a.y;
         }
-
-        // 符号付き面積が負の値なら時計回り
         return area < 0.0f;
     }
 
-    // 地形分離判定
     private List<SplitTerrainData> SplitTerrainPath()
     {
         List<SplitTerrainData> result = new List<SplitTerrainData>();
 
-        // 地形の分離を行う
         for (int i = 0; i < _terrainPaths.Count; ++i)
         {
             SplitTerrainData splitTerrain;
@@ -622,7 +616,6 @@ public class TerrainPolygon
             result.Add(splitTerrain);
         }
 
-        // 最大面積の分離地形を求める
         float maxArea = 0.0f;
         int maxAreaIndex = 0;
         for (int i = 0; i < result.Count; ++i)
@@ -634,7 +627,6 @@ public class TerrainPolygon
             }
         }
 
-        // 最大面積の分離地形を元の地形とする
         _terrainPaths = result[maxAreaIndex].paths;
         _area = result[maxAreaIndex].area;
         result.RemoveAt(maxAreaIndex);
@@ -642,7 +634,6 @@ public class TerrainPolygon
         return result;
     }
 
-    // 面積を求める
     public float GetArea(List<EdgeLoop> edgeLoops)
     {
         PathsD pathsD = new PathsD(edgeLoops.Count);

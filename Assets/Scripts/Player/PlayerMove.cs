@@ -61,6 +61,10 @@ public class PlayerMove : MonoBehaviour
     [Range(0.0f, 90.0f)]
     private float _minSlopeAngle = 10.0f;
 
+    [SerializeField, Tooltip("空中ジャンプ可能回数")]
+    [Range(0, 10)]
+    private int _maxAirJump = 0;
+
     [Header("InputAction登録")]
     [SerializeField, Tooltip("移動")]
     private InputActionReference _moveAction;
@@ -78,6 +82,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField, Tooltip("壁を駆け上がる速度")]
     private float _climbUpSpeed = 7.0f;
 
+    [SerializeField, Tooltip("壁を駆け上がれる時間")]
+    private float _climbUpTime = 7.0f;
 
     [Header("参照登録")]
     [SerializeField]
@@ -97,9 +103,16 @@ public class PlayerMove : MonoBehaviour
     [Range(0.0f, 5.0f)]
     public float _airAccelerationRatio = 1.2f;
 
+    [Header("エフェクト")]
+    [SerializeField, Tooltip("空中ジャンプ")]
+    private ParticleSystem jumpEffect = null;
+
+    [SerializeField, Tooltip("ダッシュ")]
+    private ParticleSystem dashEffect = null;
+
+    public ParticleSystem DashEffect => dashEffect;
 
 
- 
     private Rigidbody2D _rigidbody;
 
     Animator animator;                          // アニメーター
@@ -124,6 +137,12 @@ public class PlayerMove : MonoBehaviour
     private bool _wasOverrideMoveTargetReachedPrevFrame;    // オーバーライドされた移動の目標地点に前のフレームで到達していたか
 
     private int _contactWallDir = 0; // 1:右に壁がある, -1:左に壁がある, 0:壁なし
+
+    private int _airjumpCount = 0;   // 今できる空中ジャンプ回数
+
+    private float _climbUpTimer = 0.0f; // 壁を駆け上がる時間計測用タイマー
+
+    private bool _canClimbUp = false;   // 壁を駆け上がれるかどうかのフラグ
 
     private void OverrideInput()
     {
@@ -238,6 +257,7 @@ public class PlayerMove : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _rigidbody.sleepMode = RigidbodySleepMode2D.NeverSleep;
         animator = GetComponent<Animator>();    // アニメーターの取得
+        _airjumpCount = _maxAirJump; // 空中ジャンプ回数を初期化
     }
 
     private void OnEnable()
@@ -377,15 +397,20 @@ public class PlayerMove : MonoBehaviour
     private void Jump()
     {
         // ジャンプ可能か判定
-        if (_isJumping || _coyoteTimer <= 0.0f)
+        if ((_isJumping || _coyoteTimer <= 0.0f) && _airjumpCount <= 0)
             return;
 
         // ジャンプ処理
         if (_inputJump && _jumpBufferTimer > 0.0f)
         {
+            // エフェクト再生
+            var instance = Instantiate(jumpEffect, transform.position, Quaternion.Euler(-90.0f, 0.0f, 0.0f));
+            instance.Play();
+            Destroy(instance.gameObject, 2.0f); // 2.0秒後に削除
             _currentVelicity.y = _jumpPower;
             _isJumping = true;
             _inputJump = false;
+            _airjumpCount--;
         }
     }
 
@@ -449,6 +474,12 @@ public class PlayerMove : MonoBehaviour
         {
             _rotateLockTimer = Mathf.Max(0.0f, _rotateLockTimer - delta);
         }
+
+        // 壁を駆け上がるタイマーの処理
+        if(_climbUpTimer > 0.0f)
+        {
+            _climbUpTimer = Mathf.Max(0.0f, _climbUpTimer - delta);
+        }
     }
 
     // 各種フラグ更新
@@ -479,10 +510,13 @@ public class PlayerMove : MonoBehaviour
             // 地面として扱う角度か判定
             float angle = Vector2.Angle(contact.normal, Vector2.up);
 
+
             // 最大角度より大きい場合は地面として扱わない
             if (angle > _maxSlopeAngle)
                 continue;
-      
+
+            _airjumpCount = _maxAirJump;    // 空中ジャンプ回数をリセット
+            _canClimbUp = true;             // 壁を駆け上がれる状態にする
             _isGround = true;
 
             // 最も水平に近い地面の角度と法線方向を記録
@@ -542,6 +576,7 @@ public class PlayerMove : MonoBehaviour
     // 壁を乗り越える処理
     private bool OvercomeWall()
     {
+        
         if (!_isOvercomeBaseTerrain || _contactWallDir == 0) return false;
 
         // 右入力があって右に壁がある、または左入力があって左に壁がある場合
@@ -550,6 +585,13 @@ public class PlayerMove : MonoBehaviour
 
         if (isPushingWall)
         {
+            if(_canClimbUp)
+            {
+                _climbUpTimer = _climbUpTime;   // タイマーセット
+                _canClimbUp = false;            // 壁を駆け上がれる状態を解除
+            }
+            if (_climbUpTimer <= 0)         // タイマーが0以下なら壁を駆け上がれない
+                return false;
             // 壁登り中は速度を強制固定（Moveや重力に邪魔されないようにする）
             _currentVelicity.y = _climbUpSpeed;
             _currentVelicity.x = _inputMove.x * _groundSpeed;
@@ -579,7 +621,7 @@ public class PlayerMove : MonoBehaviour
 
         animator.SetBool("IsJump", _isJumping);
 
-        if (_inputMove.x >= 0.5f)
+        if (Mathf.Abs(_inputMove.x) >= 0.5f)
         {
             animator.SetBool("IsSprint", true);
             animator.SetBool("IsIdle", false);

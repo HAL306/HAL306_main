@@ -61,11 +61,11 @@ public class GameOverUI : MonoBehaviour
 
     private void LoadTitleScene()
     {
-        SceneManager.LoadScene("ModeSelectScene");
+        SceneManager.LoadScene("StageSelectScene");
     }
 
     private void LoadGameScene()
     {
-        SceneManager.LoadScene("AlphaGameScene");
+        SceneManager.LoadScene(GameProgress.CurrentStageName);
     }
 }

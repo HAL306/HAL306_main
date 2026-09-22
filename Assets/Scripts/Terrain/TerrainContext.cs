@@ -2,11 +2,10 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-
 /// <summary>
 /// 地形のコアコンポーネント
 /// </summary>
-[RequireComponent(typeof(PolygonCollider2D))]
+[RequireComponent(typeof(PolygonCollider2D), typeof(MeshFilter), typeof(MeshDotRenderer))]
 public class TerrainContext : MonoBehaviour
 {
     [SerializeField, Tooltip("地形の詳細設定")]
@@ -53,9 +52,6 @@ public class TerrainContext : MonoBehaviour
     private static readonly Dictionary<SoundEffectType, float> _lastPlayTime = new Dictionary<SoundEffectType, float>();
     private float _lastActionArea;
 
-    public bool IsDirtyDot { get; set; } = true;    // MeshDotManagerのキャッシュから変更があったか
-
-
     private TerrainPolygon _terrainPolygon;         // 地形形状
     private Action _onChangeTerrainEvent;           // 地形変更時イベント
 
@@ -63,17 +59,22 @@ public class TerrainContext : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private TerrainDestructEffect _destructEffect;
 
-    private List<Collider2D> _overlapColliderList;      // 重なっているコライダーのリスト
+    private List<Collider2D> _overlapColliderList;  // 重なっているコライダーのリスト
     private float _mass;
+    
+    private MeshFilter _meshFilter;
+    private MeshDotRenderer _dotRenderer;
+    private TerrainCollision _collision;
 
     static private BOSScharge _boss;
 
-
     public TerrainSettings TerrainSettings => _terrainSettings;
     public TerrainParameter TerrainParameter => _terrainParameter;
+    public MeshDotRenderer DotRenderer => _dotRenderer;
     public TerrainPolygon TerrainPolygon => _terrainPolygon;
     public PolygonCollider2D PolygonCollider => _polygonCollider;
     public Rigidbody2D Rigidbody => _rigidbody;
+    public MeshFilter MeshFilter => _meshFilter;
     public float Mass => _mass;
 
     private enum SoundEffectType
@@ -88,12 +89,10 @@ public class TerrainContext : MonoBehaviour
         _terrainPolygon.Initialize(this, splitTerrain);
     }
 
-    // 地形破壊処理
-    // 破壊面積を返す
+    // 地形破壊処理 (破壊面積を返す)
     public float Destruct(Vector2 worldCenter, float radius, CrackParameter crack)
     {
-        List<SplitTerrainData> splitTerrains;
-        splitTerrains = _terrainPolygon.PolygonDestruct(worldCenter, radius, crack);
+        List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonDestruct(worldCenter, radius, crack);
         float area = _terrainPolygon.GetArea(_terrainPolygon.DestructPaths);
         _lastActionArea = area;
 
@@ -105,9 +104,7 @@ public class TerrainContext : MonoBehaviour
         return area;
     }
 
-    // 三品怜
-    // 地形にひびを入れる処理
-    // 破壊面積を返す
+    // 地形にひびを入れる処理 (破壊面積を返す)
     public float Crack(CrackData[] data, CrackParameter crack)
     {
         List<SplitTerrainData> splitTerrains = _terrainPolygon.PolygonCrack(data, crack);
@@ -122,7 +119,6 @@ public class TerrainContext : MonoBehaviour
         return area;
     }
 
-
     // 地形変更時イベントを登録する
     public void AddChangeTerrainEvent(Action onDestructEvent)
     {
@@ -135,6 +131,13 @@ public class TerrainContext : MonoBehaviour
         _polygonCollider = GetComponent<PolygonCollider2D>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _destructEffect = GetComponent<TerrainDestructEffect>();
+        _meshFilter = GetComponent<MeshFilter>();
+        _dotRenderer = GetComponent<MeshDotRenderer>();
+
+        if (_dotRenderer == null)
+        {
+            _dotRenderer = gameObject.AddComponent<MeshDotRenderer>();
+        }
 
         if (_isStartTerrain)
         {
@@ -150,12 +153,6 @@ public class TerrainContext : MonoBehaviour
 
     private void Start()
     {
-        // ドット描画マネージャーに登録
-        if (MeshDotManager.Instance != null)
-        {
-            MeshDotManager.Instance.Register(this);
-        }
-        
         if (_isStartTerrain)
         {
             OnChangeTerrain();
@@ -164,7 +161,7 @@ public class TerrainContext : MonoBehaviour
 
     private void Update()
     {
-        if (_rigidbody != null)
+        if (_rigidbody != null && Camera.main != null)
         {
             // 画面外の場合はRigidbodyを無効化する
             Bounds bounds = _polygonCollider.bounds;
@@ -186,22 +183,20 @@ public class TerrainContext : MonoBehaviour
         if (_boss == null)
         {
             _boss = FindAnyObjectByType<BOSScharge>();
-            if(_boss == null)
+            if (_boss == null)
                 return;
         }
-        if (_polygonCollider.bounds.max.x < _boss.transform.position.x) 
+        if (_polygonCollider != null && _polygonCollider.bounds.max.x < _boss.transform.position.x)
+        {
             Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()
     {
-        // ドット描画マネージャーから登録解除
-        if (MeshDotManager.Instance != null)
-        {
-            MeshDotManager.Instance.Unregister(this);
-        }
+        // MeshDotManager の登録解除処理は不要となったため安全にクリーンアップ
+        _onChangeTerrainEvent = null;
     }
-
 
     // 分離地形のオブジェクトを生成する
     private void CreateSplitTerrain(SplitTerrainData splitTerrain)
@@ -213,7 +208,7 @@ public class TerrainContext : MonoBehaviour
         newTerrain.InitializeOnSplit(splitTerrain);
         newTerrain._terrainSettings = _terrainSettings;
         newTerrain._terrainParameter = _terrainParameter;
-        newTerrain._overlapColliderList = new List<Collider2D>(_overlapColliderList);
+        newTerrain._overlapColliderList = _overlapColliderList != null ? new List<Collider2D>(_overlapColliderList) : new List<Collider2D>();
 
         newTerrain.OnChangeTerrain();
     }
@@ -225,8 +220,9 @@ public class TerrainContext : MonoBehaviour
         if (_terrainPolygon.Area < _terrainSettings.MinArea)
         {
             if (_destructEffect != null)
-                //_destructEffect.EmitDestructEffect(_terrainPolygon.TerrainPaths);
+            {
                 _destructEffect.EmitDestructEffect(_terrainPolygon.DestructPaths);
+            }
             PlaySoundEffect(SoundEffectType.BIG_CRACK);
             Destroy(this.gameObject);
             return;
@@ -239,7 +235,6 @@ public class TerrainContext : MonoBehaviour
         {
             if (_overlapColliderList == null)
             {
-                // 重なったコライダーを取得する
                 GetOverlapCollider();
 
                 if (_overlapColliderList.Count == 0)
@@ -259,10 +254,18 @@ public class TerrainContext : MonoBehaviour
         }
 
         // 他のコンポーネントの地形破壊時イベント呼び出し
-        if (_onChangeTerrainEvent != null)
-            _onChangeTerrainEvent.Invoke();
-        
-        IsDirtyDot = true;
+        _onChangeTerrainEvent?.Invoke();
+
+        // メッシュのポリゴン生成およびMeshDotRendererのドット再構築
+        if (_meshFilter != null)
+        {
+            _terrainPolygon.GenerateMesh(_meshFilter);
+        }
+
+        if (_dotRenderer != null)
+        {
+            _dotRenderer.RebuildDots();
+        }
     }
 
     // コライダー形状を更新する
@@ -281,7 +284,7 @@ public class TerrainContext : MonoBehaviour
         }
     }
 
-    // 重なっているベース地形のコライダーを取得する (厳密な判定は行いません)
+    // 重なっているベース地形のコライダーを取得する
     private void GetOverlapCollider()
     {
         _overlapColliderList = new List<Collider2D>();
@@ -290,35 +293,29 @@ public class TerrainContext : MonoBehaviour
         filter.useLayerMask = true;
         filter.useTriggers = false;
 
-        // 重なっているベース地形のコライダー取得
         _polygonCollider.Overlap(filter, _overlapColliderList);
     }
 
     // ベース地形との重なりを調べる
     private bool CheckOverlapCollider()
     {
-        for(int i = 0; i < _overlapColliderList.Count ; ++i)
+        for (int i = 0; i < _overlapColliderList.Count; ++i)
         {
             if (_overlapColliderList[i] == null)
             {
-                // リストから削除して、インデックスを補正
                 _overlapColliderList.RemoveAt(i);
                 i--;
+                continue;
             }
 
-            // 重なりを調べる
-            ColliderDistance2D distance;
-            distance = _polygonCollider.Distance(_overlapColliderList[i]);
+            ColliderDistance2D distance = _polygonCollider.Distance(_overlapColliderList[i]);
 
-            // 重なっていなければ除外
-            if(distance.isOverlapped)
+            if (distance.isOverlapped)
             {
-                // 一つでも重なっていれば終了
                 break;
             }
             else
             {
-                // リストから削除して、インデックスを補正
                 _overlapColliderList.RemoveAt(i);
                 i--;
             }
@@ -335,7 +332,6 @@ public class TerrainContext : MonoBehaviour
 
         _rigidbody = gameObject.AddComponent<Rigidbody2D>();
 
-        // 重さを設定
         _mass = _terrainPolygon.Area * _terrainParameter.Density;
         _rigidbody.mass = _mass;
     }

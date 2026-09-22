@@ -24,7 +24,6 @@ public class StageStartObserver : MonoBehaviour
     {
         cutsceneState.OnCutsceneStopped += OnStageStart;
     }
-
     private void OnDisable()
     {
         cutsceneState.OnCutsceneStopped -= OnStageStart;

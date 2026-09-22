@@ -105,5 +105,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBullet
   _speed: 30
-  _lifetime: 3
   _radius: 0.1
+  asultChrgeRatio: 1.1
+  _terrainDestructVersion: 0

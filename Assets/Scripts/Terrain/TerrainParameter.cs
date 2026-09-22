@@ -7,6 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TerrainParameter", menuName = "Scriptable Objects/TerrainParameter")]
 public class TerrainParameter : ScriptableObject
 {
+    [Header("基本設定")]
     [SerializeField, Tooltip("地形のマテリアル")]
     private Material _material;
 
