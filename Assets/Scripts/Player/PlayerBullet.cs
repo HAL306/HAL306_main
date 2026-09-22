@@ -71,6 +71,9 @@ public class PlayerBullet : MonoBehaviour
             {
                 HitDestruct(hit.point);
 
+                // エフェクト
+                GunhitEffectManager.Instance.Play(transform.position, transform.rotation);
+
                 if (hit.collider.TryGetComponent(out TerrainContext terrain))
                 {
                     if (penetrationPower < terrain.Area)

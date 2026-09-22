@@ -10,6 +10,10 @@ public class BossBodyAttack : BossAttackBase
     [SerializeField, Tooltip("Projectウィンドウにある予告マーカーのプレハブ")]
     private GameObject chargeMarker;
 
+    
+    [SerializeField, Tooltip("ボスの体の半分の大きさ分、予告マーカーの長さに追加する値")]
+    private float markerLengthOffset = 1.0f;
+
     // 生成元とは別に、Scene内の実体を管理する
     private GameObject chargeMarkerInstance;
     private bool isAttacking;
@@ -67,6 +71,7 @@ public class BossBodyAttack : BossAttackBase
     {
         base.Awake();
         if (playerKiller != null) playerKiller.enabled = false;
+        endTime = Time.time;
     }
 
     public override bool CanExecute()
@@ -127,13 +132,29 @@ public class BossBodyAttack : BossAttackBase
         {
             // 親を指定せず生成し、ボスの突進に追従させない
             chargeMarkerInstance = Instantiate(chargeMarker);
-            Vector3 markerCenter = transform.position + directionToPlayer * (attackRange / 2.0f);
-            chargeMarkerInstance.transform.position = new Vector3(markerCenter.x, markerCenter.y, -1.0f);
 
-            float angle = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg;
-            chargeMarkerInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
+            // 突進距離にボス本体の大きさ分を追加
+            float markerLength = attackRange + markerLengthOffset;
 
-            chargeMarkerInstance.transform.localScale = new Vector3(attackRange, markerThickness, 1.0f);
+
+            Vector3 markerCenter =
+                transform.position + directionToPlayer * (markerLength / 2.0f);
+
+            chargeMarkerInstance.transform.position =
+                new Vector3(markerCenter.x, markerCenter.y, -1.0f);
+
+            // まーかー角度
+            float angle =
+                Mathf.Atan2(directionToPlayer.y, directionToPlayer.x)
+                * Mathf.Rad2Deg;
+
+            chargeMarkerInstance.transform.rotation =
+                Quaternion.Euler(0, 0, angle);
+
+            // 実際の攻撃範囲に合わせた長さにする
+            chargeMarkerInstance.transform.localScale =
+                new Vector3(markerLength, markerThickness, 1.0f);
+
             chargeMarkerInstance.SetActive(true);
         }
     }

@@ -171,6 +171,8 @@ public class PlayerRocket : MonoBehaviour
             else
             {
                 // どの地形に当たっても弾は消滅する
+                // エフェクト
+                GunhitEffectManager.Instance.Play(transform.position, transform.rotation);
                 PlaySoundEffect(SoundEffectType.EXPLODE);
                 Destroy(gameObject);
                 return;
@@ -227,8 +229,11 @@ public class PlayerRocket : MonoBehaviour
             }
         }
 
+        // フィーバーをためる
         if (playerFever != null)
             playerFever.Charge(area * rocketChrgeRatio);
+
+        // フィーバー中だとロケランがたまる
         if (playerRocketShooter != null)
             playerRocketShooter.Charge(area);
 
