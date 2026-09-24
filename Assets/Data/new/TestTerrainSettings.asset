@@ -29,8 +29,7 @@ MonoBehaviour:
   _smallCrackSounds:
   - {fileID: 8300000, guid: e4747c378d04e774db2011c623824be5, type: 3}
   _bigCrackSounds:
-  - {fileID: 8300000, guid: 5e4cc29a21cd98d4cbfb65a42a0d5b4c, type: 3}
-  - {fileID: 8300000, guid: d4cdfd95d25b38240a35f37fd9329abe, type: 3}
+  - {fileID: 8300000, guid: 3733fd4f39bc38d42ae565b7b9ca60f2, type: 3}
   _bigCrackAreaThreshold: 1
   _pitchMin: 0.95
   _pitchMax: 1.05

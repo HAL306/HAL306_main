@@ -181,7 +181,8 @@ public class TerrainShape : MonoBehaviour
         filter.useLayerMask = true;
         filter.useTriggers = false;
 
-        _polygonCollider.Overlap(filter, _overlapColliderList);
+        if (_polygonCollider != null)
+            _polygonCollider.Overlap(filter, _overlapColliderList);
     }
 
     private bool CheckOverlapCollider()

@@ -21,6 +21,7 @@ float _EdgeNormalWidth;
 int _TriangleCount;
 int _EdgeCount;
 uint2 _GridDimensions;
+float _WorldPositionZ;
 
 bool PointInTriangle(float2 pt, float2 v1, float2 v2, float2 v3)
 {
@@ -184,7 +185,7 @@ void CSGenerateBaseTerrainDots(uint3 id : SV_DispatchThreadID)
         }
 
         BaseDotInstance dotInst;
-        dotInst.worldPosition = float3(worldPos2D.x, worldPos2D.y, 0.0);
+        dotInst.worldPosition = float3(worldPos2D.x, worldPos2D.y, _WorldPositionZ);
         dotInst.color = float4(1, 1, 1, 1);
         dotInst.uv = uv;
         dotInst.worldNormal = worldNormal;
