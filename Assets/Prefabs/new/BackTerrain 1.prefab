@@ -1,0 +1,213 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4446673773057660278
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3294313413784179974}
+  - component: {fileID: 1503784414043011709}
+  - component: {fileID: 1940427863125868450}
+  - component: {fileID: 3837875849663501703}
+  - component: {fileID: 2549561396294842741}
+  - component: {fileID: 5524939880013718003}
+  - component: {fileID: 4950464417465312410}
+  m_Layer: 6
+  m_Name: BackTerrain 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3294313413784179974
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4446673773057660278}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -112.08, y: -9.8, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &1503784414043011709
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4446673773057660278}
+  m_Mesh: {fileID: 0}
+--- !u!23 &1940427863125868450
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4446673773057660278}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3837875849663501703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4446673773057660278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fd097292c980744c8a9127fb95243cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainShapeSerialize
+  _points:
+  - {x: -17.221924, y: 9.343804}
+  - {x: -3.2217102, y: 8.207977}
+  - {x: -2.735695, y: 4.842479}
+  - {x: -3.7348022, y: 0.58592224}
+  - {x: -3.012123, y: -3.0619602}
+  - {x: -5.55278, y: -7.2327757}
+  - {x: -22.520264, y: -7.0943823}
+  - {x: -17.099777, y: 1.9542613}
+--- !u!114 &2549561396294842741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4446673773057660278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9300f61300d873948b33a81d3ecdd6e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainShape
+--- !u!114 &5524939880013718003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4446673773057660278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fcb36c06b80f7d49944458deb762589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainContextA
+  _terrainSettings: {fileID: 11400000, guid: 7c020cd3c81aa474c84db119a2d047fa, type: 2}
+  _terrainParameter: {fileID: 11400000, guid: a3f696d1629d5d94cb5f13eb277d4c87, type: 2}
+--- !u!114 &4950464417465312410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4446673773057660278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 379ddd76933ce8844847e16483b2fdf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BaseTerrainRenderer
+  _instancedDotMaterial: {fileID: 2100000, guid: d214cbf4d79c486448d137aa8d1cdbf7, type: 2}
+  _computeShader: {fileID: 7200000, guid: 543f173fda49a3d48b42541af68e9873, type: 3}
+  _dotShapeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  _shadowCastingMode: 0
+  _receiveShadows: 0
+  _edgeNormalWidth: 0.1
+  _layers:
+  - enabled: 1
+    startDistance: 0
+    endDistance: -1
+    thresholdTexture: {fileID: 2800000, guid: 380e032cd03788d45b48cf918f6946f6, type: 3}
+    thresholdTilingMultiplier: 1
+    rampTexture: {fileID: 0}
+    _material: {fileID: 2100000, guid: 8753a61290edcb946939f3f600ac4b0b, type: 2}
+    _dynamicUpdate: 0
+    _renderTextureSize: {x: 512, y: 512}
+    _normalStrength: 1
+    _uvScale: {x: 1, y: 1}
+    _metallic: 1
+    _smoothness: 0
+    _baseColor: {r: 0.5949376, g: 0.6345195, b: 0.6528301, a: 1}
+    _envLightStrength: 0.1
+    _shadowColorRetain: 0.2
+    _cutoff: 0.01
+  - enabled: 1
+    startDistance: 0
+    endDistance: 1.57
+    thresholdTexture: {fileID: 2800000, guid: 380e032cd03788d45b48cf918f6946f6, type: 3}
+    thresholdTilingMultiplier: 0.3
+    rampTexture: {fileID: 0}
+    _material: {fileID: 2100000, guid: e9363d25261f8be40804f632d1d056ae, type: 2}
+    _dynamicUpdate: 0
+    _renderTextureSize: {x: 512, y: 512}
+    _normalStrength: 1
+    _uvScale: {x: 0.5, y: 0.5}
+    _metallic: 1
+    _smoothness: 0
+    _baseColor: {r: 0.82641506, g: 0.80302596, b: 0.80302596, a: 0}
+    _envLightStrength: 0.1
+    _shadowColorRetain: 0.2
+    _cutoff: 0.01
+  - enabled: 1
+    startDistance: 0
+    endDistance: 18.91
+    thresholdTexture: {fileID: 2800000, guid: 380e032cd03788d45b48cf918f6946f6, type: 3}
+    thresholdTilingMultiplier: 0.3
+    rampTexture: {fileID: 0}
+    _material: {fileID: 2100000, guid: e9363d25261f8be40804f632d1d056ae, type: 2}
+    _dynamicUpdate: 0
+    _renderTextureSize: {x: 512, y: 512}
+    _normalStrength: 1
+    _uvScale: {x: 0.5, y: 0.5}
+    _metallic: 0.2
+    _smoothness: 0.1
+    _baseColor: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
+    _envLightStrength: 0.1
+    _shadowColorRetain: 0.2
+    _cutoff: 0.01
