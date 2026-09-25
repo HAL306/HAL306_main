@@ -267,19 +267,22 @@ public class BaseTerrainRenderer : MeshDotRenderer
         float maxDim = Mathf.Max(Mathf.Abs(worldSize.x), Mathf.Max(Mathf.Abs(worldSize.y), Mathf.Abs(worldSize.z)));
         Bounds worldBounds = new Bounds(worldCenter, Vector3.one * (maxDim + 2f));
 
-        Graphics.DrawMeshInstancedIndirect(
-            _dotShapeMesh,
-            0,
-            _instancedDotMaterial,
-            worldBounds,
-            _argsBuffer,
-            0,
-            _propBlock,
-            _shadowCastingMode,
-            _receiveShadows,
-            gameObject.layer,
-            targetCam
-        );
+        if (Application.isPlaying) ;
+        {
+            Graphics.DrawMeshInstancedIndirect(
+                _dotShapeMesh,
+                0,
+                _instancedDotMaterial,
+                worldBounds,
+                _argsBuffer,
+                0,
+                _propBlock,
+                _shadowCastingMode,
+                _receiveShadows,
+                gameObject.layer,
+                targetCam
+            );
+        }
     }
 
     protected override void UpdateProperties()
@@ -422,6 +425,7 @@ public class BaseTerrainRenderer : MeshDotRenderer
         _computeShader.SetInt("_TriangleCount", triangles.Length / 3);
         _computeShader.SetInt("_EdgeCount", worldEdges.Length);
         _computeShader.SetInts("_GridDimensions", new int[] { gridX, gridY });
+        _computeShader.SetFloat("_WorldPositionZ", transform.position.z);
 
         int threadGroupsX = Mathf.CeilToInt(gridX / 8.0f);
         int threadGroupsY = Mathf.CeilToInt(gridY / 8.0f);

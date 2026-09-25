@@ -1153,6 +1153,7 @@ MonoBehaviour:
   _lineDisplayDuration: 0.1
   feverCoolSpeed: 2.5
   canFeverCharge: 1
+  feverShootInterval: 2
   _shootSound: {fileID: 8300000, guid: 4e6270424ec91d9459e2a13c4149aefb, type: 3}
   effectPlayer: {fileID: 1258151429676501327}
 --- !u!1 &9166607392462975096

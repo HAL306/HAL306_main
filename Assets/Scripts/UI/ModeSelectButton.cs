@@ -5,20 +5,14 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(RectTransform))]
 public class ModeSelectButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField, Tooltip("Ç±ÇÃÉ{É^ÉìÇÃRectTransform")]
-    private RectTransform _rectTransform;
+    [SerializeField, Tooltip("„Éõ„Éê„ÉºÊôÇ„ÅÆÂãï‰Ωú")]
+    private UnityEvent _hoverAction;
 
-    [SerializeField, Tooltip("ëIëçÄñ⁄ÇÃägëÂó¶")]
-    private float _selectScale = 1.5f;
-
-    [SerializeField, Tooltip("ëIëçÄñ⁄ÇÃägëÂó¶ÇÃïœâªë¨ìx")]
-    private float _selectScaleSpeed = 10.0f;
-
-    [SerializeField, Tooltip("åàíËéûÇÃìÆçÏ")]
+    [SerializeField, Tooltip("Ê±∫ÂÆöÊôÇ„ÅÆÂãï‰Ωú")]
     private UnityEvent _buttonAction;
 
     private bool _isSelected;
-
+    private RectTransform _rectTransform;
 
     public RectTransform RectTransform => _rectTransform;
     public bool IsSelected => _isSelected;
@@ -27,24 +21,6 @@ public class ModeSelectButton : MonoBehaviour, IPointerClickHandler, IPointerEnt
     private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
-    }
-
-    private void Update()
-    {
-        // ägëÂó¶ÇçXêVÇ∑ÇÈ
-        Vector3 scale = _rectTransform.localScale;
-        float targetScale = (_isSelected) ? _selectScale : 1.0f;
-        if (Application.isPlaying)
-        {
-            scale.x = Mathf.MoveTowards(scale.x, targetScale, Time.deltaTime * _selectScaleSpeed);
-            scale.y = Mathf.MoveTowards(scale.y, targetScale, Time.deltaTime * _selectScaleSpeed);
-        }
-        else
-        {
-            scale.x = targetScale;
-            scale.y = targetScale;
-        }
-        _rectTransform.localScale = scale;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -56,6 +32,8 @@ public class ModeSelectButton : MonoBehaviour, IPointerClickHandler, IPointerEnt
     public void OnPointerEnter(PointerEventData eventData)
     {
         _isSelected = true;
+        if (_hoverAction != null)
+            _hoverAction.Invoke();
     }
 
     public void OnPointerExit(PointerEventData eventData)

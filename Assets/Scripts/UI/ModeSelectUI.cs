@@ -4,64 +4,79 @@ using UnityEngine.SceneManagement;
 
 public class ModeSelectUI : MonoBehaviour
 {
+    [SerializeField, Tooltip("ギア回転コンポーネント")]
+    private GearRotate _gearRotate;
+
     [SerializeField, Tooltip("フェードUI")]
     private FadeUI _fadeUI;
 
-    [SerializeField, Tooltip("整列要素")]
-    private List<ModeSelectButton> _layoutElements;
+    [SerializeField, Tooltip("初期開始シーン")]
+    private string _newGameSceneName;
 
-    [SerializeField, Tooltip("配置間隔")]
-    private float _layoutSpace = 0.0f;
+    [SerializeField, Tooltip("ステージセレクトシーン")]
+    private string _stageSelectSceneName;
+
+    [SerializeField, Tooltip("タイトルシーン")]
+    private string _titleSceneName;
+
+    [SerializeField, Tooltip("選択ボタン")]
+    private List<ModeSelectButton> _modeSelectButtons;
+
+    [SerializeField, Tooltip("移動オフセット")]
+    private Vector2 _moveOffset;
+
+    [SerializeField, Tooltip("移動速度")]
+    private float _moveSpeed = 10.0f;
+
+    private List<Vector2> _defaultPosList;
+
+
+    private void Start()
+    {
+        _defaultPosList = new List<Vector2>();
+        foreach (var button in _modeSelectButtons)
+        {
+            _defaultPosList.Add(button.RectTransform.anchoredPosition);
+        }
+    }
 
     private void Update()
     {
-        UpdateLayout();
+        foreach (var button in _modeSelectButtons)
+        {
+            Vector2 targetPos;
+            if (button.IsSelected)
+            {
+                targetPos = _defaultPosList[_modeSelectButtons.IndexOf(button)] + _moveOffset;
+            }
+            else
+            {
+                targetPos = _defaultPosList[_modeSelectButtons.IndexOf(button)];
+            }
+
+            Vector2 pos = Vector2.Lerp(button.RectTransform.anchoredPosition, targetPos, Time.deltaTime * _moveSpeed);
+            button.RectTransform.anchoredPosition = pos;
+        }
     }
 
-    private void OnValidate()
+    public void OnChangeSelectButton()
     {
-        UpdateLayout();
-    }
-
-    private void UpdateLayout()
-    {
-        // 整列要素の高さの合計を求める
-        float sumHeight = 0.0f;
-        for (int i = 0; i < _layoutElements.Count; ++i)
-        {
-            sumHeight += _layoutElements[i].RectTransform.rect.height * _layoutElements[i].RectTransform.lossyScale.y;
-        }
-        sumHeight += _layoutSpace * (_layoutElements.Count - 1);
-        float currentPosY = sumHeight * 0.5f;
-
-        // 整列要素を中央に配置する
-        for (int i = 0; i < _layoutElements.Count; ++i)
-        {
-            float hs = _layoutElements[i].RectTransform.rect.height * _layoutElements[i].RectTransform.lossyScale.y * 0.5f;
-            currentPosY -= hs;
-            currentPosY -= _layoutSpace * 0.5f;
-
-            Vector3 localPos = _layoutElements[i].RectTransform.localPosition;
-            localPos.y = currentPosY;
-            _layoutElements[i].RectTransform.localPosition = localPos;
-
-            currentPosY -= hs;
-        }
+        _gearRotate.RotateGears();
     }
 
     public void NewGame()
     {
         GameProgress.ResetProgress();
-        _fadeUI.StartFadeOut(() => { SceneManager.LoadScene("1-1"); });
+        _fadeUI.StartFadeOut(() => { SceneManager.LoadScene(_newGameSceneName); });
     }
 
     public void ContinueGame()
     {
-        _fadeUI.StartFadeOut(() => { SceneManager.LoadScene("StageSelectScene"); });
+        _fadeUI.StartFadeOut(() => { SceneManager.LoadScene(_stageSelectSceneName); });
     }
 
     public void ToTitle()
     {
-        _fadeUI.StartFadeOut(() => { SceneManager.LoadScene("TitleScene"); });
+        _fadeUI.StartFadeOut(() => { SceneManager.LoadScene(_titleSceneName); });
     }
 }

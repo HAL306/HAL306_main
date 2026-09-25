@@ -245,7 +245,7 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                 Texture2D rampTex,
                 float4 distRange,
                 float metallic, float smoothness, float envLight, float shadowRetain, float cutoff,
-                inout float3 accumulatedColor, inout float3 accumulatedNormal, inout float currentAlpha,
+                inout float3 accumulatedColor, inout float3 accumulatedNormal, inout float currentAlpha, inout float minAlpha,
                 inout float accMetallic, inout float accSmoothness, inout float accEnvLight, inout float accShadowRetain,
                 inout float finalCutoff)
             {
@@ -321,6 +321,7 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                 accumulatedColor = lerp(accumulatedColor, layerCol.rgb, opacity);
                 accumulatedNormal = lerp(accumulatedNormal, layerNormal, opacity);
                 currentAlpha = max(currentAlpha, layerCol.a * opacity);
+                minAlpha = min(minAlpha, layerCol.a * opacity);
 
                 accMetallic = lerp(accMetallic, metallic, opacity);
                 accSmoothness = lerp(accSmoothness, smoothness, opacity);
@@ -336,6 +337,7 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                 float3 finalColor = float3(0, 0, 0);
                 float3 finalNormalTS = float3(0, 0, 1);
                 float finalAlpha = 0.0;
+                float minAlpha = 1.0;
                 float metallic = 0.0;
                 float smoothness = 0.5;
                 float envLight = 0.1;
@@ -348,7 +350,7 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                     _Layer0_ThresholdTex, _Layer0_ThresholdParams,
                     _Layer0_RampTex, _Layer0_DistRange,
                     _Layer0_Metallic, _Layer0_Smoothness, _Layer0_EnvLightStrength, _Layer0_ShadowColorRetain, _Layer0_Cutoff,
-                    finalColor, finalNormalTS, finalAlpha,
+                    finalColor, finalNormalTS, finalAlpha, minAlpha,
                     metallic, smoothness, envLight, shadowRetain, activeCutoff);
 
                 EvaluateLayer(input.uv, input.edgeDist,
@@ -357,7 +359,7 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                     _Layer1_ThresholdTex, _Layer1_ThresholdParams,
                     _Layer1_RampTex, _Layer1_DistRange,
                     _Layer1_Metallic, _Layer1_Smoothness, _Layer1_EnvLightStrength, _Layer1_ShadowColorRetain, _Layer1_Cutoff,
-                    finalColor, finalNormalTS, finalAlpha,
+                    finalColor, finalNormalTS, finalAlpha, minAlpha,
                     metallic, smoothness, envLight, shadowRetain, activeCutoff);
 
                 EvaluateLayer(input.uv, input.edgeDist,
@@ -366,7 +368,7 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                     _Layer2_ThresholdTex, _Layer2_ThresholdParams,
                     _Layer2_RampTex, _Layer2_DistRange,
                     _Layer2_Metallic, _Layer2_Smoothness, _Layer2_EnvLightStrength, _Layer2_ShadowColorRetain, _Layer2_Cutoff,
-                    finalColor, finalNormalTS, finalAlpha,
+                    finalColor, finalNormalTS, finalAlpha, minAlpha,
                     metallic, smoothness, envLight, shadowRetain, activeCutoff);
 
                 EvaluateLayer(input.uv, input.edgeDist,
@@ -375,7 +377,7 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                     _Layer3_ThresholdTex, _Layer3_ThresholdParams,
                     _Layer3_RampTex, _Layer3_DistRange,
                     _Layer3_Metallic, _Layer3_Smoothness, _Layer3_EnvLightStrength, _Layer3_ShadowColorRetain, _Layer3_Cutoff,
-                    finalColor, finalNormalTS, finalAlpha,
+                    finalColor, finalNormalTS, finalAlpha, minAlpha,
                     metallic, smoothness, envLight, shadowRetain, activeCutoff);
 
                 if (finalAlpha <= 0.0001 && activeCutoff > 0.0)
@@ -406,6 +408,11 @@ Shader "Custom/BaseTerrainDotInstancedPBR"
                 surfaceData.alpha = finalAlpha;
                 surfaceData.occlusion = envLight;
                 surfaceData.emission = finalColor * shadowRetain;
+
+                if(minAlpha <= 0.0001)
+                {
+                    discard;
+                }
 
                 return UniversalFragmentPBR(inputData, surfaceData);
             }
