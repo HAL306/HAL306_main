@@ -267,7 +267,7 @@ public class BaseTerrainRenderer : MeshDotRenderer
         float maxDim = Mathf.Max(Mathf.Abs(worldSize.x), Mathf.Max(Mathf.Abs(worldSize.y), Mathf.Abs(worldSize.z)));
         Bounds worldBounds = new Bounds(worldCenter, Vector3.one * (maxDim + 2f));
 
-        if (Application.isPlaying) ;
+        if (Application.isPlaying)
         {
             Graphics.DrawMeshInstancedIndirect(
                 _dotShapeMesh,
