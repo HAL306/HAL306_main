@@ -18,9 +18,21 @@ public class BossController : MonoBehaviour
     [SerializeField] private BossAttackBase[] attacks;          // 攻撃の配列（上が優先度高）
 
     [Tooltip("攻撃のクールタイム")]
-    [SerializeField] private float attackCheckInterval = 0.5f;  // 判定を行う間隔（秒）
+    [SerializeField] private float attackInterval = 3.0f;  // 攻撃を行う間隔（秒）
+    [Tooltip("攻撃選択を行う間隔（秒）")]
+    [SerializeField] private float attackCheckInterval = 0.5f;  // 攻撃選択を行う間隔（秒）
 
+    [Tooltip("地形破壊の間隔（秒）")]
+    [SerializeField] private float destructInterval = 1.0f;  // 地形破壊の間隔（秒）
+    [Tooltip("地形破壊の半径")]
+    [SerializeField] private float destructRadius = 1.0f;  // 地形破壊の半径
+    [Tooltip("地形破壊のひび割れパラメータ")]
+    [SerializeField] private CrackParameter crackParameter;  // 地形破壊のひび割れパラメータ
+
+    private float attackTimer = 0.0f;
     private float attackCheckTimer = 0.0f;
+
+    private float destructTimer = 0.0f;    // 地形破壊のタイマー
 
     private BossAttackBase currentAttack = null;    // 現在の攻撃
 
@@ -56,8 +68,11 @@ public class BossController : MonoBehaviour
         // 攻撃中は関数を抜ける
         if (currentAttack != null) return;
 
+        attackTimer += Time.deltaTime;
         attackCheckTimer += Time.deltaTime;
-        if (attackCheckTimer >= attackCheckInterval)
+
+        // 攻撃の間隔が経過していて、攻撃選択の間隔も経過している場合に攻撃を決定する
+        if (attackCheckTimer >= attackCheckInterval && attackTimer >= attackInterval)
         {
             attackCheckTimer = 0.0f;
             BossAttackBase nextAttack = DecideNextAttack();
@@ -66,6 +81,9 @@ public class BossController : MonoBehaviour
             {
                 // 攻撃開始
                 currentAttack = nextAttack;
+
+                // 攻撃が始まったので攻撃タイマーをリセットする
+                attackTimer = 0.0f;
 
                 // 攻撃が終わったら currentAttack を null に戻すコールバックを渡す
                 currentAttack.BeginAttack(() => currentAttack = null);
@@ -84,6 +102,39 @@ public class BossController : MonoBehaviour
             }
         }
         return null;
+    }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        // Fieldタグ以外に触れている場合は処理しない
+        if (collision.gameObject.layer != LayerMask.NameToLayer("Field")) return;
+
+        // 触れている地形からTerrainContextを取得する
+        TerrainContext terrain = collision.gameObject.GetComponentInParent<TerrainContext>();
+
+        // TerrainContextが無ければ破壊できない
+        if (terrain == null) return;
+
+        // 地形破壊処理を行う
+            terrain.Destruct(transform.position, destructRadius, crackParameter);
+        BreakTerrain(terrain);
+    }
+
+
+    // 地形を一定時間ごとに破壊する処理
+    private void BreakTerrain(TerrainContext terrain)
+    {
+        // 破壊間隔のタイマーを進める
+        destructTimer += Time.deltaTime;
+
+        // 指定時間を超えたら地形を破壊する
+        if (destructTimer >= destructInterval)
+        {
+            // BOSSの現在位置を中心に地形を削る
+            terrain.Destruct(transform.position, destructRadius, crackParameter);
+
+            // タイマーをリセットする
+            destructTimer = 0.0f;
+        }
     }
 
     private void Move()

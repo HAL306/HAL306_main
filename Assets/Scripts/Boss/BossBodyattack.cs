@@ -49,6 +49,11 @@ public class BossBodyAttack : BossAttackBase
     [SerializeField, Tooltip("チャージの時間")]
     private float chargeTime = 3.0f;
 
+    [Tooltip("地形破壊の半径")]
+    [SerializeField] private float destructRadius = 1.0f;  // 地形破壊の半径
+    [Tooltip("地形破壊のひび割れパラメータ")]
+    [SerializeField] private CrackParameter crackParameter;  // 地形破壊のひび割れパラメータ
+
     //射程内に入ってからの時間計測
     private float currentDistanceCount = 0.0f;
 
@@ -204,5 +209,23 @@ public class BossBodyAttack : BossAttackBase
         chargeMarkerInstance.SetActive(false);
         Destroy(chargeMarkerInstance);
         chargeMarkerInstance = null;
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        // 攻撃中のみ
+        if(!isAttacking) return;
+
+        // Fieldタグ以外に触れている場合は処理しない
+        if (collision.gameObject.layer != LayerMask.NameToLayer("Field")) return;
+
+        // 触れている地形からTerrainContextを取得する
+        TerrainContext terrain = collision.gameObject.GetComponentInParent<TerrainContext>();
+
+        // TerrainContextが無ければ破壊できない
+        if (terrain == null) return;
+
+        // 地形破壊処理を行う
+        terrain.Destruct(transform.position, destructRadius, crackParameter);
     }
 }
