@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1591524257047410576}
   - component: {fileID: 1011619977556729252}
   m_Layer: 0
-  m_Name: BOSS_2_0
+  m_Name: BOSS_Left_Shoulder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,11 +26,12 @@ Transform:
   m_GameObject: {fileID: 978811766264838247}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.319, y: -0.164, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1.5950003, y: -0.8200002, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5710290953433368903}
+  m_Children:
+  - {fileID: 2080116281560742078}
+  m_Father: {fileID: 4003878170266146532}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1011619977556729252
 SpriteRenderer:
@@ -103,8 +104,10 @@ GameObject:
   - component: {fileID: 880306378116899565}
   - component: {fileID: 1635240853095167152}
   - component: {fileID: 3987224891730675920}
+  - component: {fileID: 1188833646128539100}
+  - component: {fileID: 4097139162676321430}
   m_Layer: 0
-  m_Name: BOSS_3_0
+  m_Name: BOSS_Left_Hand
   m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119,11 +122,11 @@ Transform:
   m_GameObject: {fileID: 2743816189060717548}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.834, y: -0.624, z: 0}
+  m_LocalPosition: {x: 0.515, y: -0.46000004, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5710290953433368903}
+  m_Father: {fileID: 1591524257047410576}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &880306378116899565
 SpriteRenderer:
@@ -235,6 +238,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerKiller
   fade: {fileID: 0}
   cutsceneEventCh: {fileID: 11400000, guid: 93b3603320a0ad341a1bbddf4b8728f7, type: 2}
+--- !u!114 &1188833646128539100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2743816189060717548}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d43071a8bb4198f4a8a6a36cec855a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossTerrainDestruct
+  destructRadius: 3
+  crackParameter:
+    direction: {x: 0, y: 0}
+    angleNoise: 0
+    maxCrackCount: 0
+    minCrackCount: 0
+--- !u!50 &4097139162676321430
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2743816189060717548}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &4567361237749515282
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +294,7 @@ GameObject:
   - component: {fileID: 7250388082620421223}
   - component: {fileID: 3436183241976141248}
   m_Layer: 0
-  m_Name: BOSS__0
+  m_Name: BOSS_Right_shoulder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -260,12 +308,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4567361237749515282}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.525, y: -0.117, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.6250002, y: -0.58500004, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5710290953433368903}
+  m_Children:
+  - {fileID: 3674261565938030503}
+  m_Father: {fileID: 4003878170266146532}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3436183241976141248
 SpriteRenderer:
@@ -337,7 +386,7 @@ GameObject:
   - component: {fileID: 3946816928319904106}
   - component: {fileID: 6980389839174768601}
   m_Layer: 0
-  m_Name: BOSS_4_0
+  m_Name: BOSS_Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -352,11 +401,11 @@ Transform:
   m_GameObject: {fileID: 5614989940703791185}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.06, y: 0.76, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.3000002, y: 3.8, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5710290953433368903}
+  m_Father: {fileID: 4003878170266146532}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6980389839174768601
 SpriteRenderer:
@@ -428,7 +477,7 @@ GameObject:
   - component: {fileID: 3674261565938030503}
   - component: {fileID: 3608867012270210558}
   m_Layer: 0
-  m_Name: BOSS_1_0
+  m_Name: BOSS_Right_Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -443,11 +492,11 @@ Transform:
   m_GameObject: {fileID: 7044004224064050998}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.67, y: -0.75, z: 0}
+  m_LocalPosition: {x: -0.14500003, y: -0.633, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5710290953433368903}
+  m_Father: {fileID: 7250388082620421223}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3608867012270210558
 SpriteRenderer:
@@ -508,6 +557,63 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &7143219983574280964
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4003878170266146532}
+  - component: {fileID: 6750139809790992363}
+  m_Layer: 0
+  m_Name: BossVisual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4003878170266146532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7143219983574280964}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3946816928319904106}
+  - {fileID: 7250388082620421223}
+  - {fileID: 1591524257047410576}
+  m_Father: {fileID: 5710290953433368903}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &6750139809790992363
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7143219983574280964}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4fdbc787a727f794a927ba443f683628, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8896673290602856705
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,11 +655,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7250388082620421223}
-  - {fileID: 3674261565938030503}
-  - {fileID: 1591524257047410576}
-  - {fileID: 2080116281560742078}
-  - {fileID: 3946816928319904106}
+  - {fileID: 4003878170266146532}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7105139362233535745
@@ -786,7 +888,15 @@ MonoBehaviour:
   attacks:
   - {fileID: 6923334146087895574}
   - {fileID: 5754467497289857103}
+  attackInterval: 3
   attackCheckInterval: 0.001
+  destructInterval: 1
+  destructRadius: 8
+  crackParameter:
+    direction: {x: 0, y: 0}
+    angleNoise: 0
+    maxCrackCount: 0
+    minCrackCount: 0
 --- !u!114 &-3826442929849190395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -815,7 +925,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossBodyAttack
   player: {fileID: 0}
-  chargeMarker: {fileID: 0}
+  chargeMarker: {fileID: 866598021036169214, guid: c2df61b7bca1b754e8c1c60946b7f8e7, type: 3}
+  markerLengthOffset: 1
   warningTime: 0.7
   markerThickness: 10
   distancePosX: 10
@@ -824,8 +935,14 @@ MonoBehaviour:
   distanceCountTimer: 1
   attackRange: 50
   attackSpeed: 0.1
-  playerKiller: {fileID: 631788797360010003}
+  playerKiller: {fileID: 0}
   chargeTime: 3
+  destructRadius: 8
+  crackParameter:
+    direction: {x: 0, y: 0}
+    angleNoise: 0
+    maxCrackCount: 0
+    minCrackCount: 0
 --- !u!114 &6923334146087895574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -848,6 +965,7 @@ MonoBehaviour:
   coolTime: 3
   warningTime: 0.7
   markerThickness: 4
+  markerLengthOffset: 2
   playerKiller: {fileID: 3987224891730675920}
 --- !u!114 &5303912230563342454
 MonoBehaviour:
