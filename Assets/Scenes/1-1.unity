@@ -18757,6 +18757,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 238002657663107949, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: _mainCamera
+      value: 
+      objectReference: {fileID: 694725699}
+    - target: {fileID: 238002657663107949, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: _maxAirJump
       value: 1
       objectReference: {fileID: 0}
@@ -18765,9 +18769,17 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 238002657663107949, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: _cursorCanvas
+      value: 
+      objectReference: {fileID: 1181718138}
+    - target: {fileID: 238002657663107949, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: _maxSlopeAngle
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 238002657663107949, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: _cursorTransform
+      value: 
+      objectReference: {fileID: 2102113865}
     - target: {fileID: 238002657663107949, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: _jumpChrageAngle
       value: 83.1
