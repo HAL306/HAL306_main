@@ -110,11 +110,18 @@ public class PlayerMove : MonoBehaviour
     [SerializeField, Tooltip("ダッシュ")]
     private ParticleSystem dashEffect = null;
 
+    [Header("向き変更")]
+    [SerializeField]
+    private Camera _mainCamera;
+    [SerializeField, Tooltip("照準カーソル")]
+    private RectTransform _cursorTransform;
+
+    [SerializeField, Tooltip("照準カーソルのCanvas")]
+    private Canvas _cursorCanvas;
     public ParticleSystem DashEffect => dashEffect;
 
-
     private Rigidbody2D _rigidbody;
-
+                    // プレイヤーが操作可能かどうか
     Animator animator;                          // アニメーター
 
     private Vector2 _inputMove;                 // 移動入力
@@ -233,6 +240,7 @@ public class PlayerMove : MonoBehaviour
         {
             _inputJump = context.performed;
             _jumpBufferTimer = _inputBufferDuration;
+            
         }
     }
 
@@ -258,6 +266,11 @@ public class PlayerMove : MonoBehaviour
         _rigidbody.sleepMode = RigidbodySleepMode2D.NeverSleep;
         animator = GetComponent<Animator>();    // アニメーターの取得
         _airjumpCount = _maxAirJump; // 空中ジャンプ回数を初期化
+        if (_mainCamera == null)
+        {
+            _mainCamera = Camera.main;
+        }
+        
     }
 
     private void OnEnable()
@@ -311,6 +324,8 @@ public class PlayerMove : MonoBehaviour
         UpdateAnimator();       // アニメーターの更新
         UpdateTimer(Time.fixedDeltaTime);
         UpdateFlags();
+
+        
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -358,6 +373,7 @@ public class PlayerMove : MonoBehaviour
                 tangentVelocity = Mathf.MoveTowards(tangentVelocity, targetVelocity, _groundAcceleration * Time.fixedDeltaTime);
             }
             _currentVelicity = rightMoveDir * tangentVelocity;
+            MousePosLook();// マウスの位置に応じて向きを変更
         }
         else
         {
@@ -391,6 +407,9 @@ public class PlayerMove : MonoBehaviour
                 transform.eulerAngles = new Vector3(0.0f, 180.0f, 0.0f);
             }
         }
+        
+            
+        
     }
 
     // ジャンプ処理
@@ -639,5 +658,33 @@ public class PlayerMove : MonoBehaviour
             animator.SetBool("IsIdle", true);
         }
 
+    }
+    private void MousePosLook()
+    {
+        if (_rotateLockTimer > 0.0f)
+            return;
+        if (_cursorTransform == null || _cursorCanvas == null)
+            return;
+        if (_mainCamera == null)
+            return;
+
+        Vector3 playerScreenPos =_mainCamera.WorldToScreenPoint(transform.position);
+
+        Camera uiCamera = null;
+
+        if (_cursorCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+        {
+            uiCamera = _cursorCanvas.worldCamera;
+        }
+
+        Vector2 cursorScreenPos = RectTransformUtility.WorldToScreenPoint(uiCamera,_cursorTransform.position);
+        if (cursorScreenPos.x > playerScreenPos.x)
+        {
+            transform.eulerAngles = Vector3.zero;
+        }
+        else if (cursorScreenPos.x < playerScreenPos.x)
+        {
+            transform.eulerAngles = new Vector3(0.0f, 180.0f, 0.0f);
+        }
     }
 }
