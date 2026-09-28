@@ -49708,6 +49708,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5754467497289857103, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 2080541436}
+    - target: {fileID: 5754467497289857103, guid: 593122917cabd1841bc3ce50774f61b8, type: 3}
       propertyPath: chargeMarker
       value: 
       objectReference: {fileID: 866598021036169214, guid: c2df61b7bca1b754e8c1c60946b7f8e7, type: 3}

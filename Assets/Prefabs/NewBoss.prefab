@@ -785,6 +785,7 @@ MonoBehaviour:
   moveSpeed: 1
   attacks:
   - {fileID: 6923334146087895574}
+  - {fileID: 5303912230563342454}
   - {fileID: 5754467497289857103}
   attackCheckInterval: 0.001
 --- !u!114 &-3826442929849190395
@@ -816,16 +817,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossBodyAttack
   player: {fileID: 0}
   chargeMarker: {fileID: 0}
-  warningTime: 0.7
+  markerLengthOffset: 1
+  warningTime: 3
   markerThickness: 10
   distancePosX: 10
   distancePosY: 10
-  coolTime: 1
+  coolTime: 3
   distanceCountTimer: 1
-  attackRange: 50
-  attackSpeed: 0.1
+  attackRange: 20
+  attackSpeed: 1
   playerKiller: {fileID: 631788797360010003}
-  chargeTime: 3
+  chargeTime: 0.1
 --- !u!114 &6923334146087895574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -846,8 +848,9 @@ MonoBehaviour:
   returnSpeed: 10
   punchRange: 15
   coolTime: 3
-  warningTime: 0.7
+  warningTime: 3
   markerThickness: 4
+  markerLengthOffset: 2
   playerKiller: {fileID: 3987224891730675920}
 --- !u!114 &5303912230563342454
 MonoBehaviour:
@@ -864,9 +867,9 @@ MonoBehaviour:
   spawnerPrefab: {fileID: 8123270353613065553, guid: 92e9c67f15f2be441bc367b58b15fafd, type: 3}
   playerTransform: {fileID: 0}
   lineRenderer: {fileID: 0}
-  minPlayerDistance: 3
-  maxPlayerDistance: 15
-  spawnForwardDistance: 5
+  minPlayerDistance: 25
+  maxPlayerDistance: 999
+  spawnForwardDistance: 10
   spawnerHeightOffset: 3
   coolTime: 5
   attackDuration: 1
@@ -883,6 +886,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LineMove
   lineRenderer: {fileID: 0}
-  speed: 5
+  speed: 4
   useCatmullRom: 1
   resolution: 20
