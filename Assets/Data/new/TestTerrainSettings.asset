@@ -16,7 +16,7 @@ MonoBehaviour:
   _baseTerrainLayer:
     serializedVersion: 2
     m_Bits: 64
-  _minArea: 0.02
+  _minArea: 0.2
   _simplificationLevel: 0.2
   _dotSize: 0.05
   _edgeWidthMultiplier: 2.04
