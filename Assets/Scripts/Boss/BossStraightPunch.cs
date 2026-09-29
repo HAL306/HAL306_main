@@ -153,6 +153,12 @@ public class BossStraightPunch : BossAttackBase
                 isPunching = true;
 
                 fist.SetParent(null, true);
+
+                // 地形破壊
+                var destruct = fist.gameObject.GetComponent<BossTerrainDestruct>();
+
+                if (destruct != null)
+                    destruct.enabled = true;
             }
         }
         else if (isPunching)
@@ -168,6 +174,12 @@ public class BossStraightPunch : BossAttackBase
                 playerKiller.enabled = false;
 
                 DestroyPunchMarker();
+
+                // 地形破壊オフ
+                var destruct = fist.gameObject.GetComponent<BossTerrainDestruct>();
+
+                if (destruct != null)
+                    destruct.enabled = false;
             }
         }
         else if (isReturning)
