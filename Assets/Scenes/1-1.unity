@@ -18832,6 +18832,14 @@ PrefabInstance:
       propertyPath: _shootInterval
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 2181388114539021185, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_Interpolate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2181388114539021185, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3009328418883844808, guid: 15047d94fe27dc840a7b0110be7a29b3, type: 3}
       propertyPath: _bulletPrefab
       value: 
@@ -31108,6 +31116,14 @@ PrefabInstance:
     - target: {fileID: 2566543021010036992, guid: e47d637bb5114334789d162d78c058b1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5100608524203845149, guid: e47d637bb5114334789d162d78c058b1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -219.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5100608524203845149, guid: e47d637bb5114334789d162d78c058b1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -6.9
       objectReference: {fileID: 0}
     - target: {fileID: 5100608524203845149, guid: e47d637bb5114334789d162d78c058b1, type: 3}
       propertyPath: m_LocalRotation.w
