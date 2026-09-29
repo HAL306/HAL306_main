@@ -149,7 +149,7 @@ PolygonCollider2D:
       - {x: 1.1322021, y: -2.4089565}
       - {x: -1.5781555, y: -2.336689}
       - {x: -1.5417328, y: -0.10812187}
-  m_UseDelaunayMesh: 1
+  m_UseDelaunayMesh: 0
 --- !u!50 &2109734560923479556
 Rigidbody2D:
   serializedVersion: 5
