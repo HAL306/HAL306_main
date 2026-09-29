@@ -144,7 +144,7 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths: []
-  m_UseDelaunayMesh: 1
+  m_UseDelaunayMesh: 0
 --- !u!50 &929725890731142251
 Rigidbody2D:
   serializedVersion: 5
@@ -249,3 +249,5 @@ MonoBehaviour:
   _instancedDotMaterial: {fileID: 2100000, guid: ec24e5e1d5735ab4f8303d558856abbb, type: 2}
   _computeShader: {fileID: 7200000, guid: a42fed746c98b594a87f2f5b05890d5c, type: 3}
   _dotShapeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  _shadowCastingMode: 1
+  _receiveShadows: 1
