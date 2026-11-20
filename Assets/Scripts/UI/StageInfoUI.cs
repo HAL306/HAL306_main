@@ -27,7 +27,7 @@ public class StageInfoUI : MonoBehaviour
             Destroy(_currentPage.gameObject);
 
         _currentPage = Instantiate(_pagePrefab, _pagesParent);
-        _currentPage.SetContent(stage.StageInfoText, stage.StageImage);
+        _currentPage.SetContent(stage.StageName, stage.StageInfoText, stage.StageImage);
         _currentPage.transform.SetAsLastSibling();
         _currentPage.PlayEnterAnimation();
         _currentPage.GoButton.onClick.AddListener(OpenConfirm);

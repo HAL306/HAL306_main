@@ -56,7 +56,7 @@ public class StageSelectUI : MonoBehaviour
         _currentSelect = _stagePoints.Find(sp => sp.StageIndex == continueIndex) ?? _stagePoints[0];
         _selectPin.transform.position = _currentSelect.transform.position;
 
-        for(int i = 0; i < _stagePoints.Count; i++)
+        for (int i = 0; i < _stagePoints.Count; i++)
         {
             if (_stagePoints[i].StageIndex > continueIndex)
                 _stagePoints[i].gameObject.SetActive(false);

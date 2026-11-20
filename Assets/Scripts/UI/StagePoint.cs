@@ -5,6 +5,9 @@ public class StagePoint : MonoBehaviour
     [SerializeField, Tooltip("次のシーン名")]
     private string _nextSceneName;
 
+    [SerializeField, Tooltip("ステージ名")]
+    private string _stageName;
+
     [SerializeField, Tooltip("ステージ説明"), TextArea]
     private string _stageInfoText;
 
@@ -21,6 +24,7 @@ public class StagePoint : MonoBehaviour
 
     public Collider2D Collider => _collider;
     public string NextSceneName => _nextSceneName;
+    public string StageName => _stageName;
     public string StageInfoText => _stageInfoText;
     public Sprite StageImage => _stageImage;
 

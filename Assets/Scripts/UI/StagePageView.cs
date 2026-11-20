@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class StagePageView : MonoBehaviour
 {
     [SerializeField] private RectTransform _panelRect;
+    [SerializeField] private TMP_Text _stageNameText;
     [SerializeField] private TMP_Text _stageInfoText;
     [SerializeField] private Image _stageImageUI;
 
@@ -25,9 +26,13 @@ public class StagePageView : MonoBehaviour
         _restPosition = _panelRect.anchoredPosition;
     }
 
-    public void SetContent(string infoText, Sprite image)
+    public void SetContent(string title, string infoText, Sprite image)
     {
+        if (_stageNameText != null)
+            _stageNameText.text = title;
+
         _stageInfoText.text = infoText;
+
         if (_stageImageUI != null)
             _stageImageUI.sprite = image;
     }

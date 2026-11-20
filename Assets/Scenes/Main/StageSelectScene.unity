@@ -390,8 +390,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StagePoint
   _nextSceneName: 1-2
-  _stageInfoText: "\u30B9\u30C6\u30FC\u30B8\u8AAC\u660E\u6587_2"
-  _stageImage: {fileID: -7687702389306135508, guid: 90f9dec53d8088e418867312af0baad0, type: 3}
+  _stageName: "\u30B4\u30FC\u30EC\u30E0\u306E\u7720\u308B\u6D1E\u7A9F"
+  _stageInfoText: "\u5CA9\u76E4\u306F\u67D4\u304F\u30AF\u30EA\u30B9\u30BF\u30EB\u306E\u6D78\u98DF\r\n\u3082\u6BD4\u8F03\u7684\u306B\u5C11\u306A\u3044\u5730\u57DF\r\n\u3060\u304C\u3001\u3053\u3053\u306B\u306F\u5B9D\u3092\u5B88\u308B\r\n\u5F37\u529B\u306A\u30B4\u30FC\u30EC\u30E0\u304C\u7720\u3063\u3066\u3044\u308B\r\n\u5B9D\u3092\u76D7\u3081\u3070\u8D77\u304D\u308B\u306E\u3082\u5FC5\u7136\r\n\u5974\u306E\u731B\u653B\u3092\u63BB\u3044\u6F5C\u308A\u306A\u304C\u3089\r\n\u6D1E\u7A9F\u304B\u3089\u306E\u8131\u51FA\u3092\u76EE\u6307\u305B"
+  _stageImage: {fileID: 3032400113675930684, guid: 0f0080aa801ccf84896fba800cf5f0a9, type: 3}
   _stageIndex: 1
 --- !u!58 &419447985
 CircleCollider2D:
@@ -826,8 +827,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StagePoint
   _nextSceneName: 1-3
-  _stageInfoText: "\u30B9\u30C6\u30FC\u30B8\u8AAC\u660E\u6587_3"
-  _stageImage: {fileID: -7687702389306135508, guid: 90f9dec53d8088e418867312af0baad0, type: 3}
+  _stageName: "\u91DD\u96C1\u5C71"
+  _stageInfoText: "\u8D77\u4F0F\u304C\u5927\u304D\u3044\u5CA9\u5C71\u5730\u5E2F\r\n\u30AF\u30EA\u30B9\u30BF\u30EB\u3082\u91DD\u306E\u307F\u305F\u304F\u92ED\u304F\r\n\u508D\u304B\u3089\u898B\u308C\u3070\u5263\u5C71\u306E\u69D8\u3060\r\n\u7D30\u304B\u304F\u58CA\u3057\u3084\u3059\u3044\u5206\r\n\u57CB\u3082\u308C\u6613\u304F\u3082\u306A\u3063\u3066\u3044\u308B\u304B\u3089\r\n\u305D\u306E\u6642\u306F\u60DC\u3057\u307F\u306A\u304F\r\n\u30ED\u30B1\u30E9\u30F3\u3092\u3076\u3063\u653E\u305B\uFF01\uFF01"
+  _stageImage: {fileID: -6964565648693895049, guid: ff199e4ac7dd9b748a2986dc33bbd040, type: 3}
   _stageIndex: 2
 --- !u!58 &661231457
 CircleCollider2D:
@@ -1090,8 +1092,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StagePoint
   _nextSceneName: 1-4
-  _stageInfoText: "\u30B9\u30C6\u30FC\u30B8\u8AAC\u660E\u6587_4"
-  _stageImage: {fileID: -7687702389306135508, guid: 90f9dec53d8088e418867312af0baad0, type: 3}
+  _stageName: "\u86C7\u5ECA\u6D1E\u7A9F"
+  _stageInfoText: "\u9177\u304F\u637B\u3058\u308C\u66F2\u304C\u3063\u305F\u6D1E\u7A9F\r\n\u52A0\u3048\u3066\u6D1E\u7A9F\u5185\u306E\u30AF\u30EA\u30B9\u30BF\u30EB\u306F\r\n\u3068\u3066\u3082\u5927\u304D\u304F\u5D29\u308C\u3084\u3059\u3044\r\n\u843D\u77F3\u3084\u843D\u76E4\u306B\u6CE8\u610F\u3057\u3064\u3064\r\n\u7ACB\u3061\u306F\u3060\u304B\u308B\u969C\u58C1\u3092\u3076\u3061\u58CA\u3057\r\n\u4E16\u754C\u3067\u6700\u3082\u8CB4\u91CD\u3067\u7F8E\u3057\u3044\r\n\u30AF\u30EA\u30B9\u30BF\u30EB\u3092\u76D7\u307F\u51FA\u305B"
+  _stageImage: {fileID: 4679848200771493626, guid: 32962c4ce5675d443a092372c1f84b1b, type: 3}
   _stageIndex: 3
 --- !u!58 &778977028
 CircleCollider2D:
@@ -2066,8 +2069,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StagePoint
   _nextSceneName: 1-1
+  _stageName: "\u8A13\u7DF4\u65BD\u8A2D"
   _stageInfoText: "\u65B0\u4EBA\u3092\u935B\u3048\u308B\u305F\u3081\u306E\u8A13\u7DF4\u65BD\u8A2D\u30AF\u30EA\u30B9\u30BF\u30EB\u306E\u6D78\u98DF\u306E\u529B\u3082\u3053\u3053\u3067\u306F\u5F31\u3081\u3066\u3044\u308B\u304B\u3089\u5B89\u5FC3\u3060\r\n\u57FA\u672C\u7684\u306A\u52D5\u4F5C\u3092\u3053\u306E\u6D1E\u7A74\u3067\r\n\u7591\u4F3C\u7684\u306A\u304A\u5B9D\u306E\u53D6\u5F97\u3068\r\n\u6D1E\u7A9F\u306E\u9032\u307F\u65B9\u3092\u5B66\u3093\u3067\u3082\u3089\u3046\r\n\u52D5\u304D\u3092\u4F53\u306B\u523B\u307F\u8FBC\u3081\uFF01\uFF01"
-  _stageImage: {fileID: -7687702389306135508, guid: 90f9dec53d8088e418867312af0baad0, type: 3}
+  _stageImage: {fileID: -393672568197353540, guid: 172fb38d6b5d1cd4198f4a77bac77685, type: 3}
   _stageIndex: 0
 --- !u!212 &1690994861
 SpriteRenderer:
